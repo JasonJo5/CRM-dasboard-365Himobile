@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>365Himobile 客户管理系统</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-badge">365</div>
+      <div>
+        <div class="brand-name">Himobile</div>
+        <div class="brand-sub" data-i18n="sidebar.sub">客户管理系统 · 고객 관리</div>
+      </div>
+    </div>
+    <nav class="nav" id="navMenu"></nav>
+    <div class="sidebar-foot">
+      <div class="store-badge">店</div>
+      <div>
+        <div class="store-name">365Himobile</div>
+        <div class="store-sub" data-i18n="sidebar.store">韩国手机店</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left" style="flex-direction:row;align-items:center;gap:10px;">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <div class="page-title" id="pageTitle">—</div>
+          <div class="page-sub" id="pageSub">—</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中文</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+        <button class="btn btn-primary" id="btnNewCustomerTop">
+          <span>＋</span><span data-i18n="btn.newCustomer">新建客户</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="page" id="page-dashboard">
+        <div class="card" style="margin-bottom:16px;">
+          <input class="search-input" id="dashQuickSearch" data-i18n-ph="dash.quickSearch" placeholder="🔍 快速搜索客户姓名、号码或证件号..." style="width:100%;" autocomplete="off">
+          <div id="dashQuickSearchResults"></div>
+        </div>
+        <div id="dashDupeBanner" style="display:none;margin-bottom:16px;"></div>
+        <div class="grid-4" id="dashStats" style="margin-bottom:16px;"></div>
+        <div class="grid-4" id="dashStats2" style="margin-bottom:16px;"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.followup.title">今天要跟进</div>
+                <div class="section-desc" data-i18n="dash.followup.desc">优先联系即将到期的客户</div>
+              </div>
+              <a class="link" data-nav="reminders" data-i18n="dash.viewall">查看全部 →</a>
+            </div>
+            <div id="dashFollowups"></div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.overview.title">业务概览</div>
+                <div class="section-desc" data-i18n="dash.overview.desc">本月开通类型</div>
+              </div>
+            </div>
+            <div class="donut-wrap">
+              <svg class="donut" viewBox="0 0 42 42" id="donutSvg"></svg>
+              <div class="legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.renewals.title">合约即将到期（30天内）</div>
+                <div class="section-desc" data-i18n="dash.renewals.desc">后付卡合约即将到期，建议提前联系续约</div>
+              </div>
+              <a class="link" data-nav="customers" data-i18n="dash.customerlist">客户列表 →</a>
+            </div>
+            <div id="dashRenewals"></div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.winback.title">流失客户 / 待挽回</div>
+                <div class="section-desc" data-i18n="dash.winback.desc">已取消订阅、尚未重新开通的客户</div>
+              </div>
+              <button class="link" id="dashWinbackViewAll" style="border:none;background:none;cursor:pointer;padding:0;" data-i18n="dash.viewall">查看全部 →</button>
+            </div>
+            <div id="dashWinback"></div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title" data-i18n="dash.revenueTrend.title">营收趋势（近6个月）</div>
+            <div id="dashRevenueTrend" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="dash.cancelReasons.title">取消原因分布</div>
+            <div id="dashCancelReasons" style="margin-top:14px;"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="dash.recent.title">最近新增客户</div>
+              <div class="section-desc" data-i18n="dash.recent.desc">快速确认新开的号码与套餐</div>
+            </div>
+            <a class="link" data-nav="customers" data-i18n="dash.customerlist">客户列表 →</a>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.number">号码</th><th data-i18n="col.service">业务</th>
+                <th data-i18n="col.carrier">通信社</th><th data-i18n="col.activated">开通日期</th><th data-i18n="col.status">状态</th>
+              </tr></thead>
+              <tbody id="dashRecentBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title" data-i18n="dash.nationality.title">客户国籍分布</div>
+            <div id="chartNationality" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="dash.referral.title">客户来源分布</div>
+            <div id="chartReferral" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section class="page" id="page-customers">
+        <div class="card">
+          <div class="chip-tabs" id="custTypeTabs" style="margin-bottom:14px;"></div>
+          <div class="filter-bar">
+            <input class="search-input" id="custSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
+            <select class="select-input" id="custNationalityFilter"></select>
+            <select class="select-input" id="custRatingFilter"></select>
+            <select class="select-input" id="custDurationFilter" style="display:none;">
+              <option value="" data-i18n="filter.allDurations">开通时长：不限</option>
+              <option value="6" data-i18n="filter.duration6">已开通 6 个月以上</option>
+              <option value="8" data-i18n="filter.duration8">已开通 8 个月以上</option>
+              <option value="12" data-i18n="filter.duration12">已开通 1 年以上</option>
+            </select>
+            <button class="btn btn-ghost" id="btnExportCustomers" data-i18n="btn.exportExcel">导出 Excel</button>
+          </div>
+          <div class="section-desc" style="margin-bottom:10px;" id="custCount"></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.contact">联系方式</th><th data-i18n="col.nationality">国籍</th>
+                <th data-i18n="col.id">证件</th><th data-i18n="col.subType">开通方式</th><th data-i18n="col.currentNumber">当前号码</th><th data-i18n="col.recentActivity">最近业务</th>
+                <th data-i18n="col.activeFor" id="colActiveFor" style="display:none;">开通时长</th>
+                <th data-i18n="col.dupeReason" id="colDupeReason" style="display:none;">重复原因</th>
+                <th data-i18n="col.rating">评分</th><th></th>
+              </tr></thead>
+              <tbody id="customersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SHEET VIEW (editable, spreadsheet-style) -->
+      <section class="page" id="page-sheet">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="chip-tabs" id="sheetTypeTabs" style="margin-bottom:0;"></div>
+            </div>
+            <div class="section-desc" data-i18n="sheet.hint">💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存</div>
+          </div>
+          <div class="tbl-wrap sheet-tbl-wrap" style="margin-top:14px;">
+            <table id="sheetTable"></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI BUSINESS INTELLIGENCE -->
+      <section class="page" id="page-ai">
+        <div class="section-desc" style="margin-bottom:16px;" data-i18n="ai.disclaimer">💡 优先级评分与商机建议由规则引擎与透明的加权评分计算得出，并非黑箱机器学习模型 — 每一项数字均可追溯到真实客户数据。</div>
+
+        <div class="grid-4" id="aiStats" style="margin-bottom:16px;"></div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="ai.topActions.title">🔥 今日建议优先处理</div>
+              <div class="section-desc" data-i18n="ai.topActions.desc">点击每一类查看对应客户名单</div>
+            </div>
+          </div>
+          <div id="aiTopActions"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="ai.ask.title">💬 向 AI 商业分析师提问</div>
+              <div class="section-desc" data-i18n="ai.ask.desc">用真实客户数据回答，并展示计算依据（点击下方问题试试看）</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <input class="search-input" id="aiAskInput" data-i18n-ph="ai.ask.placeholder" placeholder="例如：本月有多少客户可以升级？" style="flex:1;">
+            <button class="btn btn-primary" id="aiAskBtn" data-i18n="ai.ask.btn">提问</button>
+          </div>
+          <div class="qsearch-results" id="aiAskSuggestions" style="flex-direction:row;flex-wrap:wrap;margin-top:0;margin-bottom:10px;"></div>
+          <div id="aiAskAnswer"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="ai.opps.title">客户商机列表</div>
+              <div class="section-desc" data-i18n="ai.opps.desc">按优先级排序，点击客户可查看详细的 AI 洞察</div>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input class="search-input" id="aiSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
+            <select class="select-input" id="aiPriorityFilter">
+              <option value="" data-i18n="ai.filter.allPriority">全部优先级</option>
+              <option value="high" data-i18n="ai.priority.high">🔥 高优先级</option>
+              <option value="medium" data-i18n="ai.priority.medium">🟠 中优先级</option>
+              <option value="low" data-i18n="ai.priority.low">🟢 低优先级</option>
+              <option value="none" data-i18n="ai.priority.none">⚪ 无需处理</option>
+            </select>
+            <select class="select-input" id="aiTypeFilter">
+              <option value="" data-i18n="ai.filter.allTypes">全部商机类型</option>
+              <option value="postpaid_conversion" data-i18n="ai.opp.postpaid_conversion">先付转后付</option>
+              <option value="postpaid_conversion_soon" data-i18n="ai.opp.postpaid_conversion_soon">即将符合资格</option>
+              <option value="plan_review" data-i18n="ai.opp.plan_review">合约已到期</option>
+              <option value="renewal_followup" data-i18n="ai.opp.renewal_followup">即将到期</option>
+              <option value="id_verification" data-i18n="ai.opp.id_verification">证件待核实</option>
+              <option value="winback" data-i18n="ai.opp.winback">流失待挽回</option>
+            </select>
+          </div>
+          <div class="section-desc" style="margin-bottom:10px;" id="aiOppsCount"></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="ai.col.priority">优先级</th><th data-i18n="ai.col.score">评分</th>
+                <th data-i18n="ai.col.opportunity">商机类型</th><th data-i18n="ai.col.action">建议操作</th>
+                <th data-i18n="ai.col.currentRev">目前营收</th><th data-i18n="ai.col.uplift">潜在增量</th><th></th>
+              </tr></thead>
+              <tbody id="aiOppsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- REMINDERS -->
+      <section class="page" id="page-reminders">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="rem.title">到期与跟进</div>
+              <div class="section-desc" data-i18n="rem.desc">把有效期与合同自动转换为可执行的联系任务</div>
+            </div>
+            <button class="btn btn-primary" id="btnAddReminder" data-i18n="btn.addFollowup">＋ 添加跟进</button>
+          </div>
+          <div class="chip-tabs" id="reminderTabs" style="margin:14px 0 16px;"></div>
+          <div id="reminderList"></div>
+        </div>
+      </section>
+
+      <!-- ORDERS -->
+      <section class="page" id="page-orders">
+        <div class="card">
+          <div class="filter-bar">
+            <div class="section-head" style="flex:1;">
+              <div>
+                <div class="section-title" data-i18n="orders.title">业务订单</div>
+                <div class="section-desc" data-i18n="orders.desc">记录先付、后付、号码移动、充值、过户和解约</div>
+              </div>
+            </div>
+            <select class="select-input" id="orderTypeFilter"></select>
+            <select class="select-input" id="orderStatusFilter"></select>
+            <label class="import-skipdupe-opt" style="margin:0;white-space:nowrap;">
+              <input type="checkbox" id="orderShowHistory">
+              <span data-i18n="orders.showHistory">显示已变更的历史记录</span>
+            </label>
+            <button class="btn btn-primary" id="btnNewOrder" data-i18n="btn.newOrder">＋ 新增业务</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.serviceType">业务类型</th><th data-i18n="col.carrier">通信公司</th>
+                <th data-i18n="col.plan">套餐</th><th data-i18n="col.amount">金额</th><th data-i18n="col.outstanding">欠款</th>
+                <th data-i18n="col.activated">开通日期</th><th data-i18n="col.status">办理状态</th><th></th>
+              </tr></thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="page" id="page-reports">
+        <div class="grid-4" id="reportStats" style="margin-bottom:16px;"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title" data-i18n="rep.byCarrier">按通信社的营收 / 利润</div>
+            <div id="repByCarrier" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="rep.byType">按业务类型的营收 / 利润</div>
+            <div id="repByType" style="margin-top:14px;"></div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title" data-i18n="rep.popularPlans">热门套餐 Top 5</div>
+            <div id="repPlans" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="rep.rates">续约率 / 回头客率</div>
+            <div id="repRates" style="margin-top:14px;"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="section-head">
+            <div class="section-title" data-i18n="rep.monthly">月度对账</div>
+            <button class="btn btn-ghost" id="btnExportReport" data-i18n="btn.exportExcel">导出 Excel</button>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th data-i18n="col.month">月份</th><th data-i18n="col.orders">订单数</th><th data-i18n="col.expectedProfit">预期利润</th><th data-i18n="col.actualProfit">实际利润（已核对）</th><th data-i18n="col.variance">差异</th><th data-i18n="col.discountGiven">折扣总额</th><th data-i18n="col.netExpected">净预期利润</th></tr></thead>
+            <tbody id="repMonthlyBody"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- PRINT TEMPLATES -->
+      <section class="page" id="page-templates">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="tpl.title">运营商纸质表格模板</div>
+              <div class="section-desc" data-i18n="tpl.desc">上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印</div>
+            </div>
+          </div>
+          <div class="tpl-grid" id="tplGrid"></div>
+        </div>
+      </section>
+
+      <!-- IMPORT/EXPORT -->
+      <section class="page" id="page-io">
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title" data-i18n="io.import.title">导入 Excel</div>
+            <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.import.desc">支持导入现有的先付 / 后付客户记录（.xlsx / .csv）</div>
+            <div class="dropzone" id="dropzone">
+              <div style="font-size:26px;margin-bottom:8px;">⇪</div>
+              <div data-i18n="io.import.drop">拖拽文件到此处，或点击选择文件</div>
+              <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+            </div>
+            <div id="importSummary"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="io.export.title">导出备份</div>
+            <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.export.desc">将客户、订单与提醒数据导出为 Excel 文件</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-ghost" id="exportCustomersBtn" data-i18n="io.export.customers">导出客户档案</button>
+              <button class="btn btn-ghost" id="exportOrdersBtn" data-i18n="io.export.orders">导出业务订单</button>
+              <button class="btn btn-ghost" id="exportRemindersBtn" data-i18n="io.export.reminders">导出到期跟进</button>
+              <button class="btn btn-ghost" id="exportAllBtn" data-i18n="io.export.all">导出全部数据（一体备份）</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;" id="dataIssuesCard">
+          <div class="section-title" data-i18n="io.issues.title">数据完整性检查</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.issues.desc">缺失联系方式、有效期、证件信息或付款信息的客户</div>
+          <div id="dataIssuesList"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- new customer: choose prepaid or postpaid first -->
+<div class="overlay" id="newCustomerTypeModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.chooseType">新建客户</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" style="margin-bottom:16px;" data-i18n="modal.chooseTypeDesc">先选择客户类型，两种表单的字段不同</div>
+      <div style="display:flex;gap:14px;">
+        <div class="type-choice-card prepaid" id="chooseTypePrepaid">
+          <div class="type-choice-icon">💳</div>
+          <div class="type-choice-title" data-i18n="opt.prepaidShort">先付卡</div>
+          <div class="type-choice-desc" data-i18n="modal.prepaidDesc">固定3个月充值套餐</div>
+        </div>
+        <div class="type-choice-card postpaid" id="chooseTypePostpaid">
+          <div class="type-choice-icon">📶</div>
+          <div class="type-choice-title" data-i18n="opt.postpaidShort">后付卡</div>
+          <div class="type-choice-desc" data-i18n="modal.postpaidDesc">按月合约，可选运营商与套餐</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- new postpaid customer: dedicated click-to-select form -->
+<div class="overlay" id="newPostpaidModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.newPostpaidCustomer">新建后付卡客户</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="pc_name" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="pc_nationality" placeholder="例如：CHINA"></div>
+        <div class="form-field"><label data-i18n="f.dob">出生日期</label><input id="pc_dob" type="date"></div>
+        <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="pc_years" type="number" min="0" step="0.5"></div>
+        <div class="form-field"><label data-i18n="f.idNumber">证件号码</label><input id="pc_idNumber"></div>
+        <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="pc_occupation"></div>
+        <div class="form-field full"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="pc_idType_group" data-field="idType"></div></div>
+
+        <div class="form-field"><label data-i18n="f.contactMethod">联系方式</label><div class="tile-radio-group" id="pc_contactMethod_group" data-field="contactMethod"></div></div>
+        <div class="form-field"><label data-i18n="f.contactHandle">联系账号 / ID</label><input id="pc_contactHandle" placeholder="ID / 用户名"></div>
+
+        <div class="form-field full"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="pc_workType_group" data-field="workType"></div></div>
+        <div class="form-field full"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="pc_contractLength_group" data-field="contractLength"></div></div>
+        <div class="form-field full"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pc_company_group" data-field="company"></div></div>
+        <div class="form-field full"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="pc_partnerCompany_group" data-field="partnerCompany"></div></div>
+        <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pc_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+
+        <div class="form-hr"></div>
+        <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="pc_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pc_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.monthlyFee">月租费（客户付给运营商，非本店收入）</label><input id="pc_monthlyFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.handlerName">办理人 Handled by</label><input id="pc_handlerName" placeholder="员工姓名"></div>
+
+        <div class="form-hr"></div>
+        <div class="form-subtitle" data-i18n="f.profitSection">预期利润与折扣 Expected profit & discount</div>
+        <div class="form-field"><label data-i18n="f.expectedProfit">预期利润 Expected profit（运营商预计支付）</label><input id="pc_expectedProfit" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣 Discount / month</label><input id="pc_discountPerMonth" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountMonths">折扣月数 Discount months</label><input id="pc_discountMonths" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.netExpectedProfit">净预期利润 Net expected profit</label><input id="pc_netExpectedPreview" disabled></div>
+
+        <div class="form-field full"><label data-i18n="f.referralFriend">介绍人 Referred by (朋友姓名，如有)</label><input id="pc_referralFriend" placeholder="朋友姓名"></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pc_notes"></textarea></div>
+      </div>
+      <div class="section-desc" style="margin-top:6px;" data-i18n="f.actualProfitHint">💡 「实际利润」会在月底运营商结算后填写，用于和预期利润核对 — 可在「保存客户」后于表格视图中随时补填。</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="savePostpaidCustomerBtn" data-i18n="btn.saveCustomer">保存客户</button>
+    </div>
+  </div>
+</div>
+
+<!-- customer modal -->
+<div class="overlay" id="customerModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" id="customerModalTitle" data-i18n="modal.newCustomer">新建客户</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="customerForm">
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="f_name" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.phone">联系电话</label><input id="f_phone" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="f_nationality" data-i18n-ph="f.nationalityPh" placeholder="例如：CHINA"></div>
+        <div class="form-field"><label data-i18n="f.dob">出生日期</label><input id="f_dob" type="date"></div>
+        <div class="form-field"><label data-i18n="f.kakao">KakaoTalk ID</label><input id="f_kakao"></div>
+        <div class="form-field"><label data-i18n="f.wechat">微信 WeChat</label><input id="f_wechat"></div>
+        <div class="form-field"><label data-i18n="f.idType">证件类型</label><select id="f_idType"><option value="ARC">ARC</option><option value="Passport">Passport</option></select></div>
+        <div class="form-field"><label data-i18n="f.idNumber">证件号码 (ARC/Passport)</label><input id="f_idNumber"></div>
+        <div class="form-field"><label data-i18n="f.idExpiry">证件有效期至</label><input id="f_idExpiry" type="date"></div>
+        <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="f_occupation"></div>
+        <div class="form-field"><label data-i18n="f.workplace">工作单位</label><input id="f_workplace"></div>
+        <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="f_years" type="number" min="0" step="0.5"></div>
+        <div class="form-field"><label data-i18n="f.referral">客户来源</label><select id="f_referral"></select></div>
+        <div class="form-field"><label data-i18n="f.carrierType">通信网 Carrier</label><select id="f_carrierType"><option value="SKT">SKT</option><option value="KT">KT</option></select></div>
+        <div class="form-field"><label data-i18n="f.planType">业务类型 Plan type</label><select id="f_planType"></select></div>
+        <div class="form-field"><label data-i18n="f.branchOffice">接收处管理编码 Branch office</label><input id="f_branchOffice" placeholder="접수처 관리코드"></div>
+        <div class="form-field full"><label data-i18n="f.address">地址</label><input id="f_address" data-i18n-ph="f.addressPh" placeholder="韩国地址（用于打印申请表）"></div>
+        <div class="form-field full"><label data-i18n="f.rating">客户评分</label><div class="rating-stars" id="f_rating">★★★★★</div></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="f_notes" data-i18n-ph="f.notesPh" placeholder="职业、客户来源等"></textarea></div>
+
+        <div class="prepaid3m-box" id="prepaid3mFields">
+          <div class="section-desc" id="prepaid3mHint" data-i18n="prepaid3m.hint">先付卡按充值月数计算，选择3个月时会自动套用프리티电信（Preeti Telecom）申请表；1/2个月请另外选择对应模板</div>
+          <div class="prepaid3m-fields">
+            <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="p3_number" placeholder="010-0000-0000"></div>
+            <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="p3_activationDate" type="date"></div>
+            <div class="form-field">
+              <label data-i18n="f.prepaidMonths">充值月数 Plan duration</label>
+              <select id="p3_prepaidMonths">
+                <option value="1">1 개월 (1 Month)</option>
+                <option value="2">2 개월 (2 Months)</option>
+                <option value="3" selected>3 개월 (3 Months)</option>
+              </select>
+            </div>
+            <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호 USIM number</label><input id="p3_usimNumber" placeholder="USIM Serial Number"></div>
+            <div class="form-field full"><label data-i18n="print.template">打印模板</label><select id="p3_template"></select></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="deleteCustomerBtn" style="margin-right:auto;display:none;" data-i18n="btn.deleteCustomer">删除客户</button>
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="saveCustomerBtn" data-i18n="btn.saveCustomer">保存客户</button>
+      <button class="btn btn-primary" id="savePrintCustomerBtn" style="display:none;background:var(--orange);">🖨 <span data-i18n="btn.savePrint">保存并打印申请表</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- customer detail modal -->
+<div class="overlay" id="detailModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.customerProfile">客户档案</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="detailDeleteBtn" style="margin-right:auto;" data-i18n="btn.deleteCustomer">删除客户</button>
+      <button class="btn btn-ghost" id="detailEditBtn" data-i18n="btn.edit">编辑资料</button>
+      <button class="btn btn-primary" id="detailAddServiceBtn" data-i18n="btn.addService">＋ 新增业务</button>
+    </div>
+  </div>
+</div>
+
+<!-- order/service modal -->
+<div class="overlay" id="orderModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" id="orderModalTitle" data-i18n="modal.newOrder">新增业务</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="orderForm">
+        <div class="form-field full"><label data-i18n="f.customer">客户</label><select id="o_customer"></select></div>
+        <div class="form-subtitle" data-i18n="f.serviceInfo">业务信息</div>
+        <div class="form-field"><label data-i18n="f.serviceType">业务类型</label><select id="o_type"></select></div>
+        <div class="form-field" id="o_planDurationField" style="display:none;"><label data-i18n="f.contractLength">合约期限</label><select id="o_planDuration">
+          <option value="185">185일 (185 days)</option>
+          <option value="245">245일 (245 days)</option>
+          <option value="365">365일 (365 days)</option>
+        </select></div>
+        <div class="form-field" id="o_companyField" style="display:none;"><label data-i18n="f.company">가입회사 Company</label><select id="o_company"></select></div>
+        <div class="form-field" id="o_partnerCompanyField" style="display:none;"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><select id="o_partnerCompany"></select></div>
+        <div class="form-field" id="o_svcCarrierTypeField" style="display:none;"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><select id="o_svcCarrierType"></select></div>
+        <div class="form-field"><label data-i18n="f.carrier">通信社 / MVNO</label><input id="o_carrier" placeholder="LG U+ 알뜰폰"></div>
+        <div class="form-field"><label data-i18n="f.plan">套餐名称</label><input id="o_plan" placeholder="360 / 60天"></div>
+        <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="o_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.simType">SIM 类型</label><select id="o_simType"><option value="physical" data-i18n="opt.physical">实体卡</option><option value="esim">eSIM</option></select></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="o_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.durationDays">合同时长（天）</label><input id="o_durationDays" type="number" min="0" placeholder="30 / 60 / 90 / 365"></div>
+        <div class="form-field"><label data-i18n="f.expiryDate">到期日期</label><input id="o_expiryDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.status">办理状态</label><select id="o_status"></select></div>
+        <div class="form-field" id="o_usedDaysField" style="display:none;"><label data-i18n="f.usedDays">已使用天数 Used days</label><input id="o_usedDaysDisplay" disabled></div>
+        <div class="form-hr"></div>
+        <div class="form-subtitle" data-i18n="f.feeInfo">费用信息</div>
+        <div class="form-field"><label data-i18n="f.monthlyFee">月租费</label><input id="o_monthlyFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discount">折扣</label><input id="o_discount" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.firstMonthPayment">首月费用</label><input id="o_firstMonthPayment" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.activationFee">开通费</label><input id="o_activationFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.simFee">SIM 卡费</label><input id="o_simFee" type="number" min="0"></div>
+        <div class="form-hr"></div>
+        <div class="form-subtitle" data-i18n="f.paymentInfo">收款与利润</div>
+        <div class="form-field"><label data-i18n="f.sellingPrice">销售价</label><input id="o_sellingPrice" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.cost">成本</label><input id="o_cost" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.received">已收金额</label><input id="o_received" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.paymentMethod">付款方式</label><select id="o_paymentMethod"></select></div>
+        <div class="form-field"><label data-i18n="f.commission">返点 / 提成</label><input id="o_commission" type="number" min="0"></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="o_notes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="saveOrderBtn" data-i18n="btn.saveOrder">保存业务</button>
+    </div>
+  </div>
+</div>
+
+<!-- change subscription modal (used for both "Change to Postpaid" and "Change Plan") -->
+<div class="overlay" id="changeSubModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="changeSubModalTitle" data-i18n="modal.changeToPostpaid">转为后付卡</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" id="changeSubCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="form-grid">
+        <div class="form-field"><label data-i18n="f.carrier">通信社 / MVNO</label><input id="cs_carrier" placeholder="LG U+ 알뜰폰"></div>
+        <div class="form-field"><label data-i18n="f.plan">套餐名称</label><input id="cs_plan" placeholder="Premium 50GB"></div>
+        <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><select id="cs_contractLength">
+          <option value="185">185일 (185 days)</option>
+          <option value="245">245일 (245 days)</option>
+          <option value="365">365일 (365 days)</option>
+        </select></div>
+        <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><select id="cs_company"></select></div>
+        <div class="form-field"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><select id="cs_partnerCompany"></select></div>
+        <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><select id="cs_svcCarrierType"></select></div>
+        <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="cs_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="cs_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.monthlyFee">月租费</label><input id="cs_monthlyFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.firstMonthPayment">首月费用</label><input id="cs_firstMonthPayment" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.sellingPrice">销售价</label><input id="cs_sellingPrice" type="number" min="0"></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="cs_notes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="saveChangeSubBtn" data-i18n="btn.confirmChange">确认变更</button>
+    </div>
+  </div>
+</div>
+
+<!-- cancel subscription modal -->
+<div class="overlay" id="cancelSubModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.cancelSubscription">取消订阅</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" id="cancelSubCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="form-grid">
+        <div class="form-field full">
+          <label data-i18n="f.cancelReason">取消原因</label>
+          <select id="cs_cancelReason">
+            <option value="cancelled" data-i18n="reason.cancelled">客户不再续约 / 主动停用</option>
+            <option value="switched_carrier" data-i18n="reason.switched_carrier">客户转换其他通信社</option>
+            <option value="other" data-i18n="reason.other">其他原因</option>
+          </select>
+        </div>
+        <div class="form-field full"><label data-i18n="f.notes">备注（可选）</label><textarea id="cs_cancelNotes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.back">返回</button>
+      <button class="btn btn-danger" id="confirmCancelSubBtn" data-i18n="btn.confirmCancel">确认取消订阅</button>
+    </div>
+  </div>
+</div>
+
+<!-- import preview modal -->
+<div class="overlay" id="importModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.importPreview">导入预览</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="margin-bottom:10px;">
+        <div class="form-field"><label data-i18n="io.import.sheet">选择表格 Sheet</label><select id="importSheetSelect"></select></div>
+        <div class="form-field"><label data-i18n="io.import.headerRow">标题行 Header row</label><input type="number" id="importHeaderRow" min="1" style="width:100%;"></div>
+        <div class="form-field full">
+          <label data-i18n="io.import.subType">这批客户属于 Customer type for this sheet</label>
+          <select id="importSubType">
+            <option value="auto" data-i18n="io.import.subTypeAuto">自动判断（根据表格名称）Auto-detect from sheet name</option>
+            <option value="prepaid" data-i18n="io.import.subTypePrepaid">先付卡 Prepaid</option>
+            <option value="postpaid" data-i18n="io.import.subTypePostpaid">后付卡 Postpaid</option>
+          </select>
+        </div>
+      </div>
+      <div class="section-desc" id="importInfo" style="margin-bottom:10px;"></div>
+      <div class="import-preview-table"><table id="importPreviewTable"></table></div>
+      <div class="section-desc" id="importNameWarning" style="margin-top:8px;color:#C0392B;display:none;"></div>
+      <div class="import-mode-box">
+        <div class="section-subtitle" data-i18n="io.import.modeTitle">导入方式</div>
+        <label class="import-mode-opt">
+          <input type="radio" name="importMode" value="merge" id="importMode_merge" checked>
+          <span>
+            <b data-i18n="io.import.modeMerge">与现有客户合并（自动跳过重复项）</b>
+            <div class="section-desc" data-i18n="io.import.modeMergeDesc">保留现有客户档案，仅新增导入文件中不重复的客户</div>
+            <label class="import-skipdupe-opt" id="importSkipDupeWrap">
+              <input type="checkbox" id="importSkipDupes" checked>
+              <span data-i18n="io.import.skipDupes">自动跳过重复客户（按姓名或电话匹配）</span>
+            </label>
+            <div class="section-desc" id="importSkipDupesHint" style="margin-left:26px;"></div>
+          </span>
+        </label>
+        <label class="import-mode-opt">
+          <input type="radio" name="importMode" value="replace" id="importMode_replace">
+          <span>
+            <b data-i18n="io.import.modeReplace">清空现有客户，改用此文件的数据</b>
+            <div class="section-desc" data-i18n="io.import.modeReplaceDesc">导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件</div>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="confirmImportBtn" data-i18n="btn.confirmImport">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- template editor modal -->
+<div class="overlay" id="templateEditorOverlay">
+  <div class="modal wide" style="max-width:960px;">
+    <div class="modal-head">
+      <div class="modal-title" id="templateEditorTitle" data-i18n="tpl.editor.new">新建模板</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="form-field"><label data-i18n="tpl.name">模板名称</label><input id="tpl_name" placeholder="例如：LG U+ 알뜰폰 3个月先付卡申请表"></div>
+        <div class="form-field"><label data-i18n="tpl.carrier">通信社</label><input id="tpl_carrier" placeholder="LG U+ 알뜰폰"></div>
+      </div>
+      <div id="tplUploadZone" class="dropzone" style="margin-bottom:14px;">
+        <div style="font-size:26px;margin-bottom:8px;">🖼️</div>
+        <div data-i18n="tpl.uploadHint">点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）</div>
+        <input type="file" id="tplImageInput" accept="image/*" style="display:none">
+      </div>
+      <div class="tpl-editor-wrap" id="tplEditorWrap" style="display:none;">
+        <div class="tpl-canvas-col">
+          <div class="tpl-hint" style="margin-bottom:8px;" data-i18n="tpl.canvasHint">点击图片任意位置添加字段，拖动字段调整位置</div>
+          <div class="tpl-canvas" id="tplCanvas"></div>
+        </div>
+        <div class="tpl-side-col">
+          <button class="btn btn-ghost btn-sm" id="tplChangeImageBtn" data-i18n="tpl.changeImage">更换图片</button>
+          <div class="section-title" style="font-size:13px;" data-i18n="tpl.fieldsList">已添加字段</div>
+          <div id="tplFieldList" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="tplDeleteBtn" style="margin-right:auto;display:none;" data-i18n="btn.delete">删除</button>
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="tplSaveBtn" data-i18n="btn.saveTemplate">保存模板</button>
+    </div>
+  </div>
+</div>
+
+<!-- field edit popover (simple inline panel reused inside list) -->
+
+<!-- print preview modal -->
+<div class="overlay" id="printPreviewOverlay">
+  <div class="modal wide" style="max-width:900px;">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="print.preview">打印预览</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="margin-bottom:12px;">
+        <div class="form-field"><label data-i18n="print.template">选择模板</label><select id="pp_template"></select></div>
+        <div class="form-field" style="justify-content:flex-end;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text-soft);margin-top:22px;">
+            <input type="checkbox" id="pp_showbg" style="width:16px;height:16px;"> <span data-i18n="print.includeBg">预览显示底图（打印在空白纸上勾选此项）</span>
+          </label>
+        </div>
+      </div>
+      <div style="max-height:62vh;overflow:auto;background:#EDEFF4;border-radius:10px;padding:16px;">
+        <div class="print-preview-scale-wrap">
+          <div class="print-preview-scale-inner" style="width:105mm;height:148.5mm;overflow:hidden;">
+            <div id="printPreviewArea" style="transform-origin:top left;transform:scale(.5);"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-desc" style="margin-top:10px;" data-i18n="print.bgHint">如果打印出来没有底图，请在浏览器打印对话框中开启「背景图形 / Background graphics」选项后再打印。</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="pp_printBtn">🖨 <span data-i18n="btn.print">打印</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="printOverlay"></div>
+
+<div class="toast" id="toast"></div>
+<div class="cell-popover" id="cellPopover">
+  <div class="cell-popover-title" id="cellPopoverTitle"></div>
+  <div class="cell-popover-options" id="cellPopoverOptions"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
