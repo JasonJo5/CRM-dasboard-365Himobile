@@ -20,11 +20,11 @@
       </div>
     </div>
     <nav class="nav" id="navMenu"></nav>
-    <div class="sidebar-foot">
-      <div class="store-badge">店</div>
+    <div class="sidebar-foot" id="staffProfileFoot" style="cursor:pointer;">
+      <div class="store-badge" id="staffProfileBadge">J</div>
       <div>
-        <div class="store-name">365Himobile</div>
-        <div class="store-sub" data-i18n="sidebar.store">韩国手机店</div>
+        <div class="store-name" id="staffProfileName">Jason</div>
+        <div class="store-sub" data-i18n="sidebar.staffSub">点击切换办理人</div>
       </div>
     </div>
   </aside>
@@ -157,7 +157,20 @@
           <div class="filter-bar">
             <input class="search-input" id="custSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
             <select class="select-input" id="custNationalityFilter"></select>
-            <select class="select-input" id="custRatingFilter"></select>
+            <select class="select-input" id="custSortBy">
+              <option value="newest" data-i18n="sort.newest">排序：最新优先</option>
+              <option value="oldest" data-i18n="sort.oldest">排序：最旧优先</option>
+              <option value="nameAsc" data-i18n="sort.nameAsc">姓名 A → Z</option>
+              <option value="nameDesc" data-i18n="sort.nameDesc">姓名 Z → A</option>
+              <option value="ratingHigh" data-i18n="sort.ratingHigh">评分：高到低</option>
+              <option value="ratingLow" data-i18n="sort.ratingLow">评分：低到高</option>
+            </select>
+            <select class="select-input" id="custRecentFilter">
+              <option value="" data-i18n="filter.allTime">添加时间：不限</option>
+              <option value="1" data-i18n="filter.today">今天新增</option>
+              <option value="7" data-i18n="filter.last7">最近7天</option>
+              <option value="30" data-i18n="filter.last30">最近30天</option>
+            </select>
             <select class="select-input" id="custDurationFilter" style="display:none;">
               <option value="" data-i18n="filter.allDurations">开通时长：不限</option>
               <option value="6" data-i18n="filter.duration6">已开通 6 个月以上</option>
@@ -170,8 +183,9 @@
           <div class="tbl-wrap">
             <table>
               <thead><tr>
-                <th data-i18n="col.customer">客户</th><th data-i18n="col.contact">联系方式</th><th data-i18n="col.nationality">国籍</th>
-                <th data-i18n="col.id">证件</th><th data-i18n="col.subType">开通方式</th><th data-i18n="col.currentNumber">当前号码</th><th data-i18n="col.recentActivity">最近业务</th>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.phoneNumber">电话号码</th><th data-i18n="col.nationality">国籍</th>
+                <th data-i18n="col.id">证件</th><th data-i18n="col.subType">开通方式</th><th data-i18n="col.recentActivity">最近业务</th>
+                <th data-i18n="col.dateAdded">添加日期</th>
                 <th data-i18n="col.activeFor" id="colActiveFor" style="display:none;">开通时长</th>
                 <th data-i18n="col.dupeReason" id="colDupeReason" style="display:none;">重复原因</th>
                 <th data-i18n="col.rating">评分</th><th></th>
@@ -191,7 +205,19 @@
             </div>
             <div class="section-desc" data-i18n="sheet.hint">💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存</div>
           </div>
-          <div class="tbl-wrap sheet-tbl-wrap" style="margin-top:14px;">
+          <div class="filter-bar" style="margin-top:14px;">
+            <input class="search-input" id="sheetSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
+            <select class="select-input" id="sheetNationalityFilter"></select>
+            <select class="select-input" id="sheetRatingFilter"></select>
+            <select class="select-input" id="sheetRecentFilter">
+              <option value="" data-i18n="filter.allTime">添加时间：不限</option>
+              <option value="1" data-i18n="filter.today">今天新增</option>
+              <option value="7" data-i18n="filter.last7">最近7天</option>
+              <option value="30" data-i18n="filter.last30">最近30天</option>
+            </select>
+          </div>
+          <div class="section-desc" style="margin:10px 0;" id="sheetCount"></div>
+          <div class="tbl-wrap sheet-tbl-wrap">
             <table id="sheetTable"></table>
           </div>
         </div>
@@ -316,6 +342,18 @@
 
       <!-- REPORTS -->
       <section class="page" id="page-reports">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="rep.selectMonth">选择月份</div>
+              <div class="section-desc" data-i18n="rep.selectMonthDesc">查看该月份的详细营收报告</div>
+            </div>
+            <select class="select-input" id="repMonthSelect" style="min-width:180px;"></select>
+          </div>
+        </div>
+        <div class="card" id="repHeroCard" style="margin-bottom:16px;padding:28px 30px;background:linear-gradient(135deg,#0F1B3D,#1E3A6E);color:#fff;">
+          <div id="repHero"></div>
+        </div>
         <div class="grid-4" id="reportStats" style="margin-bottom:16px;"></div>
         <div class="grid-2">
           <div class="card">
@@ -339,7 +377,19 @@
         </div>
         <div class="card" style="margin-top:16px;">
           <div class="section-head">
-            <div class="section-title" data-i18n="rep.monthly">月度对账</div>
+            <div>
+              <div class="section-title" id="repTxTitle" data-i18n="rep.transactions">本月交易明细</div>
+              <div class="section-desc" id="repTxDesc"></div>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th data-i18n="col.customer">客户</th><th data-i18n="col.serviceType">业务类型</th><th data-i18n="col.carrier">通信社</th><th data-i18n="col.activated">开通日期</th><th data-i18n="rep.profit">利润</th></tr></thead>
+            <tbody id="repTxBody"></tbody>
+          </table></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="section-head">
+            <div class="section-title" data-i18n="rep.monthly">全部月份对账</div>
             <button class="btn btn-ghost" id="btnExportReport" data-i18n="btn.exportExcel">导出 Excel</button>
           </div>
           <div class="tbl-wrap"><table>
@@ -386,10 +436,35 @@
             </div>
           </div>
         </div>
+        <div class="card" style="margin-top:16px;border:1.5px solid #C7D7FB;">
+          <div class="section-title" data-i18n="sync.title">服务器同步（多台电脑共享数据）</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="sync.desc">连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。</div>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label data-i18n="sync.urlLabel">服务器地址</label>
+              <input id="syncServerUrl" placeholder="http://192.168.219.45:4000">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+            <button class="btn btn-ghost" id="btnTestSync" data-i18n="sync.test">测试连接</button>
+            <button class="btn btn-ghost" id="btnPushSync" data-i18n="sync.pushNow">立即推送本机数据到服务器</button>
+            <button class="btn btn-ghost" id="btnPullSync" data-i18n="sync.pullNow">从服务器拉取最新数据</button>
+          </div>
+          <label class="import-skipdupe-opt" style="margin-top:14px;">
+            <input type="checkbox" id="syncEnabledCheckbox">
+            <span data-i18n="sync.enable">启用自动同步（保存时自动推送，打开页面时自动拉取）</span>
+          </label>
+          <div class="section-desc" id="syncStatusText" style="margin-top:8px;"></div>
+        </div>
         <div class="card" style="margin-top:16px;" id="dataIssuesCard">
           <div class="section-title" data-i18n="io.issues.title">数据完整性检查</div>
           <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.issues.desc">缺失联系方式、有效期、证件信息或付款信息的客户</div>
           <div id="dataIssuesList"></div>
+        </div>
+        <div class="card" style="margin-top:16px;border:1.5px solid #FBD5D5;">
+          <div class="section-title" style="color:#C0392B;" data-i18n="io.format.title">清空数据，重新开始</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.format.desc">清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。</div>
+          <button class="btn" style="background:#FEF2F2;color:#C0392B;border:1.5px solid #FCA5A5;" id="btnFormatData" data-i18n="io.format.btn">🗑 格式化数据 Format Data</button>
         </div>
       </section>
     </div>
@@ -436,22 +511,24 @@
         <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="pc_years" type="number" min="0" step="0.5"></div>
         <div class="form-field"><label data-i18n="f.idNumber">证件号码</label><input id="pc_idNumber"></div>
         <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="pc_occupation"></div>
-        <div class="form-field full"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="pc_idType_group" data-field="idType"></div></div>
 
-        <div class="form-field"><label data-i18n="f.contactMethod">联系方式</label><div class="tile-radio-group" id="pc_contactMethod_group" data-field="contactMethod"></div></div>
-        <div class="form-field"><label data-i18n="f.contactHandle">联系账号 / ID</label><input id="pc_contactHandle" placeholder="ID / 用户名"></div>
-
-        <div class="form-field full"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="pc_workType_group" data-field="workType"></div></div>
-        <div class="form-field full"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="pc_contractLength_group" data-field="contractLength"></div></div>
-        <div class="form-field full"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pc_company_group" data-field="company"></div></div>
-        <div class="form-field full"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="pc_partnerCompany_group" data-field="partnerCompany"></div></div>
-        <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pc_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+        <div class="form-field full">
+          <label data-i18n="f.planOptions">套餐选项 Plan options</label>
+          <div class="plan-options-box">
+            <div class="form-field"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="pc_idType_group" data-field="idType"></div></div>
+            <div class="form-field"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="pc_workType_group" data-field="workType"></div></div>
+            <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="pc_contractLength_group" data-field="contractLength"></div></div>
+            <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pc_company_group" data-field="company"></div></div>
+            <div class="form-field"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="pc_partnerCompany_group" data-field="partnerCompany"></div></div>
+            <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pc_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+          </div>
+        </div>
 
         <div class="form-hr"></div>
         <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="pc_number" placeholder="010-0000-0000"></div>
         <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pc_activationDate" type="date"></div>
         <div class="form-field"><label data-i18n="f.monthlyFee">月租费（客户付给运营商，非本店收入）</label><input id="pc_monthlyFee" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.handlerName">办理人 Handled by</label><input id="pc_handlerName" placeholder="员工姓名"></div>
+        <div class="form-field full"><label data-i18n="f.handlerName">办理人 Handled by</label><div class="tile-radio-group" id="pc_handlerName_group" data-field="handlerName"></div></div>
 
         <div class="form-hr"></div>
         <div class="form-subtitle" data-i18n="f.profitSection">预期利润与折扣 Expected profit & discount</div>
@@ -481,40 +558,34 @@
     </div>
     <div class="modal-body">
       <div class="form-grid" id="customerForm">
-        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="f_name" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="f_name" class="uppercase-input" placeholder="例如: KIM MINJUN"></div>
         <div class="form-field"><label data-i18n="f.phone">联系电话</label><input id="f_phone" placeholder="010-0000-0000"></div>
-        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="f_nationality" data-i18n-ph="f.nationalityPh" placeholder="例如：CHINA"></div>
-        <div class="form-field"><label data-i18n="f.dob">出生日期</label><input id="f_dob" type="date"></div>
-        <div class="form-field"><label data-i18n="f.kakao">KakaoTalk ID</label><input id="f_kakao"></div>
-        <div class="form-field"><label data-i18n="f.wechat">微信 WeChat</label><input id="f_wechat"></div>
-        <div class="form-field"><label data-i18n="f.idType">证件类型</label><select id="f_idType"><option value="ARC">ARC</option><option value="Passport">Passport</option></select></div>
-        <div class="form-field"><label data-i18n="f.idNumber">证件号码 (ARC/Passport)</label><input id="f_idNumber"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="f_nationality" class="uppercase-input" data-i18n-ph="f.nationalityPh" placeholder="例如：CHINA"></div>
+        <div class="form-field"><label data-i18n="f.dob">出生日期（6位数字 YYMMDD）</label><input id="f_dob" placeholder="예: 040728" maxlength="6" inputmode="numeric"></div>
+        <div class="form-field full"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="f_idType_group" data-field="idType"></div></div>
+        <div class="form-field"><label data-i18n="f.idNumber">证件号码 (ARC/Passport)</label><input id="f_idNumber" class="uppercase-input"></div>
         <div class="form-field"><label data-i18n="f.idExpiry">证件有效期至</label><input id="f_idExpiry" type="date"></div>
-        <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="f_occupation"></div>
-        <div class="form-field"><label data-i18n="f.workplace">工作单位</label><input id="f_workplace"></div>
+        <div class="form-field full"><label data-i18n="f.occupation">职业</label><div class="tile-radio-group" id="f_occupation_group" data-field="occupation"></div></div>
         <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="f_years" type="number" min="0" step="0.5"></div>
         <div class="form-field"><label data-i18n="f.referral">客户来源</label><select id="f_referral"></select></div>
         <div class="form-field"><label data-i18n="f.carrierType">通信网 Carrier</label><select id="f_carrierType"><option value="SKT">SKT</option><option value="KT">KT</option></select></div>
         <div class="form-field"><label data-i18n="f.planType">业务类型 Plan type</label><select id="f_planType"></select></div>
-        <div class="form-field"><label data-i18n="f.branchOffice">接收处管理编码 Branch office</label><input id="f_branchOffice" placeholder="접수처 관리코드"></div>
+        <div class="form-field"><label data-i18n="f.branchOffice">接收处管理编码 Branch office</label><select id="f_branchOffice"><option value="KY0000489">KY0000489</option><option value="시엔에스">시엔에스</option></select></div>
+        <div class="form-field"><label data-i18n="f.handlerName">办理人 Handled by</label><select id="f_handlerName"><option value="Jason">Jason</option><option value="Jihan">Jihan</option><option value="Himobile365">Himobile365</option></select></div>
         <div class="form-field full"><label data-i18n="f.address">地址</label><input id="f_address" data-i18n-ph="f.addressPh" placeholder="韩国地址（用于打印申请表）"></div>
         <div class="form-field full"><label data-i18n="f.rating">客户评分</label><div class="rating-stars" id="f_rating">★★★★★</div></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="f_notes" data-i18n-ph="f.notesPh" placeholder="职业、客户来源等"></textarea></div>
 
         <div class="prepaid3m-box" id="prepaid3mFields">
-          <div class="section-desc" id="prepaid3mHint" data-i18n="prepaid3m.hint">先付卡按充值月数计算，选择3个月时会自动套用프리티电信（Preeti Telecom）申请表；1/2个月请另外选择对应模板</div>
+          <div class="section-desc" id="prepaid3mHint" data-i18n="prepaid3m.hint">先付卡为一次性付款，价格根据所选天数自动带入（可修改）；选择90天套餐时会自动套用프리티电信（Preeti Telecom）申请表，其余天数请另外选择对应模板</div>
           <div class="prepaid3m-fields">
+            <div class="form-field full"><label class="tile-radio-required" data-i18n="f.prepaidPlan">充值套餐 Plan</label><div class="tile-radio-group" id="p3_prepaidPlan_group" data-field="prepaidPlan"></div></div>
+            <div class="form-field"><label data-i18n="f.price">价格 Price（一次性付款 one-time payment）</label><input id="p3_price" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호 USIM number</label><input id="p3_usimNumber" placeholder="USIM Serial Number"></div>
+            <div class="form-field full"><label data-i18n="f.company">회사명 Company</label><div class="tile-radio-group" id="p3_company_group" data-field="company"></div></div>
+            <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="p3_svcCarrierType_group" data-field="svcCarrierType"></div></div>
             <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="p3_number" placeholder="010-0000-0000"></div>
             <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="p3_activationDate" type="date"></div>
-            <div class="form-field">
-              <label data-i18n="f.prepaidMonths">充值月数 Plan duration</label>
-              <select id="p3_prepaidMonths">
-                <option value="1">1 개월 (1 Month)</option>
-                <option value="2">2 개월 (2 Months)</option>
-                <option value="3" selected>3 개월 (3 Months)</option>
-              </select>
-            </div>
-            <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호 USIM number</label><input id="p3_usimNumber" placeholder="USIM Serial Number"></div>
             <div class="form-field full"><label data-i18n="print.template">打印模板</label><select id="p3_template"></select></div>
           </div>
         </div>
@@ -575,19 +646,23 @@
         <div class="form-field"><label data-i18n="f.status">办理状态</label><select id="o_status"></select></div>
         <div class="form-field" id="o_usedDaysField" style="display:none;"><label data-i18n="f.usedDays">已使用天数 Used days</label><input id="o_usedDaysDisplay" disabled></div>
         <div class="form-hr"></div>
-        <div class="form-subtitle" data-i18n="f.feeInfo">费用信息</div>
-        <div class="form-field"><label data-i18n="f.monthlyFee">月租费</label><input id="o_monthlyFee" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.discount">折扣</label><input id="o_discount" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.firstMonthPayment">首月费用</label><input id="o_firstMonthPayment" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.activationFee">开通费</label><input id="o_activationFee" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.simFee">SIM 卡费</label><input id="o_simFee" type="number" min="0"></div>
-        <div class="form-hr"></div>
-        <div class="form-subtitle" data-i18n="f.paymentInfo">收款与利润</div>
-        <div class="form-field"><label data-i18n="f.sellingPrice">销售价</label><input id="o_sellingPrice" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.cost">成本</label><input id="o_cost" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.received">已收金额</label><input id="o_received" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.paymentMethod">付款方式</label><select id="o_paymentMethod"></select></div>
-        <div class="form-field"><label data-i18n="f.commission">返点 / 提成</label><input id="o_commission" type="number" min="0"></div>
+        <div class="form-subtitle" id="o_feeInfoTitle" data-i18n="f.feeInfo">费用信息</div>
+        <div class="form-field" id="o_monthlyFeeField"><label data-i18n="f.monthlyFee">月租费</label><input id="o_monthlyFee" type="number" min="0"></div>
+        <div class="form-field" id="o_discountField"><label data-i18n="f.discount">折扣</label><input id="o_discount" type="number" min="0"></div>
+        <div class="form-field" id="o_firstMonthPaymentField"><label data-i18n="f.firstMonthPayment">首月费用</label><input id="o_firstMonthPayment" type="number" min="0"></div>
+        <div class="form-field" id="o_activationFeeField"><label data-i18n="f.activationFee">开通费</label><input id="o_activationFee" type="number" min="0"></div>
+        <div class="form-field" id="o_simFeeField"><label data-i18n="f.simFee">SIM 卡费</label><input id="o_simFee" type="number" min="0"></div>
+        <div class="form-hr" id="o_paymentHr"></div>
+        <div class="form-subtitle" id="o_paymentInfoTitle" data-i18n="f.paymentInfo">收款与利润</div>
+        <div class="form-field" id="o_sellingPriceField"><label id="o_sellingPriceLabel" data-i18n="f.sellingPrice">销售价</label><input id="o_sellingPrice" type="number" min="0"></div>
+        <div class="form-field" id="o_costField"><label data-i18n="f.cost">成本</label><input id="o_cost" type="number" min="0"></div>
+        <div class="form-field" id="o_receivedField"><label data-i18n="f.received">已收金额</label><input id="o_received" type="number" min="0"></div>
+        <div class="form-field" id="o_paymentMethodField"><label data-i18n="f.paymentMethod">付款方式</label><select id="o_paymentMethod"></select></div>
+        <div class="form-field" id="o_commissionField"><label data-i18n="f.commission">返点 / 提成</label><input id="o_commission" type="number" min="0"></div>
+        <div class="form-field" id="o_expectedProfitField" style="display:none;"><label data-i18n="f.expectedProfit">预期利润</label><input id="o_expectedProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_actualProfitField" style="display:none;"><label data-i18n="f.actualProfit">实际利润</label><input id="o_actualProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_discountPerMonthField" style="display:none;"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="o_discountPerMonth" type="number" min="0"></div>
+        <div class="form-field" id="o_discountMonthsField" style="display:none;"><label data-i18n="f.discountMonths">折扣月数</label><input id="o_discountMonths" type="number" min="0"></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="o_notes"></textarea></div>
       </div>
     </div>
@@ -669,8 +744,11 @@
       <button class="modal-close" data-close>×</button>
     </div>
     <div class="modal-body">
-      <div class="form-grid" style="margin-bottom:10px;">
-        <div class="form-field"><label data-i18n="io.import.sheet">选择表格 Sheet</label><select id="importSheetSelect"></select></div>
+      <div class="form-field full" style="margin-bottom:12px;">
+        <label data-i18n="io.import.sheets">选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）</label>
+        <div class="sheet-select-group" id="importSheetChecklist"></div>
+      </div>
+      <div id="importSingleSheetControls" class="form-grid" style="margin-bottom:10px;">
         <div class="form-field"><label data-i18n="io.import.headerRow">标题行 Header row</label><input type="number" id="importHeaderRow" min="1" style="width:100%;"></div>
         <div class="form-field full">
           <label data-i18n="io.import.subType">这批客户属于 Customer type for this sheet</label>
@@ -683,6 +761,7 @@
       </div>
       <div class="section-desc" id="importInfo" style="margin-bottom:10px;"></div>
       <div class="import-preview-table"><table id="importPreviewTable"></table></div>
+      <div id="importMultiSheetSummary"></div>
       <div class="section-desc" id="importNameWarning" style="margin-top:8px;color:#C0392B;display:none;"></div>
       <div class="import-mode-box">
         <div class="section-subtitle" data-i18n="io.import.modeTitle">导入方式</div>
