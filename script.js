@@ -13,6 +13,7 @@ const SERVER_URL_KEY = 'himobile_server_url';
 const SYNC_ENABLED_KEY = 'himobile_sync_enabled';
 const LAST_SYNC_KEY = 'himobile_last_sync';
 const API_KEY_STORAGE_KEY = 'himobile_api_key';
+const UNLOCKED_KEY = 'himobile_unlocked'; // persists "stay unlocked" across refreshes until Log out
 // The store's real server address, baked in as the default so a brand-new browser (a laptop
 // opening the GitHub Pages link for the first time, on the store's WiFi) starts syncing
 // immediately with zero setup. Overridable (or turn-off-able) via Import/Export settings.
@@ -71,6 +72,7 @@ const I18N = {
     'io.export.title':'导出备份','io.export.desc':'将客户、订单与提醒数据导出为 Excel 文件','io.export.customers':'导出客户档案','io.export.orders':'导出业务订单','io.export.reminders':'导出到期跟进','io.export.all':'导出全部数据（一体备份）',
     'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
     'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.keyLabel':'密钥 API Key（在服务器 .env 文件中设置）','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
+    'lock.title':'365Himobile 客户管理系统','lock.desc':'请输入服务器地址与密钥以载入客户数据','lock.passwordLabel':'密钥 / 密码','lock.unlock':'解锁并载入数据','lock.skip':'跳过 — 仅在本机使用（空白，不含任何客户数据）','lock.logout':'🔒 退出登录 Log out',
     'io.issues.title':'数据完整性检查','io.issues.desc':'缺失联系方式、有效期、证件信息或付款信息的客户','io.issues.none':'没有发现数据问题，档案很完整 👍',
     'issue.noContact':'缺少联系电话','issue.noIdExpiry':'缺少证件有效期','issue.noIdNumber':'缺少证件号码','issue.noActiveService':'没有任何业务记录','issue.unpaid':'存在未结清欠款',
     'toast.customerSaved':'客户已保存','toast.orderSaved':'业务已保存','toast.reminderDone':'已标记完成','toast.reminderFollowup':'已设为再次跟进','toast.imported':'导入完成','toast.exported':'已导出','toast.deleted':'已删除','toast.langChanged':'语言已切换为中文',
@@ -154,6 +156,7 @@ const I18N = {
     'io.export.title':'Export backup','io.export.desc':'Export customer, order and reminder data to Excel','io.export.customers':'Export customer profiles','io.export.orders':'Export service orders','io.export.reminders':'Export reminders','io.export.all':'Export everything (full backup)',
     'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
     'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.keyLabel':'API Key (set in the server\'s .env file)','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
+    'lock.title':'365Himobile Customer Management','lock.desc':'Enter the server address and password to load customer data','lock.passwordLabel':'Password / Key','lock.unlock':'Unlock & Load Data','lock.skip':'Skip — use this computer only (blank, no customer data)','lock.logout':'🔒 Log out',
     'io.issues.title':'Data health check','io.issues.desc':'Customers missing contact info, expiry dates, ID details or payment info','io.issues.none':'No data issues found — records look complete 👍',
     'issue.noContact':'Missing phone number','issue.noIdExpiry':'Missing ID expiry date','issue.noIdNumber':'Missing ID number','issue.noActiveService':'No service records','issue.unpaid':'Has outstanding balance',
     'toast.customerSaved':'Customer saved','toast.orderSaved':'Order saved','toast.reminderDone':'Marked as completed','toast.reminderFollowup':'Set to follow up again','toast.imported':'Import complete','toast.exported':'Exported','toast.deleted':'Deleted','toast.langChanged':'Language switched to English',
@@ -645,7 +648,12 @@ function saveDB(db){
   localStorage.setItem(DB_KEY, JSON.stringify(db));
   scheduleServerSync();
 }
-let DB = loadDB();
+// DB starts as a harmless empty placeholder — NOT loaded from localStorage yet. This is
+// intentional: real (or previously-cached) customer data must never sit in memory before
+// the lock screen is passed, even briefly. The real load happens explicitly, only after
+// someone unlocks with the server + password, or deliberately chooses to skip and work
+// with a blank local session (see the lock screen wiring near the bottom of this file).
+let DB = {customers:[], services:[], templates:[], reminderState:{}, meta:{createdAt:Date.now()}};
 
 /* ============================================================
    OPTIONAL SERVER SYNC — off by default. When configured, this keeps a shared PostgreSQL
@@ -3799,15 +3807,6 @@ function boot(){
   document.getElementById('pageTitle').textContent = t('nav.'+currentPage);
   document.getElementById('pageSub').textContent = t('sub.'+currentPage);
   renderPage(currentPage);
-  // The app has already rendered instantly from local data above — if server sync is on,
-  // quietly pull the latest shared data in the background and re-render once it arrives.
-  // This never blocks or delays the initial page load.
-  if(isSyncEnabled()){
-    pullFromServer().then(result=>{
-      if(result.ok){ renderPage(currentPage); renderNav(); }
-      updateSyncStatusUI(result.ok ? null : result.error);
-    });
-  }
 }
 document.getElementById('navMenu').addEventListener('click', e=>{
   const item = e.target.closest('[data-nav]');
@@ -3818,4 +3817,76 @@ document.addEventListener('click', e=>{
   if(navEl && navEl.closest('#navMenu')===null){ /* handled elsewhere for card links */ }
 });
 
-boot();
+/* ---------------- lock screen ---------------- */
+// Shown on every page load UNLESS this browser is already marked "stay unlocked" from a
+// previous successful unlock — in which case it goes straight to loading the local cache
+// and showing the app, no re-entry needed. The only way back to a locked state is the
+// explicit Log out button, which also clears the local cache so nothing lingers behind.
+function unlockApp(){
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = '';
+  boot();
+}
+function isStayUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1'; }
+if(isStayUnlocked()){
+  // picks up wherever this browser left off: the real synced data if it was unlocked via
+  // the server, or the blank local session if it was "skip" — either way, exactly what was
+  // last showing before the refresh, with no password prompt in between
+  DB = loadDB();
+  unlockApp();
+} else {
+  document.getElementById('lockServerUrl').value = getServerUrl();
+  document.getElementById('lockUnlockBtn').addEventListener('click', async ()=>{
+    const url = document.getElementById('lockServerUrl').value.trim();
+    const pwd = document.getElementById('lockPassword').value.trim();
+    const errEl = document.getElementById('lockError');
+    errEl.style.display = 'none';
+    if(!url || !pwd){
+      errEl.textContent = LANG==='zh' ? '请输入服务器地址与密钥' : 'Please enter both the server address and password';
+      errEl.style.display = 'block';
+      return;
+    }
+    const btn = document.getElementById('lockUnlockBtn');
+    btn.disabled = true;
+    setServerUrl(url);
+    setApiKey(pwd);
+    const result = await pullFromServer();
+    btn.disabled = false;
+    if(result.ok){
+      setSyncEnabled(true); // so changes made this session push automatically too
+      localStorage.setItem(UNLOCKED_KEY, '1');
+      unlockApp();
+    } else {
+      errEl.textContent = (LANG==='zh'?'连接或密钥错误：':'Connection or password error: ')+(result.error||'');
+      errEl.style.display = 'block';
+    }
+  });
+  document.getElementById('lockPassword').addEventListener('keydown', e=>{
+    if(e.key==='Enter') document.getElementById('lockUnlockBtn').click();
+  });
+  document.getElementById('lockSkipBtn').addEventListener('click', ()=>{
+    // a genuinely blank local session — deliberately does NOT use whatever might already be
+    // cached in this browser from a previous unlock, so "skip" can never accidentally reveal
+    // real data without the password having been entered this session
+    setSyncEnabled(false);
+    DB = {customers:[], services:[], templates:[], reminderState:{}, meta:{createdAt:Date.now()}};
+    ensurePreetiTemplate(DB);
+    saveDB(DB);
+    localStorage.setItem(UNLOCKED_KEY, '1');
+    unlockApp();
+  });
+}
+document.getElementById('btnLogout').addEventListener('click', ()=>{
+  const msg = LANG==='zh'
+    ? '退出登录后，本机缓存的客户数据会被清除，下次打开需要重新输入服务器地址与密钥。是否继续？'
+    : 'Logging out clears this computer\'s cached customer data — next time you open this, you\'ll need to enter the server address and password again. Continue?';
+  if(!confirm(msg)) return;
+  localStorage.removeItem(UNLOCKED_KEY);
+  localStorage.removeItem(DB_KEY);
+  localStorage.removeItem(SYNC_ENABLED_KEY);
+  location.reload();
+});
+// the lock screen's own text should reflect whatever language was last used, even though
+// its language toggle isn't visible until after unlocking (the real toggle lives in the
+// topbar, which is part of the hidden app content)
+applyStaticI18n();
