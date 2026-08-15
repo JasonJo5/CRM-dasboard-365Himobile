@@ -122,6 +122,7 @@ tr.row-click{transition:background .12s var(--ease);}
 tr.row-click:hover{background:var(--blue-light);cursor:pointer;}
 .avatar{width:30px;height:30px;border-radius:9px;background:var(--gray-light);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);margin-right:8px;flex:0 0 30px;}
 .name-cell{display:flex;align-items:center;max-width:220px;}
+.cell-ellipsis{display:inline-block;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
 .name-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1;}
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap;}
 .pill-green{background:var(--green-light);color:var(--green);}
@@ -131,6 +132,15 @@ tr.row-click:hover{background:var(--blue-light);cursor:pointer;}
 .pill-blue{background:var(--blue-light);color:var(--blue);}
 .muted{color:var(--text-soft);}
 .tbl-wrap{overflow-x:auto;border-radius:10px;}
+/* keep the action buttons (View/Merge/etc) visible without needing to scroll all the way
+   right on wide tables — this is what was making the Merge button look "missing" on the
+   Duplicates tab, which has enough columns to push it off-screen. Sheet View is excluded
+   since its last column is just a normal editable data cell, not an action button. */
+.tbl-wrap:not(.sheet-tbl-wrap) table td:last-child, .tbl-wrap:not(.sheet-tbl-wrap) table th:last-child{position:sticky;right:0;background:var(--card);box-shadow:-6px 0 8px -6px rgba(20,30,70,.08);}
+.tbl-wrap:not(.sheet-tbl-wrap) table th:last-child{background:#FAFBFD;}
+.tbl-wrap:not(.sheet-tbl-wrap) table tr.dupe-band-a td:last-child{background:#FFFDF8;}
+.tbl-wrap:not(.sheet-tbl-wrap) table tr.dupe-band-b td:last-child{background:#FCFCFF;}
+.tbl-wrap:not(.sheet-tbl-wrap) table tr.row-click:hover td:last-child{background:var(--blue-light);}
 .empty-state{padding:48px 10px;text-align:center;color:var(--text-soft);font-size:13px;}
 .empty-state b{display:block;color:var(--text);font-size:14px;margin-bottom:4px;}
 
@@ -325,6 +335,18 @@ select.select-input:focus{border-color:var(--blue);outline:none;}
 .tile-radio.selected{border-color:currentColor;box-shadow:0 2px 10px rgba(0,0,0,.1);}
 .tile-radio.selected::after{content:"✓";margin-left:6px;font-weight:800;}
 .tile-radio-required::before{content:"*";color:var(--red);margin-right:3px;}
+.uppercase-input{text-transform:uppercase;}
+.uppercase-input::placeholder{text-transform:none;}
+.sheet-select-group{display:flex;flex-wrap:wrap;gap:8px;}
+.sheet-select-tile{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:#fff;color:var(--navy);transition:border-color .12s var(--ease),background .12s var(--ease);user-select:none;}
+.sheet-select-tile:hover{border-color:#C7CEE0;}
+.sheet-select-tile.checked{border-color:var(--blue);background:var(--blue-light);color:var(--blue-dark);}
+.sheet-select-tile input{width:15px;height:15px;flex:none;}
+.sheet-select-tile .n{font-weight:600;opacity:.7;}
+.option-field-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text-soft);width:100%;text-align:left;transition:border-color .12s var(--ease),box-shadow .12s var(--ease);}
+.option-field-btn:hover{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,237,.08);}
+.option-field-btn.chosen{color:var(--navy);border-color:transparent;}
+.option-field-btn .arrow{margin-left:auto;opacity:.5;font-size:10px;flex:none;}
 .type-choice-card{flex:1;border:2px solid var(--border);border-radius:16px;padding:26px 20px;text-align:center;cursor:pointer;transition:border-color .15s var(--ease),background .15s var(--ease),transform .1s var(--ease);}
 .type-choice-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .type-choice-card.prepaid:hover{border-color:var(--orange);background:var(--orange-light);}
@@ -332,6 +354,12 @@ select.select-input:focus{border-color:var(--blue);outline:none;}
 .type-choice-icon{font-size:34px;margin-bottom:10px;}
 .type-choice-title{font-size:16px;font-weight:800;color:var(--navy);}
 .type-choice-desc{font-size:12px;color:var(--text-soft);margin-top:6px;line-height:1.5;}
+
+/* groups several compact option-picker fields (each already a single "click for popup"
+   button via renderCompactOptionField) into one visually bounded section, instead of
+   scattering them among the plain text inputs */
+.plan-options-box{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;padding:14px;background:var(--gray-light);border-radius:10px;}
+.plan-options-box .form-field{margin:0;}
 
 @media(max-width:900px){
   .sidebar{position:fixed;left:-260px;transition:left .2s var(--ease);z-index:60;}
