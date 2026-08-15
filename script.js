@@ -621,28 +621,6 @@ function repairInvalidDates(db){
   if(changed) saveDB(db);
 }
 
-function seedData(){
-  const customers = [
-    {id:'c1',name:'ZHANG WEI',nationality:'CHINA',dob:'1996-03-12',phone:'010-5621-4830',kakao:'zhangwei_kr',wechat:'zw_1996',idType:'ARC',idNumber:'A123456789',idExpiry:'2027-05-20',occupation:'Engineer',workplace:'Seoul Tech Co.',years:3,referral:'friend',carrierType:'SKT',planType:'신규가입',branchOffice:'',subType:'prepaid',address:'서울시 강남구 테헤란로 123',notes:'',rating:5},
-    {id:'c2',name:'NGUYEN AN',nationality:'VIETNAM',dob:'2001-07-01',phone:'010-7374-2198',kakao:'',wechat:'',idType:'Passport',idNumber:'V9988771',idExpiry:'2029-01-15',occupation:'Student',workplace:'',years:1,referral:'school',carrierType:'KT',planType:'신규가입',branchOffice:'',subType:'prepaid',address:'서울시 성동구 왕십리로 222',notes:'',rating:4},
-    {id:'c3',name:'KARIMOV AZIZ',nationality:'UZBEKISTAN',dob:'1999-11-05',phone:'010-6291-8452',kakao:'aziz_k',wechat:'',idType:'ARC',idNumber:'A552317890',idExpiry:'2026-12-01',occupation:'Factory worker',workplace:'Ansan Factory',years:2,referral:'agent',carrierType:'SKT',planType:'번호이동',branchOffice:'',subType:'postpaid',address:'안산시 단원구 원곡동 45',notes:'',rating:4},
-    {id:'c4',name:'PUTRI SARI',nationality:'INDONESIA',dob:'2003-02-18',phone:'010-3904-7715',kakao:'',wechat:'',idType:'Passport',idNumber:'ID77213344',idExpiry:'2028-09-09',occupation:'Student',workplace:'',years:0.5,referral:'online',carrierType:'KT',planType:'신규가입',branchOffice:'',subType:'prepaid',address:'',notes:'',rating:3},
-    {id:'c5',name:'LI MENG',nationality:'CHINA',dob:'1995-08-22',phone:'010-8215-3026',kakao:'limeng88',wechat:'limeng_wx',idType:'ARC',idNumber:'A667788990',idExpiry:'2027-02-11',occupation:'Restaurant staff',workplace:'Gangnam Restaurant',years:4,referral:'friend',carrierType:'SKT',planType:'기간연장',branchOffice:'',subType:'prepaid',address:'서울시 강남구 역삼동 77',notes:'',rating:5},
-    {id:'c6',name:'PHAM MINH',nationality:'VIETNAM',dob:'2000-01-30',phone:'010-4468-9920',kakao:'',wechat:'',idType:'ARC',idNumber:'A112233445',idExpiry:'2026-08-25',occupation:'Factory worker',workplace:'Suwon Plant',years:2,referral:'agent',carrierType:'KT',planType:'선불전환',branchOffice:'',subType:'postpaid',address:'수원시 팔달구 매산로 9',notes:'',rating:4},
-  ];
-  const services = [
-    {id:'s1',customerId:'c1',type:'porting',carrier:'모빙 Mobing',plan:'29,000원',number:'010-5621-4830',simType:'physical',activationDate:'2026-08-11',durationDays:30,expiryDate:'2026-09-10',status:'active',monthlyFee:29000,discount:0,firstMonthPayment:29000,activationFee:0,simFee:0,sellingPrice:29000,cost:20000,received:29000,paymentMethod:'card',commission:3000,notes:''},
-    {id:'s2',customerId:'c2',type:'prepaid',carrier:'스마텔 Smartel',plan:'360 / 90일',number:'010-7374-2198',simType:'physical',activationDate:'2026-08-11',durationDays:90,expiryDate:'2026-11-09',status:'active',monthlyFee:0,discount:0,firstMonthPayment:65000,activationFee:0,simFee:0,sellingPrice:65000,cost:48000,received:65000,paymentMethod:'cash',commission:5000,notes:''},
-    {id:'s3',customerId:'c3',type:'postpaid',carrier:'KT M mobile',plan:'17,900원',number:'010-6291-8452',simType:'physical',activationDate:'2026-08-10',durationDays:365,expiryDate:'2027-08-10',status:'active',monthlyFee:17900,discount:2000,firstMonthPayment:17900,activationFee:0,simFee:0,sellingPrice:17900,cost:0,received:17900,paymentMethod:'transfer',commission:8000,notes:'合同即将到期跟进'},
-    {id:'s4',customerId:'c4',type:'topup',carrier:'LG U+ 알뜰폰',plan:'360 / 60일',number:'010-3904-7715',simType:'physical',activationDate:'2026-06-14',durationDays:60,expiryDate:'2026-08-12',status:'expiring_soon',monthlyFee:0,discount:0,firstMonthPayment:45000,activationFee:0,simFee:0,sellingPrice:45000,cost:30000,received:0,paymentMethod:'cash',commission:4000,notes:'今日到期，等待客户联系续费'},
-    {id:'s5',customerId:'c5',type:'transfer',carrier:'모빙 Mobing',plan:'22,000원',number:'010-8215-3026',simType:'physical',activationDate:'2026-08-08',durationDays:30,expiryDate:'2026-09-07',status:'active',monthlyFee:22000,discount:0,firstMonthPayment:0,activationFee:0,simFee:0,sellingPrice:0,cost:0,received:0,paymentMethod:'cash',commission:0,notes:'名义变更，无需付款'},
-    {id:'s6',customerId:'c6',type:'postpaid',carrier:'LG U+ 알뜰폰',plan:'19,900원',number:'010-4468-9920',simType:'physical',activationDate:'2025-08-25',durationDays:365,expiryDate:'2026-08-25',status:'expiring_soon',monthlyFee:19900,discount:0,firstMonthPayment:19900,activationFee:0,simFee:0,sellingPrice:19900,cost:0,received:19900,paymentMethod:'kakaopay',commission:6000,notes:''},
-  ];
-  const db = {customers, services, templates:[], reminderState:{}, meta:{createdAt:Date.now()}};
-  ensurePreetiTemplate(db);
-  return db;
-}
-
 function loadDB(){
   try{
     const raw = localStorage.getItem(DB_KEY);
@@ -656,10 +634,12 @@ function loadDB(){
       return db;
     }
   }catch(e){}
-  const seeded = seedData();
-  repairActiveSubscriptions(seeded);
-  saveDB(seeded);
-  return seeded;
+  // Fresh install: start completely empty — no demo customers. The only default is the
+  // built-in Preeti print template itself, which isn't customer data, just a form to print on.
+  const empty = {customers:[], services:[], templates:[], reminderState:{}, meta:{createdAt:Date.now()}};
+  ensurePreetiTemplate(empty);
+  saveDB(empty);
+  return empty;
 }
 function saveDB(db){
   localStorage.setItem(DB_KEY, JSON.stringify(db));
