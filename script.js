@@ -3751,23 +3751,34 @@ document.getElementById('btnPullSync').addEventListener('click', async ()=>{
     toast((LANG==='zh'?'拉取失败：':'Pull failed: ')+(result.error||''));
   }
 });
-document.getElementById('btnFormatData').addEventListener('click', ()=>{
+document.getElementById('btnFormatData').addEventListener('click', async ()=>{
   if(!DB.customers.length && !DB.services.length){
     toast(LANG==='zh' ? '目前没有数据可清空' : 'There\'s no data to clear right now');
     return;
   }
+  const syncOn = isSyncEnabled();
   const wipeMsg = LANG==='zh'
-    ? `即将清空全部 ${DB.customers.length} 位客户及 ${DB.services.length} 条业务记录，此操作无法撤销。是否继续？`
-    : `This will permanently clear all ${DB.customers.length} customers and ${DB.services.length} service records. This cannot be undone. Continue?`;
+    ? `即将清空全部 ${DB.customers.length} 位客户及 ${DB.services.length} 条业务记录${syncOn?'，包括服务器上其他电脑共享的数据':''}。系统会先自动导出一份 Excel 备份，此操作无法撤销。是否继续？`
+    : `This will permanently clear all ${DB.customers.length} customers and ${DB.services.length} service records${syncOn?', including the shared data on the server that other computers use':''}. A backup Excel file will be exported automatically first. This cannot be undone. Continue?`;
   if(!confirm(wipeMsg)) return;
-  const backupMsg = LANG==='zh'
-    ? '是否先导出一份当前数据备份？（建议）点击「确定」导出备份后再清空，点击「取消」直接清空不备份。'
-    : 'Export a backup of your current data first? (Recommended) Click OK to export a backup before clearing, or Cancel to clear without one.';
-  if(confirm(backupMsg)){
+  // always back up first, no optional prompt — if the export itself fails, stop entirely
+  // rather than risk wiping data with no copy of it anywhere
+  try{
+    exportAll();
+  }catch(err){
+    toast(LANG==='zh' ? '备份导出失败，为安全起见已取消清空，数据未被清空' : 'Backup export failed — clearing was cancelled for safety, your data was not touched');
+    return;
+  }
+  // clear the shared server database next — if this fails (server unreachable, wrong key),
+  // stop here rather than clearing locally and having the old data silently reappear on
+  // the next sync
+  if(syncOn){
+    const base = getServerUrl();
     try{
-      exportAll();
+      const res = await fetch(base+'/api/wipe', {method:'POST', headers: authHeaders()});
+      if(!res.ok) throw new Error('HTTP '+res.status);
     }catch(err){
-      toast(LANG==='zh' ? '备份导出失败，为安全起见已取消清空，数据未被清空' : 'Backup export failed — clearing was cancelled for safety, your data was not touched');
+      toast(LANG==='zh' ? '无法清空服务器数据，已取消（本机数据也未清空，备份已保存）：'+err.message : 'Could not clear the server — cancelled (local data was not touched either, but your backup was saved): '+err.message);
       return;
     }
   }
@@ -3775,7 +3786,9 @@ document.getElementById('btnFormatData').addEventListener('click', ()=>{
   DB.services = [];
   DB.reminderState = {};
   saveDB(DB);
-  toast(LANG==='zh' ? '数据已清空，可以导入新的文件了' : 'Data cleared — ready to import a new file');
+  toast(syncOn
+    ? (LANG==='zh' ? '已备份，本机与服务器数据均已清空，可以导入新的文件了' : 'Backed up, then cleared on this computer AND the server — ready to import a new file')
+    : (LANG==='zh' ? '已备份并清空数据，可以导入新的文件了' : 'Backed up and cleared — ready to import a new file'));
   renderPage(currentPage);
   renderNav();
 });
