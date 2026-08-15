@@ -12,6 +12,10 @@ const DB_KEY = 'himobile_crm_v1';
 const SERVER_URL_KEY = 'himobile_server_url';
 const SYNC_ENABLED_KEY = 'himobile_sync_enabled';
 const LAST_SYNC_KEY = 'himobile_last_sync';
+// The store's real server address, baked in as the default so a brand-new browser (a laptop
+// opening the GitHub Pages link for the first time, on the store's WiFi) starts syncing
+// immediately with zero setup. Overridable (or turn-off-able) via Import/Export settings.
+let syncTimer = null; // debounce handle for scheduleServerSync() — declared early for the same reason as above
 const LANG_KEY = 'himobile_crm_lang';
 
 /* ---------------- i18n ---------------- */
@@ -671,6 +675,9 @@ let DB = loadDB();
    (falling back to local data) if the server is unreachable, so a store computer that's
    offline or a laptop away from the store keeps working normally.
    ============================================================ */
+// No default and off by default — a fresh browser that's never had the server address
+// entered shows nothing but local/demo data. Sync only starts once someone deliberately
+// types in the server address and enables it; that choice is then remembered per-browser.
 function getServerUrl(){ return (localStorage.getItem(SERVER_URL_KEY)||'').replace(/\/$/,''); }
 function setServerUrl(url){ localStorage.setItem(SERVER_URL_KEY, (url||'').replace(/\/$/,'')); }
 function isSyncEnabled(){ return localStorage.getItem(SYNC_ENABLED_KEY)==='1' && !!getServerUrl(); }
@@ -692,7 +699,6 @@ async function testServerConnection(url){
 
 // Pushes the current in-memory dataset to the server. Debounced so rapid consecutive saves
 // (e.g. typing in Sheet View) batch into one request instead of one per keystroke.
-let syncTimer = null;
 function scheduleServerSync(){
   if(!isSyncEnabled()) return;
   clearTimeout(syncTimer);
