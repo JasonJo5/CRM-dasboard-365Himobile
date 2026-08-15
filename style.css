@@ -66,6 +66,8 @@ button{cursor:pointer;font-family:inherit;}
 .store-badge{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--orange),#D9691F);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .store-name{font-size:13px;font-weight:600;}
 .store-sub{font-size:11px;color:#9CA8CE;}
+#btnLogout{background:rgba(255,255,255,.06);color:#B9C2E0;border:1px solid rgba(255,255,255,.1);font-size:12px;font-weight:700;width:calc(100% - 28px);}
+#btnLogout:hover{background:rgba(255,255,255,.12);color:#fff;}
 
 .main{flex:1;min-width:0;display:flex;flex-direction:column;}
 .topbar{
@@ -360,6 +362,15 @@ select.select-input:focus{border-color:var(--blue);outline:none;}
    scattering them among the plain text inputs */
 .plan-options-box{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;padding:14px;background:var(--gray-light);border-radius:10px;}
 .plan-options-box .form-field{margin:0;}
+
+/* full-page lock screen shown on every load, before any customer data is touched */
+.lock-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0F1B3D,#1E3A6E);display:flex;align-items:center;justify-content:center;padding:20px;}
+.lock-card{width:100%;max-width:380px;background:#fff;border-radius:16px;padding:32px 28px;box-shadow:var(--shadow-lg);text-align:center;}
+.lock-badge{width:52px;height:52px;border-radius:14px;background:var(--blue);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.lock-title{font-size:17px;font-weight:800;color:var(--navy);}
+.lock-desc{font-size:12.5px;color:var(--text-soft);margin-top:6px;line-height:1.5;}
+.lock-card .form-field{text-align:left;}
+.lock-error{margin-top:12px;padding:8px 12px;background:#FEF2F2;color:#C0392B;border-radius:8px;font-size:12px;text-align:left;}
 
 @media(max-width:900px){
   .sidebar{position:fixed;left:-260px;transition:left .2s var(--ease);z-index:60;}
