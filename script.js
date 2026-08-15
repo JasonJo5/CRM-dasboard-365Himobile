@@ -12,6 +12,7 @@ const DB_KEY = 'himobile_crm_v1';
 const SERVER_URL_KEY = 'himobile_server_url';
 const SYNC_ENABLED_KEY = 'himobile_sync_enabled';
 const LAST_SYNC_KEY = 'himobile_last_sync';
+const API_KEY_STORAGE_KEY = 'himobile_api_key';
 // The store's real server address, baked in as the default so a brand-new browser (a laptop
 // opening the GitHub Pages link for the first time, on the store's WiFi) starts syncing
 // immediately with zero setup. Overridable (or turn-off-able) via Import/Export settings.
@@ -69,7 +70,7 @@ const I18N = {
     'io.import.sheet':'选择表格 Sheet','io.import.sheets':'选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
     'io.export.title':'导出备份','io.export.desc':'将客户、订单与提醒数据导出为 Excel 文件','io.export.customers':'导出客户档案','io.export.orders':'导出业务订单','io.export.reminders':'导出到期跟进','io.export.all':'导出全部数据（一体备份）',
     'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
-    'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
+    'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.keyLabel':'密钥 API Key（在服务器 .env 文件中设置）','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
     'io.issues.title':'数据完整性检查','io.issues.desc':'缺失联系方式、有效期、证件信息或付款信息的客户','io.issues.none':'没有发现数据问题，档案很完整 👍',
     'issue.noContact':'缺少联系电话','issue.noIdExpiry':'缺少证件有效期','issue.noIdNumber':'缺少证件号码','issue.noActiveService':'没有任何业务记录','issue.unpaid':'存在未结清欠款',
     'toast.customerSaved':'客户已保存','toast.orderSaved':'业务已保存','toast.reminderDone':'已标记完成','toast.reminderFollowup':'已设为再次跟进','toast.imported':'导入完成','toast.exported':'已导出','toast.deleted':'已删除','toast.langChanged':'语言已切换为中文',
@@ -152,7 +153,7 @@ const I18N = {
     'io.import.sheet':'Sheet','io.import.sheets':'Sheets to import (select multiple — e.g. prepaid and postpaid together)','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
     'io.export.title':'Export backup','io.export.desc':'Export customer, order and reminder data to Excel','io.export.customers':'Export customer profiles','io.export.orders':'Export service orders','io.export.reminders':'Export reminders','io.export.all':'Export everything (full backup)',
     'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
-    'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
+    'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.keyLabel':'API Key (set in the server\'s .env file)','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
     'io.issues.title':'Data health check','io.issues.desc':'Customers missing contact info, expiry dates, ID details or payment info','io.issues.none':'No data issues found — records look complete 👍',
     'issue.noContact':'Missing phone number','issue.noIdExpiry':'Missing ID expiry date','issue.noIdNumber':'Missing ID number','issue.noActiveService':'No service records','issue.unpaid':'Has outstanding balance',
     'toast.customerSaved':'Customer saved','toast.orderSaved':'Order saved','toast.reminderDone':'Marked as completed','toast.reminderFollowup':'Set to follow up again','toast.imported':'Import complete','toast.exported':'Exported','toast.deleted':'Deleted','toast.langChanged':'Language switched to English',
@@ -683,6 +684,12 @@ function setServerUrl(url){ localStorage.setItem(SERVER_URL_KEY, (url||'').repla
 function isSyncEnabled(){ return localStorage.getItem(SYNC_ENABLED_KEY)==='1' && !!getServerUrl(); }
 function setSyncEnabled(on){ localStorage.setItem(SYNC_ENABLED_KEY, on?'1':'0'); }
 function getLastSync(){ return localStorage.getItem(LAST_SYNC_KEY) || ''; }
+function getApiKey(){ return localStorage.getItem(API_KEY_STORAGE_KEY) || ''; }
+function setApiKey(key){ localStorage.setItem(API_KEY_STORAGE_KEY, key||''); }
+// every request to the server includes this header — the server rejects anything without
+// the matching key, so only devices that have been deliberately given this key can read or
+// change customer data, even if someone else is on the same store WiFi
+function authHeaders(extra){ return Object.assign({'X-API-Key': getApiKey()}, extra||{}); }
 
 async function testServerConnection(url){
   const base = (url||'').replace(/\/$/,'');
@@ -710,9 +717,10 @@ async function pushToServer(){
   try{
     const res = await fetch(base+'/api/sync', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers: authHeaders({'Content-Type':'application/json'}),
       body: JSON.stringify({customers: DB.customers, services: DB.services}),
     });
+    if(res.status===401) throw new Error(LANG==='zh'?'密钥不正确，请检查服务器同步设置':'Incorrect API key — check server sync settings');
     if(!res.ok) throw new Error('HTTP '+res.status);
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     updateSyncStatusUI();
@@ -732,7 +740,8 @@ async function pullFromServer(){
   const base = getServerUrl();
   if(!base) return {ok:false, error:'no server configured'};
   try{
-    const res = await fetch(base+'/api/snapshot', {method:'GET'});
+    const res = await fetch(base+'/api/snapshot', {method:'GET', headers: authHeaders()});
+    if(res.status===401) throw new Error(LANG==='zh'?'密钥不正确，请检查服务器同步设置':'Incorrect API key — check server sync settings');
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     DB.customers = data.customers || [];
@@ -2924,6 +2933,7 @@ function renderMoneyBars(elId, map){
 /* ---------------- IMPORT / EXPORT ---------------- */
 function renderIO(){
   document.getElementById('syncServerUrl').value = getServerUrl();
+  document.getElementById('syncApiKey').value = getApiKey();
   document.getElementById('syncEnabledCheckbox').checked = isSyncEnabled();
   updateSyncStatusUI();
   // data issues
@@ -3700,6 +3710,7 @@ document.getElementById('exportOrdersBtn').addEventListener('click', exportOrder
 document.getElementById('exportRemindersBtn').addEventListener('click', exportRemindersXlsx);
 document.getElementById('exportAllBtn').addEventListener('click', exportAll);
 document.getElementById('syncServerUrl').addEventListener('change', e=> setServerUrl(e.target.value.trim()));
+document.getElementById('syncApiKey').addEventListener('change', e=> setApiKey(e.target.value.trim()));
 document.getElementById('syncEnabledCheckbox').addEventListener('change', e=>{
   const url = document.getElementById('syncServerUrl').value.trim();
   if(e.target.checked && !url){
@@ -3708,6 +3719,7 @@ document.getElementById('syncEnabledCheckbox').addEventListener('change', e=>{
     return;
   }
   setServerUrl(url);
+  setApiKey(document.getElementById('syncApiKey').value.trim());
   setSyncEnabled(e.target.checked);
   updateSyncStatusUI();
   if(e.target.checked) toast(LANG==='zh'?'已启用同步':'Sync enabled');
@@ -3724,6 +3736,7 @@ document.getElementById('btnPushSync').addEventListener('click', async ()=>{
   const url = document.getElementById('syncServerUrl').value.trim();
   if(!url){ toast(LANG==='zh'?'请先输入服务器地址':'Please enter a server address first'); return; }
   setServerUrl(url);
+  setApiKey(document.getElementById('syncApiKey').value.trim());
   const btn = document.getElementById('btnPushSync');
   btn.disabled = true;
   const result = await pushToServer();
@@ -3736,6 +3749,7 @@ document.getElementById('btnPullSync').addEventListener('click', async ()=>{
   const url = document.getElementById('syncServerUrl').value.trim();
   if(!url){ toast(LANG==='zh'?'请先输入服务器地址':'Please enter a server address first'); return; }
   setServerUrl(url);
+  setApiKey(document.getElementById('syncApiKey').value.trim());
   if(!confirm(LANG==='zh'?'这会用服务器上的数据覆盖本机当前显示的数据（本机的本地存储也会更新）。是否继续？':'This will replace what you see on this computer with the server\'s data (this computer\'s local copy will be updated too). Continue?')) return;
   const btn = document.getElementById('btnPullSync');
   btn.disabled = true;
