@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__mcp-registry__list_connectors",
+      "mcp__mcp-registry__search_mcp_registry",
+      "Bash(where gh *)",
+      "Read(//c/Users/ASUS/.config/**)",
+      "Bash(git config *)",
+      "PowerShell(winget --version 2>&1; Write-Output \"---\"; \\(Get-Command winget -ErrorAction SilentlyContinue\\) -ne $null)"
+    ]
+  }
+}
