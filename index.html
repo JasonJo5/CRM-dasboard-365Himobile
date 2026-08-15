@@ -9,7 +9,30 @@
 </head>
 <body>
 
-<div class="app">
+<!-- LOCK SCREEN — shown on every single page load, before any customer data is touched.
+     Nothing behind it renders visibly until unlocked (with the server) or explicitly
+     skipped (local-only, empty session) — even data cached from a previous visit stays
+     hidden until one of those two choices is made, every time. -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-badge">365</div>
+    <div class="lock-title" data-i18n="lock.title">365Himobile 客户管理系统</div>
+    <div class="lock-desc" data-i18n="lock.desc">请输入服务器地址与密钥以载入客户数据</div>
+    <div class="form-field full" style="margin-top:18px;">
+      <label data-i18n="sync.urlLabel">服务器地址</label>
+      <input id="lockServerUrl" placeholder="http://192.168.219.45:4000">
+    </div>
+    <div class="form-field full" style="margin-top:10px;">
+      <label data-i18n="lock.passwordLabel">密钥 / 密码</label>
+      <input id="lockPassword" type="password" placeholder="••••">
+    </div>
+    <div class="lock-error" id="lockError" style="display:none;"></div>
+    <button class="btn btn-primary" id="lockUnlockBtn" style="width:100%;margin-top:16px;" data-i18n="lock.unlock">解锁并载入数据</button>
+    <button class="btn btn-ghost" id="lockSkipBtn" style="width:100%;margin-top:8px;" data-i18n="lock.skip">跳过 — 仅在本机使用（空白，不含任何客户数据）</button>
+  </div>
+</div>
+
+<div class="app" id="appRoot" style="display:none;">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
@@ -27,6 +50,7 @@
         <div class="store-sub" data-i18n="sidebar.staffSub">点击切换办理人</div>
       </div>
     </div>
+    <button class="btn btn-ghost" id="btnLogout" style="margin:8px 14px 14px;" data-i18n="lock.logout">🔒 退出登录 Log out</button>
   </aside>
 
   <!-- MAIN -->
