@@ -7,28 +7,36 @@ const PREETI_TEMPLATE_IMAGE = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA
 
 
 const DB_KEY = 'himobile_crm_v1';
+// declared early (before loadDB/saveDB run) since saveDB() can be called immediately during
+// the very first load (seeding fresh data) — these must exist before that happens
+const SERVER_URL_KEY = 'himobile_server_url';
+const SYNC_ENABLED_KEY = 'himobile_sync_enabled';
+const LAST_SYNC_KEY = 'himobile_last_sync';
 const LANG_KEY = 'himobile_crm_lang';
 
 /* ---------------- i18n ---------------- */
 const I18N = {
   zh: {
-    'sidebar.sub':'客户管理系统 · 고객 관리','sidebar.store':'韩国手机店',
+    'sidebar.sub':'客户管理系统 · 고객 관리','sidebar.store':'韩国手机店','sidebar.staffSub':'点击切换办理人',
     'nav.dashboard':'工作台','nav.customers':'客户档案','nav.sheet':'表格视图','nav.ai':'AI 商业洞察','nav.reminders':'到期跟进','nav.orders':'业务订单','nav.reports':'报表分析','nav.templates':'打印模板','nav.io':'导入导出',
     'sub.sheet':'像表格一样直接编辑客户与套餐信息',
     'sheet.hint':'💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存',
     'sub.dashboard':'门店运营总览','sub.customers':'客户资料与套餐管理','sub.ai':'商机识别、优先级排序与营收预测','sub.reminders':'到期、合同与信息变更提醒','sub.orders':'先付、后付、号码移动等业务记录','sub.reports':'营收、利润与客户结构报表','sub.templates':'运营商申请表自动填写与打印','sub.io':'Excel 导入与数据备份',
-    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表',
+    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并',
     'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回',
     'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布',
     'dash.quickSearch':'🔍 快速搜索客户姓名、号码或证件号...','dash.noMatches':'没有找到匹配的客户','dash.dupeBanner':'发现 {groups} 组重复客户（共 {n} 位），建议检查并合并','dash.dupeBannerBtn':'立即查看','dash.renewals.title':'合约即将到期（30天内）','dash.renewals.desc':'后付卡合约即将到期，建议提前联系续约','dash.renewals.emptyTitle':'近期没有合约到期 👍','dash.renewals.emptyDesc':'未来30天内没有后付卡合约到期','dash.winback.title':'流失客户 / 待挽回','dash.winback.desc':'已取消订阅、尚未重新开通的客户','dash.winback.emptyTitle':'暂无流失客户','dash.winback.emptyDesc':'所有曾经订阅过的客户目前都有有效订阅','dash.revenueTrend.title':'营收趋势（近6个月）','dash.cancelReasons.title':'取消原因分布','dash.noCancellations':'近6个月内没有取消记录 👍',
     'stat.totalCustomers':'客户总数','stat.newThisMonth':'本月新开通','stat.followup7':'7天内需跟进','stat.revenueMonth':'本月实收','stat.fromRecords':'来自现有先付 / 后付记录','stat.vsLastMonth':'较上月','stat.includesExpiry':'包含到期与首月入账','stat.expiringSoon':'即将到期客户','stat.infoChangeNeeded':'需信息变更客户',
     'stat.activePrepaid':'当前先付卡客户','stat.activePostpaid':'当前后付卡客户','stat.activeBook':'目前有效订阅','stat.outstanding':'未收总额','stat.outstandingSub':'所有有效及近期订单','stat.renewalsSoon':'即将到期合约','stat.renewalsSub':'30天内到期（后付卡）','stat.newActivity':'较上月新增',
-    'col.customer':'客户','col.number':'号码','col.service':'业务','col.carrier':'通信社','col.activated':'开通日期','col.status':'状态','col.contact':'联系方式','col.nationality':'国籍','col.id':'证件','col.subType':'开通方式','col.currentNumber':'当前号码','col.recentActivity':'最近业务','col.rating':'评分','col.serviceType':'业务类型','col.plan':'套餐','col.amount':'金额','col.outstanding':'欠款','col.month':'月份','col.orders':'订单数','col.revenue':'营收','col.cost':'成本','col.profit':'利润','col.outstandingTotal':'未收合计',
+    'col.customer':'客户','col.number':'号码','col.service':'业务','col.carrier':'通信社','col.activated':'开通日期','col.status':'状态','col.contact':'联系方式','col.phoneNumber':'电话号码','col.nationality':'国籍','col.id':'证件','col.subType':'开通方式','col.currentNumber':'当前号码','col.recentActivity':'最近业务','col.rating':'评分','col.serviceType':'业务类型','col.plan':'套餐','col.amount':'金额','col.outstanding':'欠款','col.month':'月份','col.orders':'订单数','col.revenue':'营收','col.cost':'成本','col.profit':'利润','col.outstandingTotal':'未收合计','col.dupeReason':'重复原因',
+    'dupe.reasonName':'姓名相同','dupe.reasonPhone':'电话相同',
     'col.expectedProfit':'预期利润','col.actualProfit':'实际利润（已核对）','col.variance':'差异','col.discountGiven':'折扣总额','col.netExpected':'净预期利润',
     'custtab.all':'全部客户','custtab.prepaid':'先付卡客户','custtab.postpaid':'后付卡客户','custtab.dupes':'重复客户',
     'ph.search':'搜索姓名、号码、国籍或证件号',
     'filter.allNationalities':'全部国籍','filter.allRatings':'全部评分','filter.allTypes':'全部业务类型','filter.allStatus':'全部状态',
     'filter.allDurations':'开通时长：不限','filter.duration6':'已开通 6 个月以上','filter.duration8':'已开通 8 个月以上','filter.duration12':'已开通 1 年以上','col.activeFor':'开通时长',
+    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.last30':'最近30天','col.dateAdded':'添加日期',
+    'sort.newest':'排序：最新优先','sort.oldest':'排序：最旧优先','sort.nameAsc':'姓名 A → Z','sort.nameDesc':'姓名 Z → A','sort.ratingHigh':'评分：高到低','sort.ratingLow':'评分：低到高',
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
     'modal.chooseType':'新建客户','modal.chooseTypeDesc':'先选择客户类型，两种表单的字段不同','modal.prepaidDesc':'固定3个月充值套餐','modal.postpaidDesc':'按月合约，可选运营商与套餐','modal.newPostpaidCustomer':'新建后付卡客户',
     'f.contactHandle':'联系账号 / ID','f.workType':'业务向','f.handlerName':'办理人','f.referralFriend':'介绍人（朋友姓名）',
@@ -37,8 +45,8 @@ const I18N = {
     'opt.prepaid':'先付卡（3个月充值）','opt.postpaid':'后付卡','opt.prepaidShort':'先付卡','opt.postpaidShort':'后付卡','prepaid3m.hint':'先付卡按充值月数计算，选择3个月时会自动套用프리티电信申请表；1/2个月请另外选择对应模板','postpaid.hint':'后付卡为按月合约，保存时会用下方选择的模板生成申请表（请先在「打印模板」页面上传后付卡运营商表格）',
     'plantype.new':'신규가입 新申请','plantype.mnp':'번호이동 携号转网','plantype.transfer':'명의변경 过户/名义变更','plantype.extend':'기간연장 有效期延长','plantype.convert':'선불전환 转为先付',
     'f.customer':'客户','f.serviceInfo':'业务信息','f.serviceType':'业务类型','f.planDuration':'套餐期限（月）','f.contractLength':'合约期限','f.carrier':'通信社 / MVNO','f.plan':'套餐名称','f.number':'电话号码','f.simType':'SIM 类型','f.activationDate':'开通日期','f.durationDays':'合同时长（天）','f.expiryDate':'到期日期','f.status':'办理状态','f.feeInfo':'费用信息','f.monthlyFee':'月租费','f.discount':'折扣','f.firstMonthPayment':'首月费用','f.activationFee':'开通费','f.simFee':'SIM 卡费','f.paymentInfo':'收款与利润','f.sellingPrice':'销售价','f.cost':'成本','f.received':'已收金额','f.paymentMethod':'付款方式','f.commission':'返点 / 提成',
-    'f.prepaidMonths':'充值月数','f.usimNumber':'USIM 일련번호',
-    'f.company':'가입회사 Company','f.partnerCompany':'파트너사 Partner company','f.svcCarrierType':'통신사 Carrier type','f.usedDays':'已使用天数 Used days','f.contactMethod':'联系方式',
+    'f.prepaidPlan':'充值套餐','f.price':'价格','f.usimNumber':'USIM 일련번호',
+    'f.company':'가입회사 Company','f.partnerCompany':'파트너사 Partner company','f.svcCarrierType':'통신사 Carrier type','f.usedDays':'已使用天数 Used days','f.contactMethod':'联系方式','f.planOptions':'套餐选项',
     'opt.physical':'实体卡',
     'lang.zh':'中文','lang.en':'英文','lang.ko':'韩文',
     'idtype.ARC':'ARC','idtype.Passport':'护照',
@@ -49,12 +57,15 @@ const I18N = {
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
-    'rep.byCarrier':'按通信社的营收 / 利润','rep.byType':'按业务类型的营收 / 利润','rep.popularPlans':'热门套餐 Top 5','rep.rates':'续约率 / 回头客率','rep.monthly':'月度对账','rep.renewalRate':'续约率','rep.repeatRate':'回头客率','rep.totalOrders':'累计订单数','rep.avgProfit':'平均单笔利润',
+    'rep.byCarrier':'按通信社的营收 / 利润','rep.byType':'按业务类型的营收 / 利润','rep.popularPlans':'热门套餐 Top 5','rep.rates':'续约率 / 回头客率','rep.monthly':'全部月份对账','rep.renewalRate':'续约率','rep.repeatRate':'回头客率','rep.totalOrders':'累计订单数','rep.avgProfit':'平均单笔利润',
+    'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'利润','rep.totalExpected':'累计预期利润',
     'stat.weekProfit':'本周利润','stat.monthExpected':'本月预期利润','stat.monthActual':'本月实际利润','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
     'io.import.modeTitle':'导入方式','io.import.modeMerge':'与现有客户合并','io.import.modeMergeDesc':'保留现有客户档案，仅新增导入文件中不重复的客户','io.import.modeReplace':'清空现有客户，改用此文件的数据','io.import.modeReplaceDesc':'导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件','io.import.skipDupes':'自动跳过重复客户（按姓名或电话匹配）',
-    'io.import.sheet':'选择表格 Sheet','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
+    'io.import.sheet':'选择表格 Sheet','io.import.sheets':'选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
     'io.export.title':'导出备份','io.export.desc':'将客户、订单与提醒数据导出为 Excel 文件','io.export.customers':'导出客户档案','io.export.orders':'导出业务订单','io.export.reminders':'导出到期跟进','io.export.all':'导出全部数据（一体备份）',
+    'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
+    'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
     'io.issues.title':'数据完整性检查','io.issues.desc':'缺失联系方式、有效期、证件信息或付款信息的客户','io.issues.none':'没有发现数据问题，档案很完整 👍',
     'issue.noContact':'缺少联系电话','issue.noIdExpiry':'缺少证件有效期','issue.noIdNumber':'缺少证件号码','issue.noActiveService':'没有任何业务记录','issue.unpaid':'存在未结清欠款',
     'toast.customerSaved':'客户已保存','toast.orderSaved':'业务已保存','toast.reminderDone':'已标记完成','toast.reminderFollowup':'已设为再次跟进','toast.imported':'导入完成','toast.exported':'已导出','toast.deleted':'已删除','toast.langChanged':'语言已切换为中文',
@@ -62,7 +73,7 @@ const I18N = {
     'detail.contract':'合同 / 有效期','detail.remaining':'剩余','detail.days':'天','detail.usedOf':'已使用 / 总时长','detail.noServices':'该客户暂无业务记录','detail.services':'业务与号码记录','detail.profile':'客户资料',
     'detail.activeSubscription':'当前订阅','detail.noActiveSubscription':'暂无有效订阅','detail.planHistory':'套餐历史记录','detail.noHistory':'暂无历史记录','detail.otherRecords':'其他业务记录（携号转网 / 过户 / 充值等）','detail.currentPlan':'当前套餐',
     'f.cancelReason':'取消原因',
-    'reason.new':'新开通','reason.upgraded_to_postpaid':'升级为后付卡','reason.plan_change':'变更套餐','reason.cancelled':'客户不再续约','reason.switched_carrier':'转换其他通信社','reason.expired_natural':'自然到期','reason.other':'其他',
+    'reason.new':'新开通','reason.upgraded_to_postpaid':'升级为后付卡','reason.plan_change':'变更套餐','reason.cancelled':'客户不再续约','reason.switched_carrier':'转换其他通信社','reason.expired_natural':'自然到期','reason.other':'其他','reason.merged':'重复客户已合并',
     'ai.elig.noDob':'缺少出生日期，无法判断资格','ai.elig.ageOk':'已年满 {age} 岁，符合后付卡开通资格','ai.elig.turningAge':'{days} 天后年满19岁，即将符合资格','ai.elig.tooYoung':'目前 {age} 岁，未满19岁','ai.elig.alreadyPostpaid':'目前已是后付卡客户',
     'ai.elig.contractCompleted':'合约已到期 {days} 天，尚未处理','ai.elig.contractApproaching':'合约将在 {days} 天后到期','ai.elig.contractMid':'合约进行中，{days} 天后到期',
     'ai.elig.needsArc':'需持外国人登录证（ARC）才符合资格','ai.elig.missingIdNumber':'缺少证件号码，需核实','ai.elig.missingIdExpiry':'缺少证件有效期，需核实','ai.elig.idExpired':'证件已过期，需更新','ai.elig.idComplete':'证件信息完整有效',
@@ -89,23 +100,26 @@ const I18N = {
     'prepaid3m.toggle':'同时开通「3个月先付卡」并打印申请表',
   },
   en: {
-    'sidebar.sub':'Customer Management · CRM','sidebar.store':'Korea SIM Store',
+    'sidebar.sub':'Customer Management · CRM','sidebar.store':'Korea SIM Store','sidebar.staffSub':'Click to switch staff',
     'nav.dashboard':'Dashboard','nav.customers':'Customers','nav.sheet':'Sheet View','nav.ai':'AI Insights','nav.reminders':'Reminders','nav.orders':'Orders','nav.reports':'Reports','nav.templates':'Print Templates','nav.io':'Import / Export',
     'sub.sheet':'Edit customer & plan info directly, like a spreadsheet',
     'sheet.hint':'💡 Click a colored tag to pick a new value; click text/numbers/dates to edit directly — press Enter or click away to save',
     'sub.dashboard':'Store operations overview','sub.customers':'Customer profiles & plan management','sub.ai':'Opportunity detection, priority ranking & revenue forecasts','sub.reminders':'Expiry, contract & info-change reminders','sub.orders':'Prepaid, postpaid, porting and other service records','sub.reports':'Revenue, profit and customer breakdowns','sub.templates':'Auto-fill and print carrier application forms','sub.io':'Excel import and data backup',
-    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form',
+    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge',
     'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back',
     'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source',
     'dash.quickSearch':'🔍 Quick search by name, phone, or ID...','dash.noMatches':'No matching customers found','dash.dupeBanner':'Found {groups} duplicate groups ({n} customers total) — worth reviewing and merging','dash.dupeBannerBtn':'Review now','dash.renewals.title':'Contracts ending soon (30 days)','dash.renewals.desc':'Postpaid contracts nearing renewal — reach out ahead of time','dash.renewals.emptyTitle':'No contracts ending soon 👍','dash.renewals.emptyDesc':'No postpaid contracts due for renewal in the next 30 days','dash.winback.title':'Cancelled / win-back opportunities','dash.winback.desc':'Customers who cancelled and haven\'t restarted','dash.winback.emptyTitle':'No lapsed customers','dash.winback.emptyDesc':'Everyone who ever subscribed currently has an active plan','dash.revenueTrend.title':'Revenue trend (last 6 months)','dash.cancelReasons.title':'Cancellation reasons','dash.noCancellations':'No cancellations in the last 6 months 👍',
     'stat.totalCustomers':'Total customers','stat.newThisMonth':'New this month','stat.followup7':'Due within 7 days','stat.revenueMonth':'Revenue this month','stat.fromRecords':'From existing prepaid / postpaid records','stat.vsLastMonth':'vs last month','stat.includesExpiry':'Includes expiries & first-month payments','stat.expiringSoon':'Expiring soon','stat.infoChangeNeeded':'Need info change',
     'stat.activePrepaid':'Active prepaid','stat.activePostpaid':'Active postpaid','stat.activeBook':'Currently active','stat.outstanding':'Outstanding total','stat.outstandingSub':'Across active & recent orders','stat.renewalsSoon':'Contracts renewing soon','stat.renewalsSub':'Postpaid, due within 30 days','stat.newActivity':'New vs last month',
-    'col.customer':'Customer','col.number':'Number','col.service':'Service','col.carrier':'Carrier','col.activated':'Activated','col.status':'Status','col.contact':'Contact','col.nationality':'Nationality','col.id':'ID','col.subType':'Subscription','col.currentNumber':'Current number','col.recentActivity':'Recent activity','col.rating':'Rating','col.serviceType':'Service type','col.plan':'Plan','col.amount':'Amount','col.outstanding':'Outstanding','col.month':'Month','col.orders':'Orders','col.revenue':'Revenue','col.cost':'Cost','col.profit':'Profit','col.outstandingTotal':'Total outstanding',
+    'col.customer':'Customer','col.number':'Number','col.service':'Service','col.carrier':'Carrier','col.activated':'Activated','col.status':'Status','col.contact':'Contact','col.phoneNumber':'Phone number','col.nationality':'Nationality','col.id':'ID','col.subType':'Subscription','col.currentNumber':'Current number','col.recentActivity':'Recent activity','col.rating':'Rating','col.serviceType':'Service type','col.plan':'Plan','col.amount':'Amount','col.outstanding':'Outstanding','col.month':'Month','col.orders':'Orders','col.revenue':'Revenue','col.cost':'Cost','col.profit':'Profit','col.outstandingTotal':'Total outstanding','col.dupeReason':'Match reason',
+    'dupe.reasonName':'Same name','dupe.reasonPhone':'Same phone',
     'col.expectedProfit':'Expected profit','col.actualProfit':'Actual profit (reconciled)','col.variance':'Variance','col.discountGiven':'Discount given','col.netExpected':'Net expected profit',
     'custtab.all':'All customers','custtab.prepaid':'Prepaid customers','custtab.postpaid':'Postpaid customers','custtab.dupes':'Duplicate customers',
     'ph.search':'Search name, number, nationality or ID',
     'filter.allNationalities':'All nationalities','filter.allRatings':'All ratings','filter.allTypes':'All service types','filter.allStatus':'All statuses',
     'filter.allDurations':'Active for: any length','filter.duration6':'Active 6+ months','filter.duration8':'Active 8+ months','filter.duration12':'Active 1+ year','col.activeFor':'Active for',
+    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.last30':'Last 30 days','col.dateAdded':'Date added',
+    'sort.newest':'Sort: Newest first','sort.oldest':'Sort: Oldest first','sort.nameAsc':'Name A → Z','sort.nameDesc':'Name Z → A','sort.ratingHigh':'Rating: High to low','sort.ratingLow':'Rating: Low to high',
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
     'modal.chooseType':'New customer','modal.chooseTypeDesc':'Choose the customer type first — the two forms have different fields','modal.prepaidDesc':'Fixed 3-month recharge plan','modal.postpaidDesc':'Monthly contract, pick carrier & plan','modal.newPostpaidCustomer':'New postpaid customer',
     'f.contactHandle':'Contact account / ID','f.workType':'Work type','f.handlerName':'Handled by','f.referralFriend':'Referred by (friend\'s name)',
@@ -114,8 +128,8 @@ const I18N = {
     'opt.prepaid':'Prepaid (3-month recharge, fixed)','opt.postpaid':'Postpaid','opt.prepaidShort':'Prepaid','opt.postpaidShort':'Postpaid','prepaid3m.hint':'Prepaid is billed by recharge months — choosing 3 months auto-applies the Preeti Telecom form; 1/2-month plans use whichever other template you select','postpaid.hint':'Postpaid is a monthly contract — saving will generate the application form using the template selected below (upload your postpaid carrier form in Print Templates first)',
     'plantype.new':'신규가입 New sign-up','plantype.mnp':'번호이동 Number port (MNP)','plantype.transfer':'명의변경 Ownership/name change','plantype.extend':'기간연장 Period extension','plantype.convert':'선불전환 Convert to prepaid',
     'f.customer':'Customer','f.serviceInfo':'Service details','f.serviceType':'Service type','f.planDuration':'Plan duration (months)','f.contractLength':'Contract length','f.carrier':'Carrier / MVNO','f.plan':'Plan name','f.number':'Phone number','f.simType':'SIM type','f.activationDate':'Activation date','f.durationDays':'Contract length (days)','f.expiryDate':'Expiry date','f.status':'Status','f.feeInfo':'Fee details','f.monthlyFee':'Monthly fee','f.discount':'Discount','f.firstMonthPayment':'First month payment','f.activationFee':'Activation fee','f.simFee':'SIM card fee','f.paymentInfo':'Payment & profit','f.sellingPrice':'Selling price','f.cost':'Cost','f.received':'Amount received','f.paymentMethod':'Payment method','f.commission':'Commission / rebate',
-    'f.prepaidMonths':'Plan duration','f.usimNumber':'USIM serial number',
-    'f.company':'Company','f.partnerCompany':'Partner company','f.svcCarrierType':'Carrier type','f.usedDays':'Used days','f.contactMethod':'Contact method',
+    'f.prepaidPlan':'Plan','f.price':'Price','f.usimNumber':'USIM serial number',
+    'f.company':'Company','f.partnerCompany':'Partner company','f.svcCarrierType':'Carrier type','f.usedDays':'Used days','f.contactMethod':'Contact method','f.planOptions':'Plan options',
     'opt.physical':'Physical SIM',
     'lang.zh':'Chinese','lang.en':'English','lang.ko':'Korean',
     'idtype.ARC':'ARC','idtype.Passport':'Passport',
@@ -126,12 +140,15 @@ const I18N = {
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
-    'rep.byCarrier':'Revenue / profit by carrier','rep.byType':'Revenue / profit by service type','rep.popularPlans':'Top 5 popular plans','rep.rates':'Renewal rate / repeat-customer rate','rep.monthly':'Monthly reconciliation','rep.renewalRate':'Renewal rate','rep.repeatRate':'Repeat-customer rate','rep.totalOrders':'Total orders','rep.avgProfit':'Avg. profit / order',
+    'rep.byCarrier':'Revenue / profit by carrier','rep.byType':'Revenue / profit by service type','rep.popularPlans':'Top 5 popular plans','rep.rates':'Renewal rate / repeat-customer rate','rep.monthly':'All months reconciliation','rep.renewalRate':'Renewal rate','rep.repeatRate':'Repeat-customer rate','rep.totalOrders':'Total orders','rep.avgProfit':'Avg. profit / order',
+    'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Profit','rep.totalExpected':'Total expected profit',
     'stat.weekProfit':'Profit this week','stat.monthExpected':'Expected profit this month','stat.monthActual':'Actual profit this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
     'io.import.modeTitle':'Import mode','io.import.modeMerge':'Merge with existing customers','io.import.modeMergeDesc':'Keeps existing customer records; only adds new customers that aren\'t already in the list','io.import.modeReplace':'Clear existing customers and use this file instead','io.import.modeReplaceDesc':'Automatically exports a backup of current customer data (Excel) first, then clears and loads the new file','io.import.skipDupes':'Automatically skip duplicate customers (matched by name or phone)',
-    'io.import.sheet':'Sheet','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
+    'io.import.sheet':'Sheet','io.import.sheets':'Sheets to import (select multiple — e.g. prepaid and postpaid together)','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
     'io.export.title':'Export backup','io.export.desc':'Export customer, order and reminder data to Excel','io.export.customers':'Export customer profiles','io.export.orders':'Export service orders','io.export.reminders':'Export reminders','io.export.all':'Export everything (full backup)',
+    'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
+    'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
     'io.issues.title':'Data health check','io.issues.desc':'Customers missing contact info, expiry dates, ID details or payment info','io.issues.none':'No data issues found — records look complete 👍',
     'issue.noContact':'Missing phone number','issue.noIdExpiry':'Missing ID expiry date','issue.noIdNumber':'Missing ID number','issue.noActiveService':'No service records','issue.unpaid':'Has outstanding balance',
     'toast.customerSaved':'Customer saved','toast.orderSaved':'Order saved','toast.reminderDone':'Marked as completed','toast.reminderFollowup':'Set to follow up again','toast.imported':'Import complete','toast.exported':'Exported','toast.deleted':'Deleted','toast.langChanged':'Language switched to English',
@@ -139,7 +156,7 @@ const I18N = {
     'detail.contract':'Contract / validity','detail.remaining':'Remaining','detail.days':'days','detail.usedOf':'Used / total length','detail.noServices':'No service records yet','detail.services':'Services & numbers','detail.profile':'Profile',
     'detail.activeSubscription':'Active Subscription','detail.noActiveSubscription':'No active subscription','detail.planHistory':'Plan History','detail.noHistory':'No history yet','detail.otherRecords':'Other records (porting / ownership transfer / top-ups etc.)','detail.currentPlan':'Current plan',
     'f.cancelReason':'Cancellation reason',
-    'reason.new':'New subscription','reason.upgraded_to_postpaid':'Upgraded to postpaid','reason.plan_change':'Plan change','reason.cancelled':'Customer discontinued (not renewing)','reason.switched_carrier':'Switched carrier','reason.expired_natural':'Expired naturally','reason.other':'Other',
+    'reason.new':'New subscription','reason.upgraded_to_postpaid':'Upgraded to postpaid','reason.plan_change':'Plan change','reason.cancelled':'Customer discontinued (not renewing)','reason.switched_carrier':'Switched carrier','reason.expired_natural':'Expired naturally','reason.other':'Other','reason.merged':'Merged duplicate record',
     'ai.elig.noDob':'Missing date of birth — can\'t determine eligibility','ai.elig.ageOk':'Already {age} years old — meets postpaid eligibility','ai.elig.turningAge':'Turns 19 in {days} days — approaching eligibility','ai.elig.tooYoung':'Currently {age} years old — under 19','ai.elig.alreadyPostpaid':'Already a postpaid customer',
     'ai.elig.contractCompleted':'Contract ended {days} days ago, not yet actioned','ai.elig.contractApproaching':'Contract ends in {days} days','ai.elig.contractMid':'Contract active, {days} days remaining',
     'ai.elig.needsArc':'Requires an Alien Registration Card (ARC) to be eligible','ai.elig.missingIdNumber':'Missing ID number — needs verification','ai.elig.missingIdExpiry':'Missing ID expiry date — needs verification','ai.elig.idExpired':'ID has expired — needs updating','ai.elig.idComplete':'ID information complete and valid',
@@ -182,6 +199,53 @@ const POSTPAID_CARRIER_TYPES = ['KT알뜰폰','LGU알뜰폰','SKT알뜰폰','KT'
 const CONTACT_METHODS = ['Wechat','Kakaotalk','INS','Phone','Other'];
 /* postpaid "업무향" (work type) — from the store's real Tencent Docs single-select field */
 const POSTPAID_WORK_TYPES = ['번호이동','신규가입','유심/이심변경','기타변경','일시정지','번호해지'];
+/* prepaid-specific option sets */
+const PREPAID_COMPANIES = ['스마텔SMS','프리티Free T','모빙Mobing','아시아Asia','벨류컨Vcnk'];
+const OCCUPATION_OPTIONS = ['Student','Worker','Professor','Other'];
+/* real prepaid catalog tiers — a one-time payment, no recurring fees. 90 days is the store's
+   "3-month recharge" plan and is the only one currently paired with the Preeti print template. */
+const PREPAID_PLANS = [
+  {days:15, price:20000, label:'Korea 15'},
+  {days:30, price:30000, label:'Korea 30'},
+  {days:60, price:40000, label:'Korea 60'},
+  {days:90, price:55000, label:'Korea 90'},
+];
+const STAFF_MEMBERS = ['Jason','Jihan','Himobile365'];
+/* the store's active staff profile — persists across sessions, and is what the "Handled by"
+   field on new customers defaults to (staff can still override it per-customer) */
+const STAFF_PROFILE_KEY = 'himobile_active_staff';
+function getActiveStaff(){
+  const saved = localStorage.getItem(STAFF_PROFILE_KEY);
+  return STAFF_MEMBERS.includes(saved) ? saved : 'Jason';
+}
+function setActiveStaff(name){
+  localStorage.setItem(STAFF_PROFILE_KEY, name);
+  renderStaffProfileFoot();
+}
+function renderStaffProfileFoot(){
+  const name = getActiveStaff();
+  document.getElementById('staffProfileName').textContent = name;
+  document.getElementById('staffProfileBadge').textContent = name.charAt(0).toUpperCase();
+}
+document.getElementById('staffProfileFoot').addEventListener('click', e=>{
+  e.stopPropagation();
+  const pop = document.getElementById('cellPopover');
+  const current = getActiveStaff();
+  document.getElementById('cellPopoverTitle').textContent = LANG==='zh' ? '选择办理人' : 'Switch staff profile';
+  document.getElementById('cellPopoverOptions').innerHTML = STAFF_MEMBERS.map(name=>{
+    const c = sheetColorFor(STAFF_MEMBERS, name);
+    const selected = name===current;
+    return `<div class="cell-popover-opt ${selected?'selected':''}" style="background:${c.bg};color:${c.fg};" data-val="${escapeHtml(name)}"><span>${escapeHtml(name)}</span><span class="check">✓</span></div>`;
+  }).join('');
+  const rect = e.currentTarget.getBoundingClientRect();
+  pop.style.left = Math.min(rect.left+window.scrollX, window.innerWidth-270)+'px';
+  pop.style.top = 'auto';
+  pop.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+  pop.style.display = 'block';
+  pop.querySelectorAll('[data-val]').forEach(opt=>{
+    opt.onclick = ()=>{ setActiveStaff(opt.dataset.val); closeCellPopover(); };
+  });
+});
 
 /* ============================================================
    EDITABLE SHEET VIEW — a spreadsheet-style page where every field
@@ -213,6 +277,67 @@ function renderTileRadioGroup(containerId, options, currentVal){
     return `<div class="tile-radio ${selected?'selected':''}" data-val="${escapeHtml(opt)}" style="background:${c.bg};color:${c.fg};">${escapeHtml(opt)}</div>`;
   }).join('');
 }
+/* Same tile-radio pattern but for the prepaid catalog specifically — the visible label
+   ("15 Days · ₩20,000") is friendlier than the stored value (just the day count). */
+function renderPrepaidPlanTiles(currentVal){
+  const el = document.getElementById('p3_prepaidPlan_group');
+  if(!el) return;
+  el.dataset.selected = currentVal || '';
+  const values = PREPAID_PLANS.map(p=>String(p.days));
+  el.innerHTML = PREPAID_PLANS.map(p=>{
+    const val = String(p.days);
+    const c = sheetColorFor(values, val);
+    const selected = val===currentVal;
+    return `<div class="tile-radio ${selected?'selected':''}" data-val="${val}" style="background:${c.bg};color:${c.fg};">${p.days} ${LANG==='zh'?'天':'Days'} · ${fmtWon(p.price)}</div>`;
+  }).join('');
+}
+/* Compact alternative to a full tile-radio-group: a single button showing the current
+   choice, click it and every option shows up in a popover (same interaction as Sheet
+   View's tag cells) — keeps a form with many option fields from sprawling down the page.
+   Selection state is stored the same way as a real tile-radio-group (dataset.selected on
+   the container), so nothing about how a form reads its saved value needs to change. */
+function renderCompactOptionField(groupId, options, currentVal, title){
+  const el = document.getElementById(groupId);
+  if(!el) return;
+  el.dataset.selected = currentVal || '';
+  el.dataset.options = JSON.stringify(options);
+  el.dataset.title = title;
+  const c = currentVal ? sheetColorFor(options, currentVal) : null;
+  el.innerHTML = `<button type="button" class="option-field-btn ${currentVal?'chosen':''}" style="${currentVal?`background:${c.bg};color:${c.fg};`:''}" data-option-trigger>${escapeHtml(currentVal || (LANG==='zh'?'点击选择':'Click to choose'))}<span class="arrow">▾</span></button>`;
+}
+function closeFormOptionPopover(){ document.getElementById('cellPopover').style.display = 'none'; }
+function openFormOptionPopover(triggerBtn){
+  const group = triggerBtn.closest('.tile-radio-group');
+  if(!group) return;
+  const options = JSON.parse(group.dataset.options||'[]');
+  const current = group.dataset.selected || '';
+  const pop = document.getElementById('cellPopover');
+  document.getElementById('cellPopoverTitle').textContent = group.dataset.title || '';
+  document.getElementById('cellPopoverOptions').innerHTML = options.map(opt=>{
+    const c = sheetColorFor(options, opt);
+    const selected = opt===current;
+    return `<div class="cell-popover-opt ${selected?'selected':''}" style="background:${c.bg};color:${c.fg};" data-val="${escapeHtml(opt)}"><span>${escapeHtml(opt)}</span><span class="check">✓</span></div>`;
+  }).join('');
+  const rect = triggerBtn.getBoundingClientRect();
+  pop.style.left = Math.min(rect.left+window.scrollX, window.innerWidth-270)+'px';
+  pop.style.bottom = 'auto';
+  pop.style.top = (rect.bottom+window.scrollY+6)+'px';
+  pop.style.display = 'block';
+  pop.querySelectorAll('[data-val]').forEach(opt=>{
+    opt.onclick = ()=>{
+      renderCompactOptionField(group.id, options, opt.dataset.val, group.dataset.title);
+      closeFormOptionPopover();
+      // the prepaid Company/Carrier fields depend on which plan tier is selected — keep
+      // that filtering in sync if this popover belongs to the prepaid form
+      if(group.id==='p3_company_group' || group.id==='p3_svcCarrierType_group') updatePrepaidPriceFromPlan();
+    };
+  });
+}
+document.addEventListener('click', e=>{
+  const trigger = e.target.closest('[data-option-trigger]');
+  if(trigger){ openFormOptionPopover(trigger); return; }
+  if(!e.target.closest('#cellPopover') && !e.target.closest('[data-option-trigger]') && !e.target.closest('[data-sheet-select]')) closeFormOptionPopover();
+});
 document.addEventListener('click', e=>{
   const tile = e.target.closest('.tile-radio');
   if(!tile) return;
@@ -259,7 +384,7 @@ function sheetCommitEdit(recordType, recordId, field, value){
 }
 document.getElementById('cellPopover').addEventListener('click', e=> e.stopPropagation());
 document.addEventListener('click', e=>{
-  if(!e.target.closest('#cellPopover') && !e.target.closest('[data-sheet-select]')) closeCellPopover();
+  if(!e.target.closest('#cellPopover') && !e.target.closest('[data-sheet-select]') && !e.target.closest('[data-option-trigger]')) closeCellPopover();
 });
 function closeCellPopover(){ document.getElementById('cellPopover').style.display = 'none'; }
 function openCellPopoverFor(anchorEl){
@@ -275,6 +400,7 @@ function openCellPopoverFor(anchorEl){
   }).join('') + `<div class="cell-popover-clear" data-val="">${LANG==='zh'?'清除':'Clear'}</div>`;
   const rect = anchorEl.getBoundingClientRect();
   pop.style.left = Math.min(rect.left+window.scrollX, window.innerWidth-270)+'px';
+  pop.style.bottom = 'auto';
   pop.style.top = (rect.bottom+window.scrollY+6)+'px';
   pop.style.display = 'block';
   pop.querySelectorAll('[data-val]').forEach(opt=>{
@@ -313,6 +439,10 @@ document.getElementById('sheetTable').addEventListener('click', e=>{
   const textEl = e.target.closest('[data-sheet-text]');
   if(textEl){ beginSheetTextEdit(textEl); return; }
 });
+document.getElementById('sheetSearch').addEventListener('input', renderSheetPage);
+document.getElementById('sheetNationalityFilter').addEventListener('change', renderSheetPage);
+document.getElementById('sheetRatingFilter').addEventListener('change', renderSheetPage);
+document.getElementById('sheetRecentFilter').addEventListener('change', renderSheetPage);
 
 let sheetTypeTab = 'prepaid';
 function renderSheetPage(){
@@ -323,13 +453,36 @@ function renderSheetPage(){
   document.getElementById('sheetTypeTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${sheetTypeTab===tb.key?'active':''}" data-sheettab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
   document.querySelectorAll('[data-sheettab]').forEach(b=> b.addEventListener('click', ()=>{ sheetTypeTab=b.dataset.sheettab; renderSheetPage(); }));
 
-  const rows = DB.customers.map(c=>({c, svc:activeSubscriptionFor(c.id)})).filter(({svc})=> svc && svc.type===sheetTypeTab);
+  // nationality filter options — only populate once, preserving whatever's selected
+  const natSel = document.getElementById('sheetNationalityFilter');
+  { const prev = natSel.value; natSel.innerHTML = `<option value="">${t('filter.allNationalities')}</option>` + NATIONALITIES.map(n=>`<option value="${n}">${n}</option>`).join(''); natSel.value = prev; }
+  const ratingSel = document.getElementById('sheetRatingFilter');
+  { const prev = ratingSel.value; ratingSel.innerHTML = `<option value="">${t('filter.allRatings')}</option>` + [5,4,3,2,1].map(r=>`<option value="${r}">${'★'.repeat(r)}</option>`).join(''); ratingSel.value = prev; }
+  const natFilter = natSel.value;
+  const ratingFilter = ratingSel.value;
+  const recentFilter = document.getElementById('sheetRecentFilter').value;
+  const search = (document.getElementById('sheetSearch').value||'').toLowerCase();
+
+  let rows = DB.customers.map(c=>({c, svc:activeSubscriptionFor(c.id)})).filter(({svc})=> svc && svc.type===sheetTypeTab);
+  rows = rows.filter(({c})=>{
+    if(natFilter && c.nationality!==natFilter) return false;
+    if(ratingFilter && String(c.rating)!==ratingFilter) return false;
+    if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
+    if(search){
+      const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
+      if(!hay.includes(search)) return false;
+    }
+    return true;
+  })
+  // newest signups first by default, same as the Customers page
+  .sort((a,b)=> new Date(customerJoinDate(b.c)||0)-new Date(customerJoinDate(a.c)||0));
+  document.getElementById('sheetCount').textContent = `${rows.length} ${LANG==='zh'?'位客户':'customers'}`;
 
   const commonHead = `
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.carrier')}</th><th>${t('f.svcCarrierType')}</th>`;
   const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.idType')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.contactMethod')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -367,7 +520,7 @@ function renderSheetPage(){
         <td>${sheetPillCell('customer',c.id,'nationality',c.nationality,NATIONALITIES, t('f.nationality'))}</td>
         <td>${sheetTextCell('customer',c.id,'years',c.years,'number')}</td>
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
-        <td>${sheetPillCell('customer',c.id,'contactMethod',c.contactMethod,CONTACT_METHODS, t('f.contactMethod'))}</td>
+        <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
       </tr>`;
     }).join('') : `<tr><td colspan="18">${emptyState()}</td></tr>`
   }</tbody>`;
@@ -503,8 +656,102 @@ function loadDB(){
   saveDB(seeded);
   return seeded;
 }
-function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+function saveDB(db){
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  scheduleServerSync();
+}
 let DB = loadDB();
+
+/* ============================================================
+   OPTIONAL SERVER SYNC — off by default. When configured, this keeps a shared PostgreSQL
+   database (via the local API server) in sync with this browser's data, so multiple store
+   computers can share one dataset. When NOT configured, the app behaves exactly as it always
+   has: localStorage only. loadDB()/saveDB() above are untouched in their local behavior —
+   this layer only ever ADDS a background push/pull on top, and always fails silently
+   (falling back to local data) if the server is unreachable, so a store computer that's
+   offline or a laptop away from the store keeps working normally.
+   ============================================================ */
+function getServerUrl(){ return (localStorage.getItem(SERVER_URL_KEY)||'').replace(/\/$/,''); }
+function setServerUrl(url){ localStorage.setItem(SERVER_URL_KEY, (url||'').replace(/\/$/,'')); }
+function isSyncEnabled(){ return localStorage.getItem(SYNC_ENABLED_KEY)==='1' && !!getServerUrl(); }
+function setSyncEnabled(on){ localStorage.setItem(SYNC_ENABLED_KEY, on?'1':'0'); }
+function getLastSync(){ return localStorage.getItem(LAST_SYNC_KEY) || ''; }
+
+async function testServerConnection(url){
+  const base = (url||'').replace(/\/$/,'');
+  if(!base) return {ok:false, error: LANG==='zh'?'请先输入服务器地址':'Please enter a server address'};
+  try{
+    const res = await fetch(base+'/api/health', {method:'GET'});
+    if(!res.ok) return {ok:false, error:`HTTP ${res.status}`};
+    const data = await res.json();
+    return {ok: !!data.ok};
+  }catch(err){
+    return {ok:false, error: err.message || String(err)};
+  }
+}
+
+// Pushes the current in-memory dataset to the server. Debounced so rapid consecutive saves
+// (e.g. typing in Sheet View) batch into one request instead of one per keystroke.
+let syncTimer = null;
+function scheduleServerSync(){
+  if(!isSyncEnabled()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushToServer, 1000);
+}
+async function pushToServer(){
+  const base = getServerUrl();
+  if(!base) return {ok:false, error:'no server configured'};
+  try{
+    const res = await fetch(base+'/api/sync', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({customers: DB.customers, services: DB.services}),
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
+    updateSyncStatusUI();
+    return {ok:true};
+  }catch(err){
+    // silent by design: a store computer that's briefly offline, or the server not running
+    // yet, should never interrupt someone mid-task — local data keeps working regardless
+    console.warn('Server sync failed, continuing with local data only:', err.message);
+    updateSyncStatusUI(err.message);
+    return {ok:false, error: err.message};
+  }
+}
+// Pulls the server's current dataset and replaces the in-memory DB with it — used once at
+// boot (if sync is on) so this computer starts from whatever the other computers last saved,
+// and available as a manual "Pull latest" action too.
+async function pullFromServer(){
+  const base = getServerUrl();
+  if(!base) return {ok:false, error:'no server configured'};
+  try{
+    const res = await fetch(base+'/api/snapshot', {method:'GET'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    DB.customers = data.customers || [];
+    DB.services = data.services || [];
+    if(data.templates && data.templates.length) DB.templates = data.templates;
+    if(data.reminderState) DB.reminderState = data.reminderState;
+    ensurePreetiTemplate(DB);
+    repairInvalidDates(DB);
+    repairActiveSubscriptions(DB);
+    localStorage.setItem(DB_KEY, JSON.stringify(DB)); // cache locally, skip re-triggering a push
+    localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
+    return {ok:true};
+  }catch(err){
+    console.warn('Could not reach server on load, using local data:', err.message);
+    return {ok:false, error: err.message};
+  }
+}
+function updateSyncStatusUI(errorMsg){
+  const el = document.getElementById('syncStatusText');
+  if(!el) return;
+  if(!isSyncEnabled()){ el.textContent = LANG==='zh'?'未启用服务器同步':'Server sync is off'; return; }
+  if(errorMsg){ el.textContent = (LANG==='zh'?'同步失败（使用本地数据）：':'Sync failed (using local data): ')+errorMsg; return; }
+  const last = getLastSync();
+  el.textContent = last ? (LANG==='zh'?'最近同步：':'Last synced: ')+new Date(last).toLocaleString() : (LANG==='zh'?'尚未同步':'Not synced yet');
+}
 
 /* ---------------- derived helpers ---------------- */
 function getCustomer(id){ return DB.customers.find(c=>c.id===id); }
@@ -677,6 +924,17 @@ function netProfitFor(svc){
   if(!svc) return 0;
   const gross = svc.actualProfit ? Number(svc.actualProfit) : Number(svc.expectedProfit)||0;
   return gross - discountTotalFor(svc);
+}
+/* The one true "how much did this transaction earn us" figure — prepaid is its full one-time
+   catalog price, postpaid is the tracked expected/actual profit net of discount, and every
+   other transactional type (porting/transfer/topup/cancel) keeps the original received-based
+   bookkeeping. Used anywhere revenue needs to be totaled across a mixed list of services —
+   Dashboard and Reports must both use this so postpaid isn't silently dropped from the numbers. */
+function totalRevenueFor(svc){
+  if(!svc) return 0;
+  if(svc.type==='prepaid') return Number(svc.sellingPrice)||0;
+  if(svc.type==='postpaid') return netProfitFor(svc);
+  return Number(svc.received)||0;
 }
 function monthlyEquivRevenue(svc){
   if(!svc) return 0;
@@ -921,8 +1179,6 @@ function populateStaticSelects(){
   // (this is what silently broke the nationality filter: it used to reset to blank on every render)
   const custNat = document.getElementById('custNationalityFilter');
   { const prev = custNat.value; custNat.innerHTML = `<option value="">${t('filter.allNationalities')}</option>` + NATIONALITIES.map(n=>`<option value="${n}">${n}</option>`).join(''); custNat.value = prev; }
-  const custRating = document.getElementById('custRatingFilter');
-  { const prev = custRating.value; custRating.innerHTML = `<option value="">${t('filter.allRatings')}</option>` + [5,4,3,2,1].map(r=>`<option value="${r}">${'★'.repeat(r)}</option>`).join(''); custRating.value = prev; }
   const orderType = document.getElementById('orderTypeFilter');
   { const prev = orderType.value; orderType.innerHTML = `<option value="">${t('filter.allTypes')}</option>` + SERVICE_TYPES.map(k=>`<option value="${k}">${t('type.'+k)}</option>`).join(''); orderType.value = prev; }
   const orderStatus = document.getElementById('orderStatusFilter');
@@ -949,8 +1205,8 @@ function renderDashboard(){
   const newDelta = computeDelta(newThisMonth, newLastMonth);
 
   // real revenue this month vs last month
-  const monthRevenue = svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===monthStr).reduce((a,s)=>a+(Number(s.received)||0),0);
-  const lastMonthRevenue = svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===lastMonthStr).reduce((a,s)=>a+(Number(s.received)||0),0);
+  const monthRevenue = svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===monthStr).reduce((a,s)=>a+totalRevenueFor(s),0);
+  const lastMonthRevenue = svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===lastMonthStr).reduce((a,s)=>a+totalRevenueFor(s),0);
   const revDelta = computeDelta(monthRevenue, lastMonthRevenue);
 
   document.getElementById('pageTitle').textContent = t('dash.greeting');
@@ -1106,7 +1362,7 @@ function renderRevenueTrend(){
     months.push(d.toISOString().slice(0,7));
   }
   const pairs = months.map(m=>{
-    const total = DB.services.filter(s=>s.activationDate && s.activationDate.slice(0,7)===m).reduce((a,s)=>a+(Number(s.received)||0),0);
+    const total = DB.services.filter(s=>s.activationDate && s.activationDate.slice(0,7)===m).reduce((a,s)=>a+totalRevenueFor(s),0);
     const label = new Date(m+'-01').toLocaleDateString(LANG==='zh'?'zh-CN':'en-US',{month:'short', year:'2-digit'});
     return [label, total];
   });
@@ -1402,11 +1658,26 @@ function renderCustomers(){
   populateStaticSelects();
   const search = (document.getElementById('custSearch').value||'').toLowerCase();
   const natFilter = document.getElementById('custNationalityFilter').value;
-  const ratingFilter = document.getElementById('custRatingFilter').value;
+  const sortBy = document.getElementById('custSortBy').value;
   const durFilter = document.getElementById('custDurationFilter').value;
+  const recentFilter = document.getElementById('custRecentFilter').value;
+  const sortComparators = {
+    newest: (a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0),
+    oldest: (a,b)=> new Date(customerJoinDate(a)||0)-new Date(customerJoinDate(b)||0),
+    nameAsc: (a,b)=> a.name.localeCompare(b.name),
+    nameDesc: (a,b)=> b.name.localeCompare(a.name),
+    ratingHigh: (a,b)=> (b.rating||0)-(a.rating||0),
+    ratingLow: (a,b)=> (a.rating||0)-(b.rating||0),
+  };
+  const sortFn = sortComparators[sortBy] || sortComparators.newest;
 
   const allCusts = DB.customers;
-  const dupeGroups = getDuplicateGroups();
+  const dupeGroupsRaw = getDuplicateGroups();
+  // each group sorted newest member first, and groups themselves ordered by their newest
+  // member — this is also what "merge into newest" targets, so the row showing the Merge
+  // button is always the one everything else in the group gets folded into
+  const dupeGroups = dupeGroupsRaw.map(g=>[...g].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)))
+    .sort((a,b)=> new Date(customerJoinDate(b[0])||0)-new Date(customerJoinDate(a[0])||0));
   const dupeCount = dupeGroups.reduce((n,g)=>n+g.length,0);
   const tabs = [
     {key:'all', label:'custtab.all', n:allCusts.length},
@@ -1434,7 +1705,7 @@ function renderCustomers(){
   if(isDupeView){
     list = dupeGroups.flat().filter(c=>{
       if(natFilter && c.nationality!==natFilter) return false;
-      if(ratingFilter && String(c.rating)!==ratingFilter) return false;
+      if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
       if(search){
         const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
         if(!hay.includes(search)) return false;
@@ -1446,7 +1717,7 @@ function renderCustomers(){
       if(custTypeTab==='prepaid' && (c.subType||'prepaid')!=='prepaid') return false;
       if(custTypeTab==='postpaid' && c.subType!=='postpaid') return false;
       if(natFilter && c.nationality!==natFilter) return false;
-      if(ratingFilter && String(c.rating)!==ratingFilter) return false;
+      if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
       if(durFilter){
         const svc = postpaidServiceFor(c.id);
         const months = svc ? monthsSince(svc.activationDate) : null;
@@ -1457,7 +1728,9 @@ function renderCustomers(){
         if(!hay.includes(search)) return false;
       }
       return true;
-    });
+    })
+    // sorted per the "Sort by" dropdown — defaults to newest first
+    .sort(sortFn);
   }
   document.getElementById('custCount').textContent = isDupeView
     ? `${dupeGroups.length} ${LANG==='zh'?'组重复 · 共':'duplicate groups · '} ${dupeCount} ${LANG==='zh'?'位客户 · 按姓名或电话匹配':'customers involved · matched by name or phone'}`
@@ -1471,8 +1744,10 @@ function renderCustomers(){
     const durTxt = months===null ? '—' : (LANG==='zh' ? `${months} 个月` : `${months} ${months===1?'month':'months'}`);
     const groupBand = isDupeView ? (groupIndexById[c.id]%2===0 ? 'dupe-band-a' : 'dupe-band-b') : '';
     let dupeReasonCell = '';
+    let isNewestInGroup = false;
     if(isDupeView){
       const group = dupeGroups[groupIndexById[c.id]];
+      isNewestInGroup = group[0].id === c.id;
       const sameName = group.filter(x=>x.id!==c.id).some(x=>x.name.trim().toLowerCase()===c.name.trim().toLowerCase());
       const samePhone = c.phone && group.filter(x=>x.id!==c.id).some(x=>x.phone===c.phone);
       const reasons = [sameName?t('dupe.reasonName'):null, samePhone?t('dupe.reasonPhone'):null].filter(Boolean).join(' + ');
@@ -1483,19 +1758,70 @@ function renderCustomers(){
       : `<span class="pill pill-gray">${t('detail.noActiveSubscription')}</span>`;
     return `<tr class="row-click ${groupBand}" data-open-customer="${c.id}">
       <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
-      <td>${escapeHtml(c.phone||'—')}</td>
-      <td>${c.nationality}</td>
+      <td>${escapeHtml((active&&active.number)||c.phone||'—')}</td>
+      <td><span class="cell-ellipsis">${escapeHtml(c.nationality)}</span></td>
       <td>${t('idtype.'+c.idType)}</td>
       <td>${subBadge}</td>
-      <td>${active?active.number:'—'}</td>
       <td>${recent? t('type.'+recent.type) : '—'}</td>
+      <td>${fmtDate(customerJoinDate(c))}</td>
       ${showDuration ? `<td>${durTxt}</td>` : ''}
       ${isDupeView ? dupeReasonCell : ''}
       <td>${'★'.repeat(c.rating||0)}<span style="color:#DADEEA">${'★'.repeat(5-(c.rating||0))}</span></td>
-      <td><button class="btn btn-sm btn-ghost" data-open-customer="${c.id}">${t('btn.view')}</button></td>
+      <td style="white-space:nowrap;">${isNewestInGroup ? `<button class="btn btn-sm btn-primary" data-merge-group="${groupIndexById[c.id]}" title="${LANG==='zh'?'将本组其他重复客户合并到这条最新记录中':'Merge the other duplicates in this group into this newest record'}">🔀 ${t('btn.merge')}</button> ` : ''}<button class="btn btn-sm btn-ghost" data-open-customer="${c.id}">${t('btn.view')}</button></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="10">${isDupeView ? emptyStateDupes() : emptyState()}</td></tr>`;
+  }).join('') : `<tr><td colspan="9">${isDupeView ? emptyStateDupes() : emptyState()}</td></tr>`;
   bindRowOpens();
+  document.querySelectorAll('[data-merge-group]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const group = dupeGroups[Number(btn.dataset.mergeGroup)];
+      if(!group || group.length<2) return;
+      const [primary, ...others] = group;
+      const otherNames = others.map(c=>c.name).join(', ');
+      const msg = LANG==='zh'
+        ? `将「${otherNames}」的所有业务记录合并到「${primary.name}」（最新记录）中，其余重复客户档案将被删除，仅保留一个客户档案，历史套餐可在该客户资料中查看。是否继续？`
+        : `This will move all service records from "${otherNames}" into "${primary.name}" (the newest record), then delete the other duplicate profiles — leaving just one customer with everything visible in their Plan History. Continue?`;
+      if(!confirm(msg)) return;
+      mergeDuplicateGroup(group.map(c=>c.id));
+      toast(LANG==='zh' ? '已合并重复客户' : 'Duplicate customers merged');
+      renderCustomers();
+      renderNav();
+    });
+  });
+}
+/* Folds every OTHER customer in a duplicate group into the first one (the group's newest
+   record) — moves all their service records over as history, fills any blank profile fields
+   on the primary from the others so nothing is lost, then deletes the redundant profiles. */
+function mergeDuplicateGroup(customerIds){
+  const primaryId = customerIds[0];
+  const primary = getCustomer(primaryId);
+  if(!primary) return;
+  const others = customerIds.slice(1);
+  const fillGapFields = ['idNumber','idType','idExpiry','dob','nationality','occupation','years','address','notes','workType','handlerName','referralFriendName','branchOffice','carrierType','planType','phone'];
+  others.forEach(otherId=>{
+    const otherCust = getCustomer(otherId);
+    if(!otherCust) return;
+    fillGapFields.forEach(f=>{
+      if((primary[f]===undefined || primary[f]==='' || primary[f]===null) && otherCust[f]) primary[f] = otherCust[f];
+    });
+    DB.services.filter(s=>s.customerId===otherId).forEach(s=>{ s.customerId = primaryId; });
+    DB.customers = DB.customers.filter(c=>c.id!==otherId);
+  });
+  // moving records over can leave the primary with more than one "active" subscription at
+  // once (e.g. two of the merged duplicates each had their own active plan) — enforce the
+  // one-active-subscription rule by keeping only the most recently activated as active and
+  // folding the rest into history, exactly like every other subscription change does.
+  // changeReason is force-overwritten (not just filled in if blank) because a demoted record
+  // already carries whatever reason it was ORIGINALLY created with (e.g. "new") — leaving
+  // that in place would mislabel it as a fresh signup instead of a merged duplicate.
+  const activeSvcs = DB.services.filter(s=>s.customerId===primaryId && isSubscriptionType(s.type) && s.isActive);
+  if(activeSvcs.length > 1){
+    const winner = activeSvcs.reduce((a,b)=> new Date(b.activationDate||0) > new Date(a.activationDate||0) ? b : a);
+    activeSvcs.forEach(s=>{
+      if(s!==winner){ s.isActive=false; s.endedAt = s.endedAt||todayISO(); s.endedSeq = s.endedSeq||Date.now(); s.changeReason = 'merged'; }
+    });
+  }
+  saveDB(DB);
 }
 function emptyStateDupes(){
   return `<div class="empty-state"><b>${LANG==='zh'?'没有发现重复客户 👍':'No duplicate customers found 👍'}</b>${LANG==='zh'?'按姓名或电话号码匹配，未发现重复记录':'Checked by matching name and phone number — nothing to clean up'}</div>`;
@@ -1520,18 +1846,16 @@ function openNewPostpaidModal(){
   document.getElementById('pc_years').value = '';
   document.getElementById('pc_idNumber').value = '';
   document.getElementById('pc_occupation').value = '';
-  renderTileRadioGroup('pc_idType_group', ['ARC','Passport'], 'ARC');
-  renderTileRadioGroup('pc_contactMethod_group', CONTACT_METHODS, 'Kakaotalk');
-  document.getElementById('pc_contactHandle').value = '';
-  renderTileRadioGroup('pc_workType_group', POSTPAID_WORK_TYPES, '');
-  renderTileRadioGroup('pc_contractLength_group', POSTPAID_CONTRACT_DAYS.map(String), String(POSTPAID_CONTRACT_DAYS[0]));
-  renderTileRadioGroup('pc_company_group', POSTPAID_COMPANIES, '');
-  renderTileRadioGroup('pc_partnerCompany_group', POSTPAID_PARTNER_COMPANIES, '');
-  renderTileRadioGroup('pc_svcCarrierType_group', POSTPAID_CARRIER_TYPES, '');
+  renderCompactOptionField('pc_idType_group', ['ARC','Passport'], 'ARC', t('f.idType'));
+  renderCompactOptionField('pc_workType_group', POSTPAID_WORK_TYPES, '', t('f.workType'));
+  renderCompactOptionField('pc_contractLength_group', POSTPAID_CONTRACT_DAYS.map(String), String(POSTPAID_CONTRACT_DAYS[0]), t('f.contractLength'));
+  renderCompactOptionField('pc_company_group', POSTPAID_COMPANIES, '', t('f.company'));
+  renderCompactOptionField('pc_partnerCompany_group', POSTPAID_PARTNER_COMPANIES, '', t('f.partnerCompany'));
+  renderCompactOptionField('pc_svcCarrierType_group', POSTPAID_CARRIER_TYPES, '', t('f.svcCarrierType'));
   document.getElementById('pc_number').value = '';
   document.getElementById('pc_activationDate').value = todayISO();
   document.getElementById('pc_monthlyFee').value = '';
-  document.getElementById('pc_handlerName').value = '';
+  renderTileRadioGroup('pc_handlerName_group', STAFF_MEMBERS, getActiveStaff());
   document.getElementById('pc_expectedProfit').value = '';
   document.getElementById('pc_discountPerMonth').value = '';
   document.getElementById('pc_discountMonths').value = '';
@@ -1555,8 +1879,6 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
   const workType = document.getElementById('pc_workType_group').dataset.selected;
   if(!workType){ toast(LANG==='zh'?'请选择「业务向」':'Please select a work type'); return; }
   const idType = document.getElementById('pc_idType_group').dataset.selected || 'ARC';
-  const contactMethod = document.getElementById('pc_contactMethod_group').dataset.selected || 'Kakaotalk';
-  const contactHandle = document.getElementById('pc_contactHandle').value.trim();
   const contractLength = Number(document.getElementById('pc_contractLength_group').dataset.selected || POSTPAID_CONTRACT_DAYS[0]);
   const company = document.getElementById('pc_company_group').dataset.selected || '';
   const partnerCompany = document.getElementById('pc_partnerCompany_group').dataset.selected || '';
@@ -1567,15 +1889,13 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
     id: uid('c'), name,
     nationality: document.getElementById('pc_nationality').value.trim().toUpperCase() || 'OTHER',
     dob: document.getElementById('pc_dob').value,
-    kakao: contactMethod==='Kakaotalk' ? contactHandle : '',
-    wechat: contactMethod==='Wechat' ? contactHandle : '',
-    contactMethod, contactHandle,
+    phone: document.getElementById('pc_number').value.trim(),
     idType, idNumber: document.getElementById('pc_idNumber').value.trim(), idExpiry:'',
     occupation: document.getElementById('pc_occupation').value.trim(),
     workplace:'', years: Number(document.getElementById('pc_years').value)||0,
     referral: referralFriendName ? 'friend' : 'other',
     referralFriendName,
-    handlerName: document.getElementById('pc_handlerName').value.trim(),
+    handlerName: document.getElementById('pc_handlerName_group').dataset.selected || '',
     workType,
     carrierType:'SKT', planType:'신규가입', branchOffice:'',
     subType:'postpaid', address:'', notes: document.getElementById('pc_notes').value.trim(),
@@ -1619,26 +1939,27 @@ function openCustomerModal(customer){
   document.getElementById('f_name').value = customer?.name || '';
   document.getElementById('f_phone').value = customer?.phone || '';
   document.getElementById('f_nationality').value = customer?.nationality || '';
-  document.getElementById('f_dob').value = customer?.dob || '';
-  document.getElementById('f_kakao').value = customer?.kakao || '';
-  document.getElementById('f_wechat').value = customer?.wechat || '';
-  document.getElementById('f_idType').value = customer?.idType || 'ARC';
+  document.getElementById('f_dob').value = toYYMMDD(customer?.dob) || '';
+  renderTileRadioGroup('f_idType_group', ['ARC','Passport'], customer?.idType || 'ARC');
   document.getElementById('f_idNumber').value = customer?.idNumber || '';
   document.getElementById('f_idExpiry').value = customer?.idExpiry || '';
-  document.getElementById('f_occupation').value = customer?.occupation || '';
-  document.getElementById('f_workplace').value = customer?.workplace || '';
+  // an existing customer's occupation might be old free-text that predates this option set —
+  // only pre-select a tile if it actually matches one of the current choices
+  renderTileRadioGroup('f_occupation_group', OCCUPATION_OPTIONS, OCCUPATION_OPTIONS.includes(customer?.occupation) ? customer.occupation : '');
   document.getElementById('f_years').value = customer?.years ?? '';
   document.getElementById('f_referral').value = customer?.referral || 'friend';
   document.getElementById('f_carrierType').value = customer?.carrierType || 'SKT';
   document.getElementById('f_planType').value = customer?.planType || '신규가입';
-  document.getElementById('f_branchOffice').value = customer?.branchOffice || '';
+  document.getElementById('f_branchOffice').value = ['KY0000489','시엔에스'].includes(customer?.branchOffice) ? customer.branchOffice : 'KY0000489';
+  document.getElementById('f_handlerName').value = STAFF_MEMBERS.includes(customer?.handlerName) ? customer.handlerName : getActiveStaff();
   document.getElementById('f_address').value = customer?.address || '';
   document.getElementById('f_notes').value = customer?.notes || '';
   setRatingStars(customer?.rating || 5);
   document.getElementById('p3_number').value = customer?.phone || '';
   document.getElementById('p3_activationDate').value = todayISO();
-  document.getElementById('p3_prepaidMonths').value = '3';
   document.getElementById('p3_usimNumber').value = '';
+  renderPrepaidPlanTiles('90');
+  updatePrepaidPriceFromPlan();
   // this modal is now prepaid-only for NEW customers; when editing an EXISTING postpaid
   // customer via "Edit profile" elsewhere, hide the prepaid quick-print box entirely rather
   // than showing prepaid-only fields for a postpaid record — and never let saving here
@@ -1650,8 +1971,48 @@ function openCustomerModal(customer){
   document.getElementById('deleteCustomerBtn').style.display = customer ? '' : 'none';
   document.getElementById('customerModalOverlay').classList.add('show');
 }
+/* Korean ARC numbers are formatted 6 digits - 7 digits (e.g. 123456-1234567), like a resident
+   registration number; passport numbers have no fixed dash pattern, just plain uppercase. */
+function formatIdNumberInput(){
+  const idType = document.getElementById('f_idType_group').dataset.selected || 'ARC';
+  const el = document.getElementById('f_idNumber');
+  if(idType==='ARC'){
+    let digits = el.value.replace(/[^0-9]/g,'').slice(0,13);
+    el.value = digits.length>6 ? digits.slice(0,6)+'-'+digits.slice(6) : digits;
+  } else {
+    el.value = el.value.replace(/-/g,'').toUpperCase();
+  }
+}
+document.getElementById('f_idNumber').addEventListener('input', formatIdNumberInput);
+document.getElementById('f_idType_group').addEventListener('click', ()=> setTimeout(formatIdNumberInput, 0));
+/* birthday entered directly as 6 digits, Korean resident-number style (YYMMDD) — digits only,
+   no separators, capped at 6 characters as you type */
+document.getElementById('f_dob').addEventListener('input', e=>{
+  e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,6);
+});
+/* postpaid-only companies/carrier that a given prepaid plan is allowed to use — three months
+   uses one supplier pairing, 1-2 months uses another, and the 15-day plan is unrestricted */
+function prepaidCompanyCarrierOptionsFor(days){
+  if(days===90) return {companies:['프리티Free T','스마텔SMS'], carriers:['SKT알뜰폰','LGU알뜰폰']};
+  if(days===30 || days===60) return {companies:['아시아Asia','벨류컨Vcnk'], carriers:['KT알뜰폰','LGU알뜰폰']};
+  return {companies:PREPAID_COMPANIES, carriers:POSTPAID_CARRIER_TYPES}; // 15 days — no restriction
+}
+/* prepaid is a flat one-time catalog price — auto-fill it from the selected plan, but leave
+   it editable in case of a discount or special case */
+function updatePrepaidPriceFromPlan(){
+  const days = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
+  const plan = PREPAID_PLANS.find(p=>p.days===days);
+  document.getElementById('p3_price').value = plan ? plan.price : '';
+  const {companies, carriers} = prepaidCompanyCarrierOptionsFor(days);
+  const curCompany = document.getElementById('p3_company_group').dataset.selected;
+  const curCarrier = document.getElementById('p3_svcCarrierType_group').dataset.selected;
+  renderTileRadioGroup('p3_company_group', companies, companies.includes(curCompany) ? curCompany : '');
+  renderTileRadioGroup('p3_svcCarrierType_group', carriers, carriers.includes(curCarrier) ? curCarrier : '');
+  refreshP3TemplateOptions();
+}
+document.getElementById('p3_prepaidPlan_group').addEventListener('click', ()=> setTimeout(updatePrepaidPriceFromPlan, 0));
 function refreshP3TemplateOptions(){
-  const months = Number(document.getElementById('p3_prepaidMonths').value)||3;
+  const days = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
   const p3tpl = document.getElementById('p3_template');
   if(!DB.templates.length){
     p3tpl.innerHTML = `<option value="">${LANG==='zh'?'（尚未上传模板，请先在「打印模板」页面上传）':'(no templates yet — upload one in Print Templates)'}</option>`;
@@ -1659,17 +2020,16 @@ function refreshP3TemplateOptions(){
   }
   p3tpl.innerHTML = DB.templates.map(tp=>`<option value="${tp.id}">${escapeHtml(tp.name)}</option>`).join('');
   const preeti = getTemplate('tpl_preeti_3m');
-  if(months===3 && preeti){
+  if(days===90 && preeti){
     p3tpl.value = preeti.id;
   } else {
-    // 1 or 2 months uses a different plan/template than the fixed 3-month Preeti form —
-    // prefer a non-Preeti template if the store has uploaded one, otherwise leave the first
-    // option selected and let staff pick manually
+    // the 15/30/60-day tiers use a different template than the fixed 90-day ("3-month
+    // recharge") Preeti form — prefer a non-Preeti template if the store has uploaded one,
+    // otherwise leave the first option selected and let staff pick manually
     const nonPreeti = DB.templates.find(tp=>tp.id!=='tpl_preeti_3m');
     p3tpl.value = nonPreeti ? nonPreeti.id : DB.templates[0].id;
   }
 }
-document.getElementById('p3_prepaidMonths').addEventListener('change', refreshP3TemplateOptions);
 /* populates the shared Company / Partner Company / Carrier Type dropdowns for a given
    field-id prefix (cs_, o_), used across the Change Subscription and Order modals so the
    option lists stay in sync in one place */
@@ -1712,22 +2072,22 @@ function saveCustomerCore(name){
   // EXISTING customer of any type — never reset an existing customer's subType back to
   // prepaid just because this shared form has no type selector anymore
   const subType = editingCustomerId ? (getCustomer(editingCustomerId)?.subType || 'prepaid') : 'prepaid';
+  const idType = document.getElementById('f_idType_group').dataset.selected || 'ARC';
+  const occupation = document.getElementById('f_occupation_group').dataset.selected || '';
   const data = {
-    name, phone:document.getElementById('f_phone').value.trim(),
-    nationality:document.getElementById('f_nationality').value.trim(),
-    dob:document.getElementById('f_dob').value,
-    kakao:document.getElementById('f_kakao').value.trim(),
-    wechat:document.getElementById('f_wechat').value.trim(),
-    idType:document.getElementById('f_idType').value,
-    idNumber:document.getElementById('f_idNumber').value.trim(),
+    name: name.toUpperCase(), phone:document.getElementById('f_phone').value.trim(),
+    nationality:document.getElementById('f_nationality').value.trim().toUpperCase(),
+    dob:parseDobFlexible(document.getElementById('f_dob').value) || '',
+    idType,
+    idNumber:document.getElementById('f_idNumber').value.trim().toUpperCase(),
     idExpiry:document.getElementById('f_idExpiry').value,
-    occupation:document.getElementById('f_occupation').value.trim(),
-    workplace:document.getElementById('f_workplace').value.trim(),
+    occupation,
     years:document.getElementById('f_years').value?Number(document.getElementById('f_years').value):0,
     referral:document.getElementById('f_referral').value,
     carrierType:document.getElementById('f_carrierType').value,
     planType:document.getElementById('f_planType').value,
-    branchOffice:document.getElementById('f_branchOffice').value.trim(),
+    branchOffice:document.getElementById('f_branchOffice').value,
+    handlerName: document.getElementById('f_handlerName').value || '',
     subType,
     address:document.getElementById('f_address').value.trim(),
     notes:document.getElementById('f_notes').value.trim(),
@@ -1744,11 +2104,9 @@ function saveCustomerCore(name){
   }
 }
 
-/* save customer + create the fixed 3-month prepaid service + open print preview
-   (data plan and address are fixed by store policy — see PREETI_FIXED_PLAN / PREETI_FIXED_ADDRESS) */
 /* save customer + create the matching service record + open print preview.
-   Prepaid is billed by recharge months (1/2/3) — 3 months auto-applies the fixed Preeti
-   Telecom template; 1/2-month plans use whatever other template the store has set up. */
+   Prepaid is billed by catalog day-tiers (15/30/60/90) — 90 days auto-applies the fixed
+   Preeti Telecom template; the other tiers use whatever other template the store has set up. */
 function saveCustomerAndPrint(){
   const name = document.getElementById('f_name').value.trim();
   if(!name){ toast(LANG==='zh'?'请输入客户姓名':'Please enter a customer name'); return; }
@@ -1761,19 +2119,24 @@ function saveCustomerAndPrint(){
   }
   const cust = saveCustomerCore(name);
   const activationDate = document.getElementById('p3_activationDate').value || todayISO();
-  const months = Number(document.getElementById('p3_prepaidMonths').value)||3;
-  const durationDays = months*30;
+  const durationDays = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
+  const price = Number(document.getElementById('p3_price').value)||0;
+  const planInfo = PREPAID_PLANS.find(p=>p.days===durationDays);
   const d = new Date(activationDate); d.setDate(d.getDate()+durationDays);
   const svcData = {
     customerId: cust.id, type:'prepaid',
     carrier: cust.carrierType || document.getElementById('f_carrierType').value,
-    plan: months===3 ? PREETI_FIXED_PLAN : `${months}개월 충전`,
+    plan: durationDays===90 ? PREETI_FIXED_PLAN : (planInfo ? `${planInfo.days}일` : `${durationDays}일`),
     number: document.getElementById('p3_number').value.trim(),
     usimNumber: document.getElementById('p3_usimNumber').value.trim(),
     simType:'physical', activationDate, durationDays,
     expiryDate: d.toISOString().slice(0,10), status:'active',
+    // prepaid is a one-time payment, paid in full at signup — no recurring fee, cost, or
+    // partial-payment tracking needed the way postpaid has
     monthlyFee:0, discount:0, firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:0, cost:0, received:0, paymentMethod:'cash', commission:0, notes:'',
+    sellingPrice:price, cost:0, received:price, paymentMethod:'cash', commission:0, notes:'',
+    company: document.getElementById('p3_company_group').dataset.selected || '',
+    svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
   };
   // routes through the same enforcement path as every other subscription change, so saving
   // here for a customer who already has an active plan correctly ends the old one instead
@@ -1836,6 +2199,34 @@ function openCustomerDetail(id){
     actionButtons = `<button class="btn btn-primary" id="btnStartNewSub">＋ ${t('btn.startNewSubscription')}</button>`;
   }
 
+  // surface duplicate-detection right on the profile too, not just the Duplicates tab —
+  // if this customer is the newest in their group, offer to merge directly from here;
+  // otherwise point at whichever record IS the newest, since that's the one merge targets
+  let dupeBannerHtml = '';
+  const dupeGroupForThis = getDuplicateGroups().find(g=>g.some(x=>x.id===id));
+  if(dupeGroupForThis && dupeGroupForThis.length>1){
+    const sortedGroup = [...dupeGroupForThis].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0));
+    const isNewest = sortedGroup[0].id===id;
+    const others = sortedGroup.filter(x=>x.id!==id);
+    if(isNewest){
+      dupeBannerHtml = `<div class="service-card" style="background:#FEF2F2;border-color:#FCA5A5;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-weight:800;color:#C0392B;">⚠ ${LANG==='zh'?'检测到重复档案':'Duplicate profiles detected'}</div>
+            <div class="section-desc" style="margin-top:4px;">${LANG==='zh'?`与 ${others.length} 个其他档案重复（按姓名或电话匹配）。合并会将它们的历史记录并入本档案，并删除多余档案。`:`Matches ${others.length} other profile${others.length>1?'s':''} by name or phone. Merging moves their history into this one and removes the extras.`}</div>
+          </div>
+          <button class="btn btn-primary" id="btnMergeFromProfile" style="flex:none;">🔀 ${t('btn.merge')}</button>
+        </div>
+      </div>`;
+    } else {
+      const newest = sortedGroup[0];
+      dupeBannerHtml = `<div class="service-card" style="background:var(--gray-light);margin-bottom:16px;">
+        <div style="font-weight:800;">ℹ ${LANG==='zh'?'这可能是重复档案':'This looks like a duplicate profile'}</div>
+        <div class="section-desc" style="margin-top:4px;">${LANG==='zh'?'较新的档案':'The newer profile is'} <b>${escapeHtml(newest.name)}</b>（${fmtDate(customerJoinDate(newest))}）。${LANG==='zh'?'请到该档案进行合并。':'Merge from there instead.'}</div>
+        <button class="btn btn-sm btn-ghost" style="margin-top:8px;" data-open-customer="${newest.id}">${LANG==='zh'?'前往该档案':'Go to that profile'} →</button>
+      </div>`;
+    }
+  }
   const aiInsightHtml = intel.priority==='none' ? '' : `
     <div class="service-card" style="background:var(--blue-light);border-color:var(--blue);margin-bottom:16px;">
       <div class="service-card-head">
@@ -1852,6 +2243,7 @@ function openCustomerDetail(id){
     </div>`;
 
   document.getElementById('detailBody').innerHTML = `
+    ${dupeBannerHtml}
     ${aiInsightHtml}
     <div class="profile-head">
       <div class="profile-avatar">${initials(c.name)}</div>
@@ -1867,8 +2259,6 @@ function openCustomerDetail(id){
     </div>
     <div class="kv-grid">
       <div><div class="k">${t('f.phone')}</div><div class="v">${escapeHtml(c.phone||'—')}</div></div>
-      <div><div class="k">${t('f.kakao')}</div><div class="v">${escapeHtml(c.kakao||'—')}</div></div>
-      <div><div class="k">${t('f.wechat')}</div><div class="v">${escapeHtml(c.wechat||'—')}</div></div>
       <div><div class="k">${t('f.idExpiry')}</div><div class="v">${fmtDate(c.idExpiry)}</div></div>
       <div><div class="k">${t('f.occupation')}</div><div class="v">${escapeHtml(c.occupation||'—')}</div></div>
       <div><div class="k">${t('f.workplace')}</div><div class="v">${escapeHtml(c.workplace||'—')}</div></div>
@@ -1881,7 +2271,6 @@ function openCustomerDetail(id){
       ${c.workType?`<div><div class="k">${t('f.workType')}</div><div class="v">${escapeHtml(c.workType)}</div></div>`:''}
       ${c.handlerName?`<div><div class="k">${t('f.handlerName')}</div><div class="v">${escapeHtml(c.handlerName)}</div></div>`:''}
       ${c.referralFriendName?`<div><div class="k">${t('f.referralFriend')}</div><div class="v">${escapeHtml(c.referralFriendName)}</div></div>`:''}
-      ${c.contactMethod?`<div><div class="k">${t('f.contactMethod')}</div><div class="v">${escapeHtml(c.contactMethod)}${c.contactHandle?' · '+escapeHtml(c.contactHandle):''}</div></div>`:''}
       <div style="grid-column:1/-1;"><div class="k">${t('f.address')}</div><div class="v">${escapeHtml(c.address||'—')}</div></div>
       <div style="grid-column:1/-1;"><div class="k">${t('f.notes')}</div><div class="v">${escapeHtml(c.notes||'—')}</div></div>
     </div>
@@ -1891,7 +2280,7 @@ function openCustomerDetail(id){
       <div class="section-title">${t('detail.activeSubscription')}</div>
       <div style="display:flex;gap:8px;">${actionButtons}</div>
     </div>
-    <div id="detailActiveSub">${active ? serviceCardHtml(active) : `<div class="muted">${t('detail.noActiveSubscription')}</div>`}</div>
+    <div id="detailActiveSub">${active ? serviceCardHtml(active, c) : `<div class="muted">${t('detail.noActiveSubscription')}</div>`}</div>
 
     <div class="form-hr" style="margin:18px 0;"></div>
     <div class="section-title" style="margin-bottom:10px;">${t('detail.planHistory')}</div>
@@ -1900,7 +2289,7 @@ function openCustomerDetail(id){
     ${otherRecords.length ? `
     <div class="form-hr" style="margin:18px 0;"></div>
     <div class="section-title" style="margin-bottom:10px;">${t('detail.otherRecords')}</div>
-    <div id="detailOtherRecords">${otherRecords.map(s=>serviceCardHtml(s)).join('')}</div>` : ''}
+    <div id="detailOtherRecords">${otherRecords.map(s=>serviceCardHtml(s, c)).join('')}</div>` : ''}
   `;
   document.getElementById('detailModalOverlay').classList.add('show');
   document.getElementById('detailBody').querySelectorAll('[data-edit-service]').forEach(b=>{
@@ -1917,13 +2306,28 @@ function openCustomerDetail(id){
   if(btnCancelSub) btnCancelSub.addEventListener('click', ()=> openCancelSubModal(id));
   const btnStartNew = document.getElementById('btnStartNewSub');
   if(btnStartNew) btnStartNew.addEventListener('click', ()=>{ closeAllModals(); openOrderModal(null, id); });
+  const btnMergeFromProfile = document.getElementById('btnMergeFromProfile');
+  if(btnMergeFromProfile) btnMergeFromProfile.addEventListener('click', ()=>{
+    const group = getDuplicateGroups().find(g=>g.some(x=>x.id===id));
+    if(!group || group.length<2) return;
+    const sortedGroup = [...group].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0));
+    const others = sortedGroup.slice(1);
+    const msg = LANG==='zh'
+      ? `将「${others.map(c=>c.name).join(', ')}」的所有业务记录合并到「${sortedGroup[0].name}」（最新记录）中，其余重复客户档案将被删除，仅保留一个客户档案，历史套餐可在该客户资料中查看。是否继续？`
+      : `This will move all service records from "${others.map(c=>c.name).join(', ')}" into "${sortedGroup[0].name}" (the newest record), then delete the other duplicate profiles — leaving just one customer with everything visible in their Plan History. Continue?`;
+    if(!confirm(msg)) return;
+    mergeDuplicateGroup(sortedGroup.map(c=>c.id));
+    toast(LANG==='zh' ? '已合并重复客户' : 'Duplicate customers merged');
+    openCustomerDetail(id);
+    renderNav();
+  });
 }
 function getService(id){ return DB.services.find(s=>s.id===id); }
 function usedDaysFor(s){
   if(!s || !s.activationDate || !isIsoDate(s.activationDate)) return null;
   return Math.max(0, daysBetween(s.activationDate, todayISO()));
 }
-function serviceCardHtml(s){
+function serviceCardHtml(s, customer){
   const st = computedStatus(s);
   let progressPct = 0;
   if(s.activationDate && s.expiryDate){
@@ -1933,12 +2337,46 @@ function serviceCardHtml(s){
   }
   const remaining = s.expiryDate ? daysBetween(todayISO(), s.expiryDate) : null;
   const usedDays = usedDaysFor(s);
-  const postpaidExtra = s.type==='postpaid' ? `<div class="kv-grid" style="margin-top:10px;">
+  // plain-language framing of where this subscription stands relative to its contract,
+  // instead of just a bare day count
+  let contractStatusText = '';
+  if(remaining !== null){
+    if(remaining < 0) contractStatusText = LANG==='zh' ? `已超过合约期 ${Math.abs(remaining)} 天（已到期）` : `${Math.abs(remaining)} days past contract end — expired`;
+    else if(remaining <= 7) contractStatusText = LANG==='zh' ? `仍在合约内，剩余 ${remaining} 天（即将到期）` : `${remaining} days remaining, in contract — expiring soon`;
+    else contractStatusText = LANG==='zh' ? `仍在合约内，剩余 ${remaining} 天` : `${remaining} days remaining, in contract`;
+  }
+  // one comprehensive info grid covering phone, plan type, subscription type, company/
+  // carrier, how long the plan's been used, and how long the customer's been in Korea —
+  // shown for BOTH prepaid and postpaid (previously some of this was postpaid-only)
+  const infoGrid = `<div class="kv-grid" style="margin-top:10px;">
+      <div><div class="k">${t('f.number')}</div><div class="v">${s.number||'—'}</div></div>
+      <div><div class="k">${t('col.subType')}</div><div class="v">${s.type==='postpaid'?t('opt.postpaidShort'):t('opt.prepaidShort')}</div></div>
+      ${customer?.planType?`<div><div class="k">${t('f.planType')}</div><div class="v">${escapeHtml(customer.planType)}</div></div>`:''}
       ${s.company?`<div><div class="k">${t('f.company')}</div><div class="v">${escapeHtml(s.company)}</div></div>`:''}
       ${s.partnerCompany?`<div><div class="k">${t('f.partnerCompany')}</div><div class="v">${escapeHtml(s.partnerCompany)}</div></div>`:''}
       ${s.svcCarrierType?`<div><div class="k">${t('f.svcCarrierType')}</div><div class="v">${escapeHtml(s.svcCarrierType)}</div></div>`:''}
       ${usedDays!==null?`<div><div class="k">${t('f.usedDays')}</div><div class="v">${usedDays} ${LANG==='zh'?'天':'days'}</div></div>`:''}
-    </div>` : '';
+      ${customer && customer.years!=null?`<div><div class="k">${t('f.years')}</div><div class="v">${customer.years} ${t('years.suffix')}</div></div>`:''}
+    </div>`;
+  // prepaid is one flat one-time payment — just show the price, none of the recurring/
+  // partial-payment fields that only make sense for postpaid's commission model
+  const feeSection = s.type==='prepaid'
+    ? `<div class="kv-grid" style="margin-top:10px;">
+        <div><div class="k">${t('f.price')}</div><div class="v" style="font-size:15px;">${fmtWon(s.sellingPrice)}</div></div>
+      </div>`
+    : s.type==='postpaid'
+    ? `<div class="kv-grid" style="margin-top:10px;">
+        <div><div class="k">${t('f.expectedProfit')}</div><div class="v">${fmtWon(s.expectedProfit)}</div></div>
+        <div><div class="k">${t('f.actualProfit')}</div><div class="v">${s.actualProfit?fmtWon(s.actualProfit):`<span class="muted">${t('stat.notReconciled')}</span>`}</div></div>
+        <div><div class="k">${t('f.discountTotal')}</div><div class="v">${fmtWon(discountTotalFor(s))}</div></div>
+        <div><div class="k">${t('f.netExpectedProfit')}</div><div class="v" style="color:var(--green);font-weight:700;">${fmtWon(netProfitFor(s))}</div></div>
+      </div>`
+    : `<div class="kv-grid" style="margin-top:10px;">
+        <div><div class="k">${t('f.sellingPrice')}</div><div class="v">${fmtWon(s.sellingPrice)}</div></div>
+        <div><div class="k">${t('f.received')}</div><div class="v">${fmtWon(s.received)}</div></div>
+        <div><div class="k">${t('col.outstanding')}</div><div class="v" style="color:${(s.sellingPrice-s.received)>0?'var(--red)':'inherit'}">${fmtWon(Math.max(0,(s.sellingPrice||0)-(s.received||0)))}</div></div>
+        <div><div class="k">${t('f.commission')}</div><div class="v">${fmtWon(s.commission)}</div></div>
+      </div>`;
   return `<div class="service-card">
     <div class="service-card-head">
       <div>
@@ -1954,14 +2392,9 @@ function serviceCardHtml(s){
       </div>
     </div>
     ${s.expiryDate?`<div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
-    <div class="muted" style="font-size:11.5px;margin-top:6px;">${fmtDate(s.activationDate)} → ${fmtDate(s.expiryDate)} · ${t('detail.remaining')} ${remaining} ${t('detail.days')}</div>`:''}
-    ${postpaidExtra}
-    <div class="kv-grid" style="margin-top:10px;">
-      <div><div class="k">${t('f.sellingPrice')}</div><div class="v">${fmtWon(s.sellingPrice)}</div></div>
-      <div><div class="k">${t('f.received')}</div><div class="v">${fmtWon(s.received)}</div></div>
-      <div><div class="k">${t('col.outstanding')}</div><div class="v" style="color:${(s.sellingPrice-s.received)>0?'var(--red)':'inherit'}">${fmtWon(Math.max(0,(s.sellingPrice||0)-(s.received||0)))}</div></div>
-      <div><div class="k">${t('f.commission')}</div><div class="v">${fmtWon(s.commission)}</div></div>
-    </div>
+    <div class="muted" style="font-size:11.5px;margin-top:6px;">${fmtDate(s.activationDate)} → ${fmtDate(s.expiryDate)} · ${contractStatusText}</div>`:''}
+    ${infoGrid}
+    ${feeSection}
   </div>`;
 }
 /* compact read-only row for a subscription that has been superseded or cancelled */
@@ -2015,6 +2448,10 @@ function openOrderModal(service, presetCustomerId){
   document.getElementById('o_paymentMethod').value = service?.paymentMethod || 'cash';
   document.getElementById('o_commission').value = service?.commission ?? '';
   document.getElementById('o_notes').value = service?.notes || '';
+  document.getElementById('o_expectedProfit').value = service?.expectedProfit ?? '';
+  document.getElementById('o_actualProfit').value = service?.actualProfit ?? '';
+  document.getElementById('o_discountPerMonth').value = service?.discountPerMonth ?? '';
+  document.getElementById('o_discountMonths').value = service?.discountMonths ?? '';
   // populate the company/partner/carrier dropdowns' options BEFORE assigning their value,
   // otherwise setting .value on a still-empty <select> silently does nothing
   populatePostpaidOptionSelects('o_');
@@ -2038,12 +2475,30 @@ function openOrderModal(service, presetCustomerId){
 document.getElementById('o_type').addEventListener('change', updateOrderTypeUI);
 document.getElementById('o_planDuration').addEventListener('change', applyPlanDurationToDays);
 function updateOrderTypeUI(){
-  const isPostpaid = document.getElementById('o_type').value === 'postpaid';
+  const type = document.getElementById('o_type').value;
+  const isPostpaid = type === 'postpaid';
+  const isPrepaid = type === 'prepaid';
   document.getElementById('o_planDurationField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_companyField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_partnerCompanyField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_svcCarrierTypeField').style.display = isPostpaid ? '' : 'none';
   if(isPostpaid){ populatePostpaidOptionSelects('o_'); applyPlanDurationToDays(); }
+
+  // prepaid is a flat one-time payment (just a price); postpaid now tracks expected/actual
+  // profit + discount instead of the old cost/received/commission model — only "other"
+  // transactional types (porting/transfer/topup/cancel) still use the full generic fee grid
+  const fullFeeFields = ['o_monthlyFeeField','o_discountField','o_firstMonthPaymentField','o_activationFeeField','o_simFeeField','o_costField','o_receivedField','o_paymentMethodField','o_commissionField'];
+  const showFullFees = !isPrepaid && !isPostpaid;
+  fullFeeFields.forEach(id=> document.getElementById(id).style.display = showFullFees ? '' : 'none');
+  document.getElementById('o_feeInfoTitle').style.display = showFullFees ? '' : 'none';
+  document.getElementById('o_paymentHr').style.display = showFullFees ? '' : 'none';
+  document.getElementById('o_paymentInfoTitle').style.display = (showFullFees || isPrepaid) ? '' : 'none';
+  document.getElementById('o_sellingPriceField').style.display = (showFullFees || isPrepaid) ? '' : 'none';
+  document.getElementById('o_sellingPriceLabel').textContent = isPrepaid ? t('f.price') : t('f.sellingPrice');
+  document.getElementById('o_expectedProfitField').style.display = isPostpaid ? '' : 'none';
+  document.getElementById('o_actualProfitField').style.display = isPostpaid ? '' : 'none';
+  document.getElementById('o_discountPerMonthField').style.display = isPostpaid ? '' : 'none';
+  document.getElementById('o_discountMonthsField').style.display = isPostpaid ? '' : 'none';
 }
 function applyPlanDurationToDays(){
   const days = Number(document.getElementById('o_planDuration').value) || POSTPAID_CONTRACT_DAYS[0];
@@ -2063,9 +2518,11 @@ function autoCalcExpiry(){
 function saveOrderFromForm(){
   const customerId = document.getElementById('o_customer').value;
   if(!customerId){ toast(LANG==='zh'?'请选择客户':'Please select a customer'); return; }
+  const type = document.getElementById('o_type').value;
+  const sellingPrice = Number(document.getElementById('o_sellingPrice').value)||0;
   const data = {
     customerId,
-    type:document.getElementById('o_type').value,
+    type,
     carrier:document.getElementById('o_carrier').value.trim(),
     plan:document.getElementById('o_plan').value.trim(),
     number:document.getElementById('o_number').value.trim(),
@@ -2079,15 +2536,20 @@ function saveOrderFromForm(){
     firstMonthPayment:Number(document.getElementById('o_firstMonthPayment').value)||0,
     activationFee:Number(document.getElementById('o_activationFee').value)||0,
     simFee:Number(document.getElementById('o_simFee').value)||0,
-    sellingPrice:Number(document.getElementById('o_sellingPrice').value)||0,
-    cost:Number(document.getElementById('o_cost').value)||0,
-    received:Number(document.getElementById('o_received').value)||0,
+    // prepaid is paid in full at signup — there's no partial-payment concept, so "received"
+    // always matches the price rather than being entered separately
+    sellingPrice, cost:Number(document.getElementById('o_cost').value)||0,
+    received: type==='prepaid' ? sellingPrice : Number(document.getElementById('o_received').value)||0,
     paymentMethod:document.getElementById('o_paymentMethod').value,
     commission:Number(document.getElementById('o_commission').value)||0,
     notes:document.getElementById('o_notes').value.trim(),
-    company: document.getElementById('o_type').value==='postpaid' ? document.getElementById('o_company').value : '',
-    partnerCompany: document.getElementById('o_type').value==='postpaid' ? document.getElementById('o_partnerCompany').value : '',
-    svcCarrierType: document.getElementById('o_type').value==='postpaid' ? document.getElementById('o_svcCarrierType').value : '',
+    company: type==='postpaid' ? document.getElementById('o_company').value : '',
+    partnerCompany: type==='postpaid' ? document.getElementById('o_partnerCompany').value : '',
+    svcCarrierType: type==='postpaid' ? document.getElementById('o_svcCarrierType').value : '',
+    expectedProfit: type==='postpaid' ? Number(document.getElementById('o_expectedProfit').value)||0 : 0,
+    actualProfit: type==='postpaid' ? Number(document.getElementById('o_actualProfit').value)||0 : 0,
+    discountPerMonth: type==='postpaid' ? Number(document.getElementById('o_discountPerMonth').value)||0 : 0,
+    discountMonths: type==='postpaid' ? Number(document.getElementById('o_discountMonths').value)||0 : 0,
   };
   if(editingOrderId){
     // editing an existing record just corrects its details — it doesn't change which
@@ -2278,18 +2740,21 @@ function renderOrders(){
     const c = getCustomer(s.customerId);
     const st = computedStatus(s);
     const outstanding = Math.max(0,(s.sellingPrice||0)-(s.received||0));
+    const amount = totalRevenueFor(s);
     return `<tr class="row-click" data-edit-order="${s.id}">
       <td class="name-cell" title="${c?escapeHtml(c.name):''}"><span class="avatar">${initials(c?c.name:'?')}</span><span class="name-text">${c?escapeHtml(c.name):'—'}</span></td>
-      <td>${t('type.'+s.type)}</td>
-      <td>${escapeHtml(s.carrier||'—')}</td>
-      <td>${escapeHtml(s.plan||'—')}</td>
-      <td>${fmtWon(s.sellingPrice)}</td>
-      <td>${outstanding>0?`<span style="color:var(--red);font-weight:700;">${fmtWon(outstanding)}</span>`:'—'}</td>
+      <td><span class="cell-ellipsis">${t('type.'+s.type)}</span></td>
+      <td><span class="cell-ellipsis">${escapeHtml(s.carrier||'—')}</span></td>
+      <td><span class="cell-ellipsis" style="max-width:160px;">${escapeHtml(s.plan||'—')}</span></td>
+      <td>${fmtWon(amount)}</td>
+      <td>${(s.type!=='postpaid' && outstanding>0)?`<span style="color:var(--red);font-weight:700;">${fmtWon(outstanding)}</span>`:'—'}</td>
       <td>${fmtDate(s.activationDate)}</td>
       <td><span class="pill ${statusPillClass(st)}">${t('status.'+st)}</span></td>
       <td style="white-space:nowrap;">
-        ${(s.type==='prepaid' && s.durationDays===90) ? `<button class="btn btn-sm btn-ghost" data-print-order="${s.id}" style="color:var(--orange);">🖨</button>` : ''}
-        <button class="btn btn-sm btn-ghost" data-edit-order="${s.id}">${t('btn.edit')}</button>
+        <div style="display:flex;gap:6px;justify-content:flex-end;align-items:center;">
+          ${(s.type==='prepaid' && s.durationDays===90) ? `<button class="btn btn-sm btn-ghost" data-print-order="${s.id}" style="color:var(--orange);" title="${t('btn.print')}">🖨</button>` : ''}
+          <button class="btn btn-sm btn-ghost" data-edit-order="${s.id}">${t('btn.edit')}</button>
+        </div>
       </td>
     </tr>`;
   }).join('') : `<tr><td colspan="9">${emptyState()}</td></tr>`;
@@ -2298,30 +2763,73 @@ function renderOrders(){
 }
 
 /* ---------------- REPORTS ---------------- */
+let repSelectedMonth = null; // null = all time
 function renderReports(){
-  const svcs = DB.services.filter(s=>isSubscriptionType(s.type));
+  const allSvcs = DB.services.filter(s=>isSubscriptionType(s.type));
   const now = new Date();
-  const weekAgo = new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
-  const monthStr = now.toISOString().slice(0,7);
-  // this business earns a one-time carrier commission per signup, not recurring monthly
-  // revenue — so "this week/month" means signups activated in that window, valued at their
-  // net expected profit (or actual profit once the carrier has reconciled it)
-  const weekProfit = svcs.filter(s=>s.activationDate>=weekAgo).reduce((a,s)=>a+netProfitFor(s),0);
-  const monthSvcs = svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===monthStr);
-  const monthExpected = monthSvcs.reduce((a,s)=>a+(Number(s.expectedProfit)||0)-discountTotalFor(s),0);
-  const reconciled = monthSvcs.filter(s=>s.actualProfit);
-  const monthActual = reconciled.reduce((a,s)=>a+netProfitFor(s),0);
-  const monthVariance = reconciled.reduce((a,s)=>a+((Number(s.actualProfit)||0)-(Number(s.expectedProfit)||0)),0);
-  const pendingReminders = buildReminders().filter(r=>r.uiStatus==='pending').length;
+  const curMonthStr = now.toISOString().slice(0,7);
 
+  // month selector — every month that actually has a signup, newest first, plus "all time"
+  const monthsWithData = [...new Set(allSvcs.map(s=>(s.activationDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
+  if(repSelectedMonth===null){
+    repSelectedMonth = monthsWithData.includes(curMonthStr) ? curMonthStr : (monthsWithData[0] || 'all');
+  }
+  const monthSel = document.getElementById('repMonthSelect');
+  monthSel.innerHTML = `<option value="all">${t('rep.allTime')}</option>` + monthsWithData.map(m=>`<option value="${m}">${fmtMonthLabel(m)}</option>`).join('');
+  monthSel.value = repSelectedMonth;
+
+  const isAllTime = repSelectedMonth==='all';
+  const svcs = isAllTime ? allSvcs : allSvcs.filter(s=>(s.activationDate||'').slice(0,7)===repSelectedMonth);
+
+  // --- hero card: the big "seller center" style summary for the selected scope ---
+  const heroExpected = svcs.reduce((a,s)=>a+(Number(s.expectedProfit)||0)-discountTotalFor(s),0);
+  const heroReconciled = svcs.filter(s=>s.actualProfit);
+  const heroActual = heroReconciled.reduce((a,s)=>a+netProfitFor(s),0);
+  const heroDiscount = svcs.reduce((a,s)=>a+discountTotalFor(s),0);
+  const prepaidCount = svcs.filter(s=>s.type==='prepaid').length;
+  const postpaidCount = svcs.filter(s=>s.type==='postpaid').length;
+  // vs previous month, only meaningful when a specific month is selected
+  let deltaHtml = '';
+  if(!isAllTime){
+    const idx = monthsWithData.indexOf(repSelectedMonth);
+    const prevMonth = monthsWithData[idx+1];
+    if(prevMonth){
+      const prevSvcs = allSvcs.filter(s=>(s.activationDate||'').slice(0,7)===prevMonth);
+      const prevExpected = prevSvcs.reduce((a,s)=>a+(Number(s.expectedProfit)||0)-discountTotalFor(s),0);
+      const delta = prevExpected ? Math.round(((heroExpected-prevExpected)/Math.abs(prevExpected))*100) : (heroExpected>0?100:0);
+      deltaHtml = `<span style="color:${delta>=0?'#7CE3B8':'#FF9B9B'};font-weight:700;">${delta>=0?'▲':'▼'} ${Math.abs(delta)}%</span> <span style="opacity:.7;">${LANG==='zh'?'较上月':'vs'} ${fmtMonthLabel(prevMonth)}</span>`;
+    }
+  }
+  document.getElementById('repTxTitle').textContent = isAllTime ? t('rep.allTransactions') : t('rep.transactions');
+  document.getElementById('repTxDesc').textContent = isAllTime
+    ? (LANG==='zh'?'全部时间的每一笔业务':'Every signup across all time')
+    : `${fmtMonthLabel(repSelectedMonth)} · ${svcs.length} ${t('io.rows')}`;
+  document.getElementById('repHero').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+      <div>
+        <div style="font-size:12.5px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.05em;">${isAllTime ? t('rep.allTime') : fmtMonthLabel(repSelectedMonth)}</div>
+        <div style="font-size:38px;font-weight:800;margin-top:6px;">${fmtWon(heroExpected)}</div>
+        <div style="font-size:12.5px;margin-top:6px;opacity:.9;">${isAllTime ? t('rep.totalExpected') : t('stat.monthExpected')} ${deltaHtml}</div>
+      </div>
+      <div style="display:flex;gap:28px;flex-wrap:wrap;">
+        <div><div style="font-size:11px;opacity:.7;text-transform:uppercase;">${t('stat.monthActual')}</div><div style="font-size:20px;font-weight:800;margin-top:4px;">${heroReconciled.length?fmtWon(heroActual):'—'}</div><div style="font-size:11px;opacity:.7;margin-top:2px;">${heroReconciled.length}/${svcs.length} ${t('stat.reconciledCount')}</div></div>
+        <div><div style="font-size:11px;opacity:.7;text-transform:uppercase;">${t('f.discountTotal')}</div><div style="font-size:20px;font-weight:800;margin-top:4px;">${fmtWon(heroDiscount)}</div></div>
+        <div><div style="font-size:11px;opacity:.7;text-transform:uppercase;">${t('rep.totalOrders')}</div><div style="font-size:20px;font-weight:800;margin-top:4px;">${svcs.length}</div><div style="font-size:11px;opacity:.7;margin-top:2px;">${prepaidCount} ${t('opt.prepaidShort')} · ${postpaidCount} ${t('opt.postpaidShort')}</div></div>
+      </div>
+    </div>`;
+
+  const weekAgo = new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
+  const weekProfit = allSvcs.filter(s=>s.activationDate>=weekAgo).reduce((a,s)=>a+netProfitFor(s),0);
+  const pendingReminders = buildReminders().filter(r=>r.uiStatus==='pending').length;
   document.getElementById('reportStats').innerHTML = [
     {label:t('stat.weekProfit'), value:fmtWon(weekProfit)},
-    {label:t('stat.monthExpected'), value:fmtWon(monthExpected)},
-    {label:t('stat.monthActual'), value:reconciled.length?fmtWon(monthActual):t('stat.notReconciled'), sub:reconciled.length?`${reconciled.length}/${monthSvcs.length} ${t('stat.reconciledCount')}`:''},
+    {label:isAllTime?t('rep.avgProfit'):t('stat.monthExpected'), value: isAllTime ? fmtWon(svcs.length?Math.round(heroExpected/svcs.length):0) : fmtWon(heroExpected)},
+    {label:t('stat.monthActual'), value:heroReconciled.length?fmtWon(heroActual):t('stat.notReconciled'), sub:heroReconciled.length?`${heroReconciled.length}/${svcs.length} ${t('stat.reconciledCount')}`:''},
     {label:t('stat.pendingReminders'), value:pendingReminders},
-  ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value" style="${typeof s.value==='string'&&isNaN(parseInt(s.value))&&s.value!==t('stat.notReconciled')?'':''}">${s.value}</div>${s.sub?`<div class="stat-delta">${s.sub}</div>`:''}</div>`).join('');
+  ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div>${s.sub?`<div class="stat-delta">${s.sub}</div>`:''}</div>`).join('');
 
-  // by carrier — net expected profit (falls back to expected if not yet reconciled)
+  // by carrier — net expected profit (falls back to expected if not yet reconciled), scoped
+  // to the selected month
   const carrierMap = {};
   svcs.forEach(s=>{ const k=s.carrier||'—'; carrierMap[k]=carrierMap[k]||{rev:0}; carrierMap[k].rev+=netProfitFor(s); });
   renderMoneyBars('repByCarrier', carrierMap);
@@ -2336,11 +2844,12 @@ function renderReports(){
   const topPlans = Object.entries(planMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
   renderBarChart('repPlans', topPlans);
 
-  // rates
-  const custWithMulti = DB.customers.filter(c=>customerServices(c.id).length>1).length;
-  const repeatRate = DB.customers.length? Math.round(custWithMulti/DB.customers.length*100):0;
-  const renewable = DB.services.filter(s=>['prepaid','postpaid','topup'].includes(s.type));
-  const renewed = DB.services.filter(s=>s.type==='topup').length;
+  // rates — scoped to the selected month
+  const custIdsInScope = new Set(svcs.map(s=>s.customerId));
+  const custWithMulti = [...custIdsInScope].filter(cid=>customerServices(cid).length>1).length;
+  const repeatRate = custIdsInScope.size? Math.round(custWithMulti/custIdsInScope.size*100):0;
+  const renewable = svcs.filter(s=>['prepaid','postpaid','topup'].includes(s.type));
+  const renewed = svcs.filter(s=>s.type==='topup').length;
   const renewalRate = renewable.length? Math.round(renewed/renewable.length*100):0;
   const avgProfit = svcs.length? Math.round(svcs.reduce((a,s)=>a+netProfitFor(s),0)/svcs.length):0;
   document.getElementById('repRates').innerHTML = `
@@ -2351,9 +2860,24 @@ function renderReports(){
       <div><div class="k">${t('rep.avgProfit')}</div><div class="v" style="font-size:20px;">${fmtWon(avgProfit)}</div></div>
     </div>`;
 
-  // monthly reconciliation table: expected vs actual profit, per signup month
+  // transaction detail list for the selected scope
+  const txSorted = [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0));
+  document.getElementById('repTxBody').innerHTML = txSorted.length ? txSorted.slice(0,200).map(s=>{
+    const c = getCustomer(s.customerId);
+    return `<tr class="row-click" data-open-customer="${s.customerId}">
+      <td class="name-cell" title="${c?escapeHtml(c.name):''}"><span class="avatar">${initials(c?c.name:'?')}</span><span class="name-text">${c?escapeHtml(c.name):'—'}</span></td>
+      <td><span class="cell-ellipsis">${t('type.'+s.type)}</span></td>
+      <td><span class="cell-ellipsis">${escapeHtml(s.carrier||'—')}</span></td>
+      <td>${fmtDate(s.activationDate)}</td>
+      <td style="font-weight:700;">${fmtWon(netProfitFor(s))}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5">${emptyState()}</td></tr>`;
+  bindRowOpens();
+
+  // monthly reconciliation table: expected vs actual profit, per signup month — always shows
+  // ALL months regardless of the selector above, as a historical comparison view
   const byMonth = {};
-  svcs.forEach(s=>{ const m=(s.activationDate||'').slice(0,7); if(!m) return; byMonth[m]=byMonth[m]||{orders:0,expected:0,actual:0,actualCount:0,discount:0};
+  allSvcs.forEach(s=>{ const m=(s.activationDate||'').slice(0,7); if(!m) return; byMonth[m]=byMonth[m]||{orders:0,expected:0,actual:0,actualCount:0,discount:0};
     byMonth[m].orders++;
     byMonth[m].expected += Number(s.expectedProfit)||0;
     byMonth[m].discount += discountTotalFor(s);
@@ -2364,13 +2888,22 @@ function renderReports(){
     const d = byMonth[m];
     const variance = d.actualCount ? (d.actual - (d.actualCount===d.orders ? d.expected : 0)) : null;
     const netExpected = d.expected - d.discount;
-    return `<tr><td>${m}</td><td>${d.orders}</td><td>${fmtWon(d.expected)}</td>
+    return `<tr class="row-click" data-month-row="${m}"><td>${fmtMonthLabel(m)}</td><td>${d.orders}</td><td>${fmtWon(d.expected)}</td>
       <td>${d.actualCount ? `${fmtWon(d.actual)} <span class="muted" style="font-size:11px;">(${d.actualCount}/${d.orders})</span>` : `<span class="muted">${t('stat.notReconciled')}</span>`}</td>
       <td>${d.actualCount===d.orders ? `<span style="color:${variance>=0?'var(--green)':'var(--red)'};font-weight:700;">${variance>=0?'+':''}${fmtWon(variance)}</span>` : '—'}</td>
       <td>${fmtWon(d.discount)}</td>
       <td>${fmtWon(netExpected)}</td></tr>`;
   }).join('') : `<tr><td colspan="7">${emptyState()}</td></tr>`;
+  document.querySelectorAll('[data-month-row]').forEach(el=>{
+    el.addEventListener('click', ()=>{ repSelectedMonth = el.getAttribute('data-month-row'); renderReports(); window.scrollTo({top:0,behavior:'smooth'}); });
+  });
 }
+function fmtMonthLabel(m){
+  if(!m || m==='all') return t('rep.allTime');
+  const [y,mo] = m.split('-');
+  return LANG==='zh' ? `${y}年${Number(mo)}月` : new Date(Number(y),Number(mo)-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
+}
+document.getElementById('repMonthSelect').addEventListener('change', e=>{ repSelectedMonth = e.target.value; renderReports(); });
 function renderMoneyBars(elId, map){
   const entries = Object.entries(map).sort((a,b)=>b[1].rev-a[1].rev);
   const max = Math.max(1, ...entries.map(([,v])=>Math.abs(v.rev)));
@@ -2384,6 +2917,9 @@ function renderMoneyBars(elId, map){
 
 /* ---------------- IMPORT / EXPORT ---------------- */
 function renderIO(){
+  document.getElementById('syncServerUrl').value = getServerUrl();
+  document.getElementById('syncEnabledCheckbox').checked = isSyncEnabled();
+  updateSyncStatusUI();
   // data issues
   const issues = [];
   DB.customers.forEach(c=>{
@@ -2454,6 +2990,7 @@ let pendingImportRows = [];
 let pendingWorkbook = null;
 let pendingSheetName = '';
 let pendingHeaderRowIdx = 0; // 0-based index into the raw sheet rows
+let checkedImportSheets = []; // sheet names currently checked in the multi-select checklist
 function handleImportFile(file){
   const reader = new FileReader();
   reader.onload = (e)=>{
@@ -2462,17 +2999,84 @@ function handleImportFile(file){
       const wb = XLSX.read(data, {type:'array'});
       if(!wb.SheetNames.length){ toast(LANG==='zh'?'文件中没有数据':'No data found in file'); return; }
       pendingWorkbook = wb;
-      const sheetSel = document.getElementById('importSheetSelect');
-      sheetSel.innerHTML = wb.SheetNames.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-      // prefer a sheet that actually looks like a customer list over utility/calculator sheets
-      const preferred = wb.SheetNames.find(n=> !/计算器|智能表/.test(n)) || wb.SheetNames[0];
-      sheetSel.value = preferred;
-      loadSheetForImport(preferred, null);
+      // default-check every sheet that actually looks like customer data (skip calculator/
+      // helper tabs) — this is what lets prepaid + postpaid import together in one go without
+      // the user having to hunt for and tick each one manually
+      const dataSheets = wb.SheetNames.filter(n=> !/计算器|智能表/.test(n));
+      checkedImportSheets = dataSheets.length ? [...dataSheets] : [wb.SheetNames[0]];
+      renderImportSheetChecklist();
+      updateImportSheetSelectionUI();
     }catch(err){
       toast(LANG==='zh'?'文件解析失败':'Failed to parse file');
     }
   };
   reader.readAsArrayBuffer(file);
+}
+function renderImportSheetChecklist(){
+  const el = document.getElementById('importSheetChecklist');
+  el.innerHTML = pendingWorkbook.SheetNames.map(name=>{
+    const checked = checkedImportSheets.includes(name);
+    let rowCount = '';
+    try{
+      const aoa = XLSX.utils.sheet_to_json(pendingWorkbook.Sheets[name], {header:1, defval:''});
+      const headerIdx = detectHeaderRowIndex(aoa);
+      rowCount = rowsFromHeaderIndex(aoa, headerIdx).length;
+    }catch(e){}
+    return `<label class="sheet-select-tile ${checked?'checked':''}" data-sheet-name="${escapeHtml(name)}">
+      <input type="checkbox" ${checked?'checked':''}>
+      ${escapeHtml(name)} ${rowCount!==''?`<span class="n">(${rowCount})</span>`:''}
+    </label>`;
+  }).join('');
+  el.querySelectorAll('.sheet-select-tile').forEach(tile=>{
+    tile.addEventListener('click', e=>{
+      e.preventDefault();
+      const name = tile.dataset.sheetName;
+      if(checkedImportSheets.includes(name)) checkedImportSheets = checkedImportSheets.filter(n=>n!==name);
+      else checkedImportSheets.push(name);
+      tile.classList.toggle('checked');
+      tile.querySelector('input').checked = checkedImportSheets.includes(name);
+      updateImportSheetSelectionUI();
+    });
+  });
+}
+/* Single sheet checked → show the full detailed preview grid with manual header-row/type
+   overrides (existing behavior). 2+ sheets checked → each is auto-detected independently
+   (header row + prepaid/postpaid) and summarized in a compact list instead, since a single
+   data grid can't meaningfully preview sheets with completely different columns. */
+function updateImportSheetSelectionUI(){
+  const single = checkedImportSheets.length===1;
+  document.getElementById('importSingleSheetControls').style.display = single ? '' : 'none';
+  document.getElementById('importPreviewTable').parentElement.style.display = single ? '' : 'none';
+  document.getElementById('importMultiSheetSummary').style.display = single ? 'none' : '';
+  if(!checkedImportSheets.length){
+    document.getElementById('importInfo').textContent = LANG==='zh' ? '请至少选择一个表格' : 'Select at least one sheet to import';
+    document.getElementById('importMultiSheetSummary').innerHTML = '';
+    document.getElementById('importModalOverlay').classList.add('show');
+    return;
+  }
+  if(single){
+    loadSheetForImport(checkedImportSheets[0], null);
+    return;
+  }
+  document.getElementById('importInfo').textContent = '';
+  document.getElementById('importNameWarning').style.display = 'none';
+  document.getElementById('importMultiSheetSummary').innerHTML = checkedImportSheets.map(name=>{
+    const aoa = XLSX.utils.sheet_to_json(pendingWorkbook.Sheets[name], {header:1, defval:''});
+    const headerIdx = detectHeaderRowIndex(aoa);
+    const rows = rowsFromHeaderIndex(aoa, headerIdx);
+    const detectedType = guessSubTypeFromSheetName(name);
+    const typeLabel = detectedType==='postpaid' ? (LANG==='zh'?'后付卡':'Postpaid') : (LANG==='zh'?'先付卡':'Prepaid');
+    const sampleHasName = rows.slice(0,10).some(r=> guessField(r, NAME_GUESS_KEYS));
+    return `<div class="service-card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <b>${escapeHtml(name)}</b>
+        <span class="pill ${detectedType==='postpaid'?'pill-blue':'pill-orange'}">${typeLabel}</span>
+      </div>
+      <div class="muted" style="font-size:12px;margin-top:4px;">${rows.length} ${t('io.rows')} · ${LANG==='zh'?'第':'row'} ${headerIdx+1} ${LANG==='zh'?'行为标题行':'used as header row'}</div>
+      ${!sampleHasName ? `<div style="color:#C0392B;font-size:12px;margin-top:4px;">⚠ ${LANG==='zh'?'未找到姓名列，此表格可能不会新增客户':"Couldn't find a name column — this sheet may add nothing"}</div>` : ''}
+    </div>`;
+  }).join('');
+  document.getElementById('importModalOverlay').classList.add('show');
 }
 /* Many real-world spreadsheets have a title/merged-cell row above the actual column headers.
    Auto-detect the real header row as the row (within the first 10) with the most non-empty cells,
@@ -2520,9 +3124,6 @@ function loadSheetForImport(sheetName, manualHeaderIdx){
   pendingImportRows = rows;
   showImportPreview(rows);
 }
-document.getElementById('importSheetSelect').addEventListener('change', e=>{
-  if(pendingWorkbook) loadSheetForImport(e.target.value, null);
-});
 document.getElementById('importHeaderRow').addEventListener('change', e=>{
   const idx = Math.max(0, (Number(e.target.value)||1) - 1);
   if(pendingWorkbook) loadSheetForImport(pendingSheetName, idx);
@@ -2607,30 +3208,13 @@ function updateImportSkipDupesUI(){
 document.querySelectorAll('input[name="importMode"]').forEach(el=> el.addEventListener('change', updateImportSkipDupesUI));
 document.getElementById('importSkipDupes').addEventListener('change', updateImportSkipDupesUI);
 
-function confirmImport(){
-  const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'merge';
-  if(mode === 'replace'){
-    if(DB.customers.length){
-      if(!confirm(LANG==='zh'
-        ? `即将清空现有 ${DB.customers.length} 位客户及其业务记录，并改用此文件的数据。系统会先自动导出一份备份 Excel。是否继续？`
-        : `This will clear the existing ${DB.customers.length} customers and their orders, then load this file instead. A backup Excel will be exported automatically first. Continue?`)){
-        return;
-      }
-      try{
-        exportAll();
-      }catch(err){
-        toast(LANG==='zh' ? '备份导出失败，为安全起见已取消导入，现有数据未被清空' : 'Backup export failed — import cancelled for safety, existing data was not cleared');
-        return;
-      }
-    }
-    DB.customers = [];
-    DB.services = [];
-  }
+/* Imports one sheet's already-parsed rows into DB.customers/DB.services. Extracted from
+   confirmImport so the same logic can run once per sheet when multiple sheets are selected
+   (e.g. prepaid + postpaid together), each resolving its own subtype/header row. */
+function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
   let added = 0, dupes = 0, retagged = 0;
-  const subTypeChoice = document.getElementById('importSubType').value;
-  const resolvedSubType = subTypeChoice==='auto' ? guessSubTypeFromSheetName(pendingSheetName) : subTypeChoice;
-  const skipDupes = mode === 'merge' && document.getElementById('importSkipDupes').checked;
-  pendingImportRows.forEach(row=>{
+  const resolvedSubType = subTypeChoice==='auto' ? guessSubTypeFromSheetName(sheetName) : subTypeChoice;
+  rows.forEach(row=>{
     const name = guessField(row, NAME_GUESS_KEYS);
     if(!name) return;
     const phone = guessField(row,['phone','contact','联系电话','电话','phonenumber','开通号码','号码']);
@@ -2705,9 +3289,54 @@ function confirmImport(){
     }
     added++;
   });
+  return {added, dupes, retagged};
+}
+function confirmImport(){
+  const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'merge';
+  if(mode === 'replace'){
+    if(DB.customers.length){
+      if(!confirm(LANG==='zh'
+        ? `即将清空现有 ${DB.customers.length} 位客户及其业务记录，并改用此文件的数据。系统会先自动导出一份备份 Excel。是否继续？`
+        : `This will clear the existing ${DB.customers.length} customers and their orders, then load this file instead. A backup Excel will be exported automatically first. Continue?`)){
+        return;
+      }
+      try{
+        exportAll();
+      }catch(err){
+        toast(LANG==='zh' ? '备份导出失败，为安全起见已取消导入，现有数据未被清空' : 'Backup export failed — import cancelled for safety, existing data was not cleared');
+        return;
+      }
+    }
+    DB.customers = [];
+    DB.services = [];
+  }
+  const skipDupes = mode === 'merge' && document.getElementById('importSkipDupes').checked;
+  let added = 0, dupes = 0, retagged = 0;
+  const perSheetResults = [];
+  if(checkedImportSheets.length===1){
+    // single-sheet mode respects the manual header-row/type overrides shown in the form
+    const subTypeChoice = document.getElementById('importSubType').value;
+    const r = importRowsIntoDB(pendingImportRows, pendingSheetName, subTypeChoice, skipDupes);
+    added+=r.added; dupes+=r.dupes; retagged+=r.retagged;
+    perSheetResults.push({name:pendingSheetName, ...r});
+  } else {
+    // multi-sheet mode: each sheet is parsed and auto-detected fresh and independently —
+    // this is what lets prepaid + postpaid (or any combination) import together in one go
+    checkedImportSheets.forEach(sheetName=>{
+      const aoa = XLSX.utils.sheet_to_json(pendingWorkbook.Sheets[sheetName], {header:1, defval:''});
+      const headerIdx = detectHeaderRowIndex(aoa);
+      const rows = rowsFromHeaderIndex(aoa, headerIdx);
+      const r = importRowsIntoDB(rows, sheetName, 'auto', skipDupes);
+      added+=r.added; dupes+=r.dupes; retagged+=r.retagged;
+      perSheetResults.push({name:sheetName, ...r});
+    });
+  }
   saveDB(DB);
   closeAllModals();
-  document.getElementById('importSummary').innerHTML = `<div class="pill pill-green" style="margin-top:12px;">${added} ${LANG==='zh'?'条已导入':'imported'}</div> <div class="pill pill-gray" style="margin-top:12px;">${dupes} ${LANG==='zh'?'条重复已跳过':'duplicates skipped'}</div>` + (retagged ? ` <div class="pill pill-blue" style="margin-top:12px;">${retagged} ${LANG==='zh'?'条已更正开通方式（先付/后付）':'had their prepaid/postpaid tag corrected'}</div>` : '');
+  const perSheetHtml = perSheetResults.length>1 ? perSheetResults.map(r=>
+    `<div class="section-desc" style="margin-top:4px;">${escapeHtml(r.name)}: ${r.added} ${LANG==='zh'?'已导入':'imported'}, ${r.dupes} ${LANG==='zh'?'重复':'dupes'}${r.retagged?`, ${r.retagged} ${LANG==='zh'?'已更正':'corrected'}`:''}</div>`
+  ).join('') : '';
+  document.getElementById('importSummary').innerHTML = `<div class="pill pill-green" style="margin-top:12px;">${added} ${LANG==='zh'?'条已导入':'imported'}</div> <div class="pill pill-gray" style="margin-top:12px;">${dupes} ${LANG==='zh'?'条重复已跳过':'duplicates skipped'}</div>` + (retagged ? ` <div class="pill pill-blue" style="margin-top:12px;">${retagged} ${LANG==='zh'?'条已更正开通方式（先付/后付）':'had their prepaid/postpaid tag corrected'}</div>` : '') + perSheetHtml;
   toast(t('toast.imported'));
   renderPage(currentPage);
   renderNav();
@@ -3053,8 +3682,9 @@ document.getElementById('menuBtn').addEventListener('click', ()=> document.getEl
 
 document.getElementById('custSearch').addEventListener('input', renderCustomers);
 document.getElementById('custNationalityFilter').addEventListener('change', renderCustomers);
-document.getElementById('custRatingFilter').addEventListener('change', renderCustomers);
+document.getElementById('custSortBy').addEventListener('change', renderCustomers);
 document.getElementById('custDurationFilter').addEventListener('change', renderCustomers);
+document.getElementById('custRecentFilter').addEventListener('change', renderCustomers);
 document.getElementById('orderTypeFilter').addEventListener('change', renderOrders);
 document.getElementById('orderStatusFilter').addEventListener('change', renderOrders);
 document.getElementById('orderShowHistory').addEventListener('change', renderOrders);
@@ -3063,6 +3693,84 @@ document.getElementById('exportCustomersBtn').addEventListener('click', exportCu
 document.getElementById('exportOrdersBtn').addEventListener('click', exportOrdersXlsx);
 document.getElementById('exportRemindersBtn').addEventListener('click', exportRemindersXlsx);
 document.getElementById('exportAllBtn').addEventListener('click', exportAll);
+document.getElementById('syncServerUrl').addEventListener('change', e=> setServerUrl(e.target.value.trim()));
+document.getElementById('syncEnabledCheckbox').addEventListener('change', e=>{
+  const url = document.getElementById('syncServerUrl').value.trim();
+  if(e.target.checked && !url){
+    toast(LANG==='zh'?'请先输入服务器地址':'Please enter a server address first');
+    e.target.checked = false;
+    return;
+  }
+  setServerUrl(url);
+  setSyncEnabled(e.target.checked);
+  updateSyncStatusUI();
+  if(e.target.checked) toast(LANG==='zh'?'已启用同步':'Sync enabled');
+});
+document.getElementById('btnTestSync').addEventListener('click', async ()=>{
+  const url = document.getElementById('syncServerUrl').value.trim();
+  const btn = document.getElementById('btnTestSync');
+  btn.disabled = true;
+  const result = await testServerConnection(url);
+  btn.disabled = false;
+  toast(result.ok ? (LANG==='zh'?'连接成功':'Connected successfully') : (LANG==='zh'?'连接失败：':'Connection failed: ')+(result.error||''));
+});
+document.getElementById('btnPushSync').addEventListener('click', async ()=>{
+  const url = document.getElementById('syncServerUrl').value.trim();
+  if(!url){ toast(LANG==='zh'?'请先输入服务器地址':'Please enter a server address first'); return; }
+  setServerUrl(url);
+  const btn = document.getElementById('btnPushSync');
+  btn.disabled = true;
+  const result = await pushToServer();
+  btn.disabled = false;
+  toast(result.ok
+    ? (LANG==='zh'?`已推送 ${DB.customers.length} 位客户、${DB.services.length} 条业务记录`:`Pushed ${DB.customers.length} customers, ${DB.services.length} services`)
+    : (LANG==='zh'?'推送失败：':'Push failed: ')+(result.error||''));
+});
+document.getElementById('btnPullSync').addEventListener('click', async ()=>{
+  const url = document.getElementById('syncServerUrl').value.trim();
+  if(!url){ toast(LANG==='zh'?'请先输入服务器地址':'Please enter a server address first'); return; }
+  setServerUrl(url);
+  if(!confirm(LANG==='zh'?'这会用服务器上的数据覆盖本机当前显示的数据（本机的本地存储也会更新）。是否继续？':'This will replace what you see on this computer with the server\'s data (this computer\'s local copy will be updated too). Continue?')) return;
+  const btn = document.getElementById('btnPullSync');
+  btn.disabled = true;
+  const result = await pullFromServer();
+  btn.disabled = false;
+  if(result.ok){
+    toast(LANG==='zh'?'已从服务器拉取最新数据':'Pulled the latest data from the server');
+    renderPage(currentPage);
+    renderNav();
+  } else {
+    toast((LANG==='zh'?'拉取失败：':'Pull failed: ')+(result.error||''));
+  }
+});
+document.getElementById('btnFormatData').addEventListener('click', ()=>{
+  if(!DB.customers.length && !DB.services.length){
+    toast(LANG==='zh' ? '目前没有数据可清空' : 'There\'s no data to clear right now');
+    return;
+  }
+  const wipeMsg = LANG==='zh'
+    ? `即将清空全部 ${DB.customers.length} 位客户及 ${DB.services.length} 条业务记录，此操作无法撤销。是否继续？`
+    : `This will permanently clear all ${DB.customers.length} customers and ${DB.services.length} service records. This cannot be undone. Continue?`;
+  if(!confirm(wipeMsg)) return;
+  const backupMsg = LANG==='zh'
+    ? '是否先导出一份当前数据备份？（建议）点击「确定」导出备份后再清空，点击「取消」直接清空不备份。'
+    : 'Export a backup of your current data first? (Recommended) Click OK to export a backup before clearing, or Cancel to clear without one.';
+  if(confirm(backupMsg)){
+    try{
+      exportAll();
+    }catch(err){
+      toast(LANG==='zh' ? '备份导出失败，为安全起见已取消清空，数据未被清空' : 'Backup export failed — clearing was cancelled for safety, your data was not touched');
+      return;
+    }
+  }
+  DB.customers = [];
+  DB.services = [];
+  DB.reminderState = {};
+  saveDB(DB);
+  toast(LANG==='zh' ? '数据已清空，可以导入新的文件了' : 'Data cleared — ready to import a new file');
+  renderPage(currentPage);
+  renderNav();
+});
 document.getElementById('btnExportReport').addEventListener('click', exportAll);
 
 const dz = document.getElementById('dropzone');
@@ -3085,11 +3793,21 @@ document.querySelectorAll('.lang-btn').forEach(b=>{
 function boot(){
   applyStaticI18n();
   renderNav();
+  renderStaffProfileFoot();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+currentPage).classList.add('active');
   document.getElementById('pageTitle').textContent = t('nav.'+currentPage);
   document.getElementById('pageSub').textContent = t('sub.'+currentPage);
   renderPage(currentPage);
+  // The app has already rendered instantly from local data above — if server sync is on,
+  // quietly pull the latest shared data in the background and re-render once it arrives.
+  // This never blocks or delays the initial page load.
+  if(isSyncEnabled()){
+    pullFromServer().then(result=>{
+      if(result.ok){ renderPage(currentPage); renderNav(); }
+      updateSyncStatusUI(result.ok ? null : result.error);
+    });
+  }
 }
 document.getElementById('navMenu').addEventListener('click', e=>{
   const item = e.target.closest('[data-nav]');
