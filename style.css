@@ -372,6 +372,11 @@ select.select-input:focus{border-color:var(--blue);outline:none;}
 .lock-card .form-field{text-align:left;}
 .lock-error{margin-top:12px;padding:8px 12px;background:#FEF2F2;color:#C0392B;border-radius:8px;font-size:12px;text-align:left;}
 
+/* persistent banner shown whenever a server sync attempt fails — visible on every page
+   until the connection recovers, so staff know changes aren't reaching other computers
+   right now, without having to go check the Import/Export settings themselves */
+.offline-banner{background:#FFF7ED;color:#9A5B0F;border-bottom:1px solid #FDBA74;padding:9px 24px;font-size:12.5px;font-weight:700;}
+
 @media(max-width:900px){
   .sidebar{position:fixed;left:-260px;transition:left .2s var(--ease);z-index:60;}
   .sidebar.open{left:0;}
