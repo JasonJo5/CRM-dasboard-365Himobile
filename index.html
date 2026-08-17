@@ -74,6 +74,10 @@
       </div>
     </div>
 
+    <div class="offline-banner" id="offlineBanner" style="display:none;">
+      ⚠ <span id="offlineBannerText"></span>
+    </div>
+
     <div class="content">
       <!-- DASHBOARD -->
       <section class="page" id="page-dashboard">
@@ -208,7 +212,7 @@
             <table>
               <thead><tr>
                 <th data-i18n="col.customer">客户</th><th data-i18n="col.phoneNumber">电话号码</th><th data-i18n="col.nationality">国籍</th>
-                <th data-i18n="col.id">证件</th><th data-i18n="col.subType">开通方式</th><th data-i18n="col.recentActivity">最近业务</th>
+                <th data-i18n="col.id">证件</th><th data-i18n="col.subType">开通方式</th><th data-i18n="col.contractStatus">合约状态</th><th data-i18n="col.recentActivity">最近业务</th>
                 <th data-i18n="col.dateAdded">添加日期</th>
                 <th data-i18n="col.activeFor" id="colActiveFor" style="display:none;">开通时长</th>
                 <th data-i18n="col.dupeReason" id="colDupeReason" style="display:none;">重复原因</th>
@@ -596,7 +600,7 @@
         <div class="form-field full"><label data-i18n="f.occupation">职业</label><div class="tile-radio-group" id="f_occupation_group" data-field="occupation"></div></div>
         <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="f_years" type="number" min="0" step="0.5"></div>
         <div class="form-field"><label data-i18n="f.referral">客户来源</label><select id="f_referral"></select></div>
-        <div class="form-field"><label data-i18n="f.carrierType">通信网 Carrier</label><select id="f_carrierType"><option value="SKT">SKT</option><option value="KT">KT</option></select></div>
+        <div class="form-field"><label data-i18n="f.carrierType">通信网 Carrier</label><select id="f_carrierType"><option value="SKT">SKT</option><option value="KT">KT</option><option value="LG">LG</option></select></div>
         <div class="form-field"><label data-i18n="f.planType">业务类型 Plan type</label><select id="f_planType"></select></div>
         <div class="form-field"><label data-i18n="f.branchOffice">接收处管理编码 Branch office</label><select id="f_branchOffice"><option value="KY0000489">KY0000489</option><option value="시엔에스">시엔에스</option></select></div>
         <div class="form-field"><label data-i18n="f.handlerName">办理人 Handled by</label><select id="f_handlerName"><option value="Jason">Jason</option><option value="Jihan">Jihan</option><option value="Himobile365">Himobile365</option></select></div>
