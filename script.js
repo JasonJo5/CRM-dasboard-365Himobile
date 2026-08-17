@@ -34,7 +34,7 @@ const I18N = {
     'dash.quickSearch':'🔍 快速搜索客户姓名、号码或证件号...','dash.noMatches':'没有找到匹配的客户','dash.dupeBanner':'发现 {groups} 组重复客户（共 {n} 位），建议检查并合并','dash.dupeBannerBtn':'立即查看','dash.renewals.title':'合约即将到期（30天内）','dash.renewals.desc':'后付卡合约即将到期，建议提前联系续约','dash.renewals.emptyTitle':'近期没有合约到期 👍','dash.renewals.emptyDesc':'未来30天内没有后付卡合约到期','dash.winback.title':'流失客户 / 待挽回','dash.winback.desc':'已取消订阅、尚未重新开通的客户','dash.winback.emptyTitle':'暂无流失客户','dash.winback.emptyDesc':'所有曾经订阅过的客户目前都有有效订阅','dash.revenueTrend.title':'营收趋势（近6个月）','dash.cancelReasons.title':'取消原因分布','dash.noCancellations':'近6个月内没有取消记录 👍',
     'stat.totalCustomers':'客户总数','stat.newThisMonth':'本月新开通','stat.followup7':'7天内需跟进','stat.revenueMonth':'本月实收','stat.fromRecords':'来自现有先付 / 后付记录','stat.vsLastMonth':'较上月','stat.includesExpiry':'包含到期与首月入账','stat.expiringSoon':'即将到期客户','stat.infoChangeNeeded':'需信息变更客户',
     'stat.activePrepaid':'当前先付卡客户','stat.activePostpaid':'当前后付卡客户','stat.activeBook':'目前有效订阅','stat.outstanding':'未收总额','stat.outstandingSub':'所有有效及近期订单','stat.renewalsSoon':'即将到期合约','stat.renewalsSub':'30天内到期（后付卡）','stat.newActivity':'较上月新增',
-    'col.customer':'客户','col.number':'号码','col.service':'业务','col.carrier':'通信社','col.activated':'开通日期','col.status':'状态','col.contact':'联系方式','col.phoneNumber':'电话号码','col.nationality':'国籍','col.id':'证件','col.subType':'开通方式','col.currentNumber':'当前号码','col.recentActivity':'最近业务','col.rating':'评分','col.serviceType':'业务类型','col.plan':'套餐','col.amount':'金额','col.outstanding':'欠款','col.month':'月份','col.orders':'订单数','col.revenue':'营收','col.cost':'成本','col.profit':'利润','col.outstandingTotal':'未收合计','col.dupeReason':'重复原因',
+    'col.customer':'客户','col.number':'号码','col.service':'业务','col.carrier':'通信社','col.activated':'开通日期','col.status':'状态','col.contact':'联系方式','col.phoneNumber':'电话号码','col.nationality':'国籍','col.id':'证件','col.subType':'开通方式','col.currentNumber':'当前号码','col.recentActivity':'最近业务','col.rating':'评分','col.serviceType':'业务类型','col.plan':'套餐','col.amount':'金额','col.outstanding':'欠款','col.month':'月份','col.orders':'订单数','col.revenue':'营收','col.cost':'成本','col.profit':'利润','col.outstandingTotal':'未收合计','col.dupeReason':'重复原因','col.contractStatus':'合约状态',
     'dupe.reasonName':'姓名相同','dupe.reasonPhone':'电话相同',
     'col.expectedProfit':'预期利润','col.actualProfit':'实际利润（已核对）','col.variance':'差异','col.discountGiven':'折扣总额','col.netExpected':'净预期利润',
     'custtab.all':'全部客户','custtab.prepaid':'先付卡客户','custtab.postpaid':'后付卡客户','custtab.dupes':'重复客户',
@@ -57,7 +57,7 @@ const I18N = {
     'lang.zh':'中文','lang.en':'英文','lang.ko':'韩文',
     'idtype.ARC':'ARC','idtype.Passport':'护照',
     'type.prepaid':'先付卡','type.postpaid':'后付卡','type.porting':'号码移动','type.transfer':'过户 / 名义变更','type.topup':'充值 / 续费','type.cancel':'解约',
-    'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
+    'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.over_contract':'已超合约期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
     'pay.cash':'现金','pay.transfer':'银行转账','pay.card':'刷卡','pay.kakaopay':'KakaoPay','pay.other':'其他',
     'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更',
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
@@ -84,7 +84,7 @@ const I18N = {
     'ai.elig.noDob':'缺少出生日期，无法判断资格','ai.elig.ageOk':'已年满 {age} 岁，符合后付卡开通资格','ai.elig.turningAge':'{days} 天后年满19岁，即将符合资格','ai.elig.tooYoung':'目前 {age} 岁，未满19岁','ai.elig.alreadyPostpaid':'目前已是后付卡客户',
     'ai.elig.contractCompleted':'合约已到期 {days} 天，尚未处理','ai.elig.contractApproaching':'合约将在 {days} 天后到期','ai.elig.contractMid':'合约进行中，{days} 天后到期',
     'ai.elig.needsArc':'需持外国人登录证（ARC）才符合资格','ai.elig.missingIdNumber':'缺少证件号码，需核实','ai.elig.missingIdExpiry':'缺少证件有效期，需核实','ai.elig.idExpired':'证件已过期，需更新','ai.elig.idComplete':'证件信息完整有效',
-    'ai.churn.noActive':'已 {days} 天没有有效订阅','ai.churn.expired':'订阅已到期尚未续约','ai.churn.expiringSoon':'订阅即将到期','ai.churn.outstanding':'账单有未收余额','ai.churn.stable':'订阅状态稳定',
+    'ai.churn.noActive':'已 {days} 天没有有效订阅','ai.churn.expired':'订阅已到期尚未续约','ai.churn.overContract':'已超过合约期，尚未续约或更换套餐','ai.churn.expiringSoon':'订阅即将到期','ai.churn.outstanding':'账单有未收余额','ai.churn.stable':'订阅状态稳定',
     'ai.reason.postpaidReady':'先付卡客户，已符合转后付卡资格','ai.reason.noAction':'暂无需要处理的事项',
     'ai.action.postpaidConversion':'联系客户，推荐转为后付卡','ai.action.waitEligibility':'暂缓联系，待资格达成后再跟进','ai.action.planReview':'合约已到期，建议协助办理续约或更换套餐','ai.action.renewalFollowup':'合约即将到期，提前联系提醒续约','ai.action.idVerification':'联系客户补充或更新证件信息','ai.action.winback':'客户已流失，建议主动联系挽回','ai.action.none':'暂无建议操作',
     'ai.disclaimer':'💡 优先级评分与商机建议由规则引擎与透明的加权评分计算得出，并非黑箱机器学习模型 — 每一项数字均可追溯到真实客户数据。',
@@ -118,7 +118,7 @@ const I18N = {
     'dash.quickSearch':'🔍 Quick search by name, phone, or ID...','dash.noMatches':'No matching customers found','dash.dupeBanner':'Found {groups} duplicate groups ({n} customers total) — worth reviewing and merging','dash.dupeBannerBtn':'Review now','dash.renewals.title':'Contracts ending soon (30 days)','dash.renewals.desc':'Postpaid contracts nearing renewal — reach out ahead of time','dash.renewals.emptyTitle':'No contracts ending soon 👍','dash.renewals.emptyDesc':'No postpaid contracts due for renewal in the next 30 days','dash.winback.title':'Cancelled / win-back opportunities','dash.winback.desc':'Customers who cancelled and haven\'t restarted','dash.winback.emptyTitle':'No lapsed customers','dash.winback.emptyDesc':'Everyone who ever subscribed currently has an active plan','dash.revenueTrend.title':'Revenue trend (last 6 months)','dash.cancelReasons.title':'Cancellation reasons','dash.noCancellations':'No cancellations in the last 6 months 👍',
     'stat.totalCustomers':'Total customers','stat.newThisMonth':'New this month','stat.followup7':'Due within 7 days','stat.revenueMonth':'Revenue this month','stat.fromRecords':'From existing prepaid / postpaid records','stat.vsLastMonth':'vs last month','stat.includesExpiry':'Includes expiries & first-month payments','stat.expiringSoon':'Expiring soon','stat.infoChangeNeeded':'Need info change',
     'stat.activePrepaid':'Active prepaid','stat.activePostpaid':'Active postpaid','stat.activeBook':'Currently active','stat.outstanding':'Outstanding total','stat.outstandingSub':'Across active & recent orders','stat.renewalsSoon':'Contracts renewing soon','stat.renewalsSub':'Postpaid, due within 30 days','stat.newActivity':'New vs last month',
-    'col.customer':'Customer','col.number':'Number','col.service':'Service','col.carrier':'Carrier','col.activated':'Activated','col.status':'Status','col.contact':'Contact','col.phoneNumber':'Phone number','col.nationality':'Nationality','col.id':'ID','col.subType':'Subscription','col.currentNumber':'Current number','col.recentActivity':'Recent activity','col.rating':'Rating','col.serviceType':'Service type','col.plan':'Plan','col.amount':'Amount','col.outstanding':'Outstanding','col.month':'Month','col.orders':'Orders','col.revenue':'Revenue','col.cost':'Cost','col.profit':'Profit','col.outstandingTotal':'Total outstanding','col.dupeReason':'Match reason',
+    'col.customer':'Customer','col.number':'Number','col.service':'Service','col.carrier':'Carrier','col.activated':'Activated','col.status':'Status','col.contact':'Contact','col.phoneNumber':'Phone number','col.nationality':'Nationality','col.id':'ID','col.subType':'Subscription','col.currentNumber':'Current number','col.recentActivity':'Recent activity','col.rating':'Rating','col.serviceType':'Service type','col.plan':'Plan','col.amount':'Amount','col.outstanding':'Outstanding','col.month':'Month','col.orders':'Orders','col.revenue':'Revenue','col.cost':'Cost','col.profit':'Profit','col.outstandingTotal':'Total outstanding','col.dupeReason':'Match reason','col.contractStatus':'Contract status',
     'dupe.reasonName':'Same name','dupe.reasonPhone':'Same phone',
     'col.expectedProfit':'Expected profit','col.actualProfit':'Actual profit (reconciled)','col.variance':'Variance','col.discountGiven':'Discount given','col.netExpected':'Net expected profit',
     'custtab.all':'All customers','custtab.prepaid':'Prepaid customers','custtab.postpaid':'Postpaid customers','custtab.dupes':'Duplicate customers',
@@ -141,7 +141,7 @@ const I18N = {
     'lang.zh':'Chinese','lang.en':'English','lang.ko':'Korean',
     'idtype.ARC':'ARC','idtype.Passport':'Passport',
     'type.prepaid':'Prepaid SIM','type.postpaid':'Postpaid SIM','type.porting':'Number porting','type.transfer':'Ownership transfer','type.topup':'Top-up / renewal','type.cancel':'Cancellation',
-    'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
+    'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.over_contract':'Over contract','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
     'pay.cash':'Cash','pay.transfer':'Bank transfer','pay.card':'Card','pay.kakaopay':'KakaoPay','pay.other':'Other',
     'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change',
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
@@ -168,7 +168,7 @@ const I18N = {
     'ai.elig.noDob':'Missing date of birth — can\'t determine eligibility','ai.elig.ageOk':'Already {age} years old — meets postpaid eligibility','ai.elig.turningAge':'Turns 19 in {days} days — approaching eligibility','ai.elig.tooYoung':'Currently {age} years old — under 19','ai.elig.alreadyPostpaid':'Already a postpaid customer',
     'ai.elig.contractCompleted':'Contract ended {days} days ago, not yet actioned','ai.elig.contractApproaching':'Contract ends in {days} days','ai.elig.contractMid':'Contract active, {days} days remaining',
     'ai.elig.needsArc':'Requires an Alien Registration Card (ARC) to be eligible','ai.elig.missingIdNumber':'Missing ID number — needs verification','ai.elig.missingIdExpiry':'Missing ID expiry date — needs verification','ai.elig.idExpired':'ID has expired — needs updating','ai.elig.idComplete':'ID information complete and valid',
-    'ai.churn.noActive':'No active subscription for {days} days','ai.churn.expired':'Subscription expired and not renewed','ai.churn.expiringSoon':'Subscription expiring soon','ai.churn.outstanding':'Unpaid balance on this account','ai.churn.stable':'Subscription is stable',
+    'ai.churn.noActive':'No active subscription for {days} days','ai.churn.expired':'Subscription expired and not renewed','ai.churn.overContract':'Past the contract term — hasn\'t renewed or changed plans yet','ai.churn.expiringSoon':'Subscription expiring soon','ai.churn.outstanding':'Unpaid balance on this account','ai.churn.stable':'Subscription is stable',
     'ai.reason.postpaidReady':'Prepaid customer who now meets postpaid eligibility','ai.reason.noAction':'No action needed right now',
     'ai.action.postpaidConversion':'Contact customer about postpaid conversion','ai.action.waitEligibility':'Hold off — follow up once eligible','ai.action.planReview':'Contract completed — help arrange renewal or plan change','ai.action.renewalFollowup':'Contract ending soon — send a renewal reminder','ai.action.idVerification':'Contact customer to update or complete ID info','ai.action.winback':'Customer has lapsed — worth a win-back outreach','ai.action.none':'No recommended action',
     'ai.disclaimer':'💡 Priority scores and opportunities come from a rule engine and a transparent weighted formula — not a black-box ML model. Every number traces back to real customer data.',
@@ -699,6 +699,21 @@ function scheduleServerSync(){
   clearTimeout(syncTimer);
   syncTimer = setTimeout(pushToServer, 1000);
 }
+// Persistent "not connected" banner — only shown when sync is actually turned ON but a
+// recent attempt failed (an unexpected disconnection), never for someone who deliberately
+// chose to work locally (Skip / sync off), since that's an intentional, not broken, state.
+function setOfflineBanner(show, errorMsg){
+  const el = document.getElementById('offlineBanner');
+  if(!el) return;
+  if(show && isSyncEnabled()){
+    document.getElementById('offlineBannerText').textContent = LANG==='zh'
+      ? `未连接到服务器，更改仅保存在本机，其他电脑暂时看不到${errorMsg?'（'+errorMsg+'）':''}`
+      : `Not connected to the server — changes are only saving on this computer, other computers won't see them yet${errorMsg?' ('+errorMsg+')':''}`;
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
+}
 async function pushToServer(){
   const base = getServerUrl();
   if(!base) return {ok:false, error:'no server configured'};
@@ -712,12 +727,14 @@ async function pushToServer(){
     if(!res.ok) throw new Error('HTTP '+res.status);
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     updateSyncStatusUI();
+    setOfflineBanner(false);
     return {ok:true};
   }catch(err){
     // silent by design: a store computer that's briefly offline, or the server not running
     // yet, should never interrupt someone mid-task — local data keeps working regardless
     console.warn('Server sync failed, continuing with local data only:', err.message);
     updateSyncStatusUI(err.message);
+    setOfflineBanner(true, err.message);
     return {ok:false, error: err.message};
   }
 }
@@ -741,9 +758,11 @@ async function pullFromServer(){
     repairActiveSubscriptions(DB);
     localStorage.setItem(DB_KEY, JSON.stringify(DB)); // cache locally, skip re-triggering a push
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
+    setOfflineBanner(false);
     return {ok:true};
   }catch(err){
     console.warn('Could not reach server on load, using local data:', err.message);
+    setOfflineBanner(true, err.message);
     return {ok:false, error: err.message};
   }
 }
@@ -785,7 +804,7 @@ function computedStatus(svc){
   if(svc.status==='payment_pending' || svc.status==='docs_pending') return svc.status;
   if(!svc.expiryDate) return svc.status||'active';
   const d = daysBetween(todayISO(), svc.expiryDate);
-  if(d < 0) return 'expired';
+  if(d < 0) return svc.type==='postpaid' ? 'over_contract' : 'expired';
   if(d <= 7) return 'expiring_soon';
   return 'active';
 }
@@ -909,7 +928,7 @@ function churnRisk(c){
     return {level:'high', score:85, reason:t('ai.churn.noActive').replace('{days}',daysSince)};
   }
   const st = computedStatus(active);
-  if(st==='expired') return {level:'high', score:80, reason:t('ai.churn.expired')};
+  if(st==='expired' || st==='over_contract') return {level:'high', score:80, reason: st==='over_contract' ? t('ai.churn.overContract') : t('ai.churn.expired')};
   if(st==='expiring_soon') return {level:'medium', score:50, reason:t('ai.churn.expiringSoon')};
   const outstanding = Math.max(0,(active.sellingPrice||0)-(active.received||0));
   if(outstanding>0) return {level:'medium', score:40, reason:t('ai.churn.outstanding')};
@@ -1052,7 +1071,7 @@ function computeBISummary(){
   };
 }
 function statusPillClass(st){
-  return {active:'pill-green',payment_pending:'pill-orange',docs_pending:'pill-orange',expiring_soon:'pill-orange',expired:'pill-red',cancelled:'pill-gray',completed:'pill-green',waiting:'pill-orange',superseded:'pill-gray'}[st]||'pill-gray';
+  return {active:'pill-green',payment_pending:'pill-orange',docs_pending:'pill-orange',expiring_soon:'pill-orange',expired:'pill-red',over_contract:'pill-orange',cancelled:'pill-gray',completed:'pill-green',waiting:'pill-orange',superseded:'pill-gray'}[st]||'pill-gray';
 }
 
 /* reminders are derived from services + customers, with a persisted state map (id -> status) */
@@ -1759,12 +1778,19 @@ function renderCustomers(){
     const subBadge = active
       ? `<span class="pill ${active.type==='postpaid'?'pill-blue':'pill-orange'}">${active.type==='postpaid'?t('opt.postpaidShort'):t('opt.prepaidShort')}</span>`
       : `<span class="pill pill-gray">${t('detail.noActiveSubscription')}</span>`;
+    let statusCell = '<span class="muted">—</span>';
+    if(active && active.expiryDate){
+      const remainingDays = daysBetween(todayISO(), active.expiryDate);
+      const color = remainingDays<0 ? 'var(--red)' : (remainingDays<=7 ? 'var(--orange)' : 'var(--green)');
+      statusCell = `<span style="color:${color};font-weight:700;font-size:12px;">${contractStatusTextFor(active, true)}</span>`;
+    }
     return `<tr class="row-click ${groupBand}" data-open-customer="${c.id}">
       <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
       <td>${escapeHtml((active&&active.number)||c.phone||'—')}</td>
       <td><span class="cell-ellipsis">${escapeHtml(c.nationality)}</span></td>
       <td>${t('idtype.'+c.idType)}</td>
       <td>${subBadge}</td>
+      <td>${statusCell}</td>
       <td>${recent? t('type.'+recent.type) : '—'}</td>
       <td>${fmtDate(customerJoinDate(c))}</td>
       ${showDuration ? `<td>${durTxt}</td>` : ''}
@@ -1772,7 +1798,7 @@ function renderCustomers(){
       <td>${'★'.repeat(c.rating||0)}<span style="color:#DADEEA">${'★'.repeat(5-(c.rating||0))}</span></td>
       <td style="white-space:nowrap;">${isNewestInGroup ? `<button class="btn btn-sm btn-primary" data-merge-group="${groupIndexById[c.id]}" title="${LANG==='zh'?'将本组其他重复客户合并到这条最新记录中':'Merge the other duplicates in this group into this newest record'}">🔀 ${t('btn.merge')}</button> ` : ''}<button class="btn btn-sm btn-ghost" data-open-customer="${c.id}">${t('btn.view')}</button></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="9">${isDupeView ? emptyStateDupes() : emptyState()}</td></tr>`;
+  }).join('') : `<tr><td colspan="10">${isDupeView ? emptyStateDupes() : emptyState()}</td></tr>`;
   bindRowOpens();
   document.querySelectorAll('[data-merge-group]').forEach(btn=>{
     btn.addEventListener('click', e=>{
@@ -2330,6 +2356,30 @@ function usedDaysFor(s){
   if(!s || !s.activationDate || !isIsoDate(s.activationDate)) return null;
   return Math.max(0, daysBetween(s.activationDate, todayISO()));
 }
+/* Plain-language framing of where a subscription stands relative to its contract — shared
+   by the profile's Active Subscription card and the Customers list table, so the wording is
+   always identical wherever it appears. Returns '' if there's no expiry date to judge by. */
+function contractStatusTextFor(s, short){
+  if(!s || !s.expiryDate) return '';
+  const remaining = daysBetween(todayISO(), s.expiryDate);
+  const isPostpaid = s.type==='postpaid';
+  if(short){
+    // compact form for a table column — same three states, fewer words
+    if(remaining < 0) return isPostpaid
+      ? (LANG==='zh' ? `已超合约 ${Math.abs(remaining)} 天` : `Over contract ${Math.abs(remaining)}d`)
+      : (LANG==='zh' ? `已到期 ${Math.abs(remaining)} 天` : `Expired ${Math.abs(remaining)}d ago`);
+    if(remaining <= 7) return LANG==='zh' ? `剩 ${remaining} 天（即将到期）` : `${remaining}d left (soon)`;
+    return LANG==='zh' ? `合约内，剩 ${remaining} 天` : `${remaining}d left, in contract`;
+  }
+  // postpaid service doesn't just stop when the contract term ends — the customer keeps
+  // their current plan or switches to a new one, so "expired" would be misleading; only
+  // prepaid genuinely stops working once its paid-up period is over
+  if(remaining < 0) return isPostpaid
+    ? (LANG==='zh' ? `已超过合约期 ${Math.abs(remaining)} 天 — 可保留原套餐或更换新套餐` : `${Math.abs(remaining)} days over the contract term — can keep the current plan or switch to a new one`)
+    : (LANG==='zh' ? `已超过合约期 ${Math.abs(remaining)} 天（已到期）` : `${Math.abs(remaining)} days past contract end — expired`);
+  if(remaining <= 7) return LANG==='zh' ? `仍在合约内，剩余 ${remaining} 天（即将到期）` : `${remaining} days remaining, in contract — expiring soon`;
+  return LANG==='zh' ? `仍在合约内，剩余 ${remaining} 天` : `${remaining} days remaining, in contract`;
+}
 function serviceCardHtml(s, customer){
   const st = computedStatus(s);
   let progressPct = 0;
@@ -2338,16 +2388,10 @@ function serviceCardHtml(s, customer){
     const used = daysBetween(s.activationDate, todayISO());
     progressPct = Math.min(100, Math.max(0, (used/total)*100));
   }
-  const remaining = s.expiryDate ? daysBetween(todayISO(), s.expiryDate) : null;
   const usedDays = usedDaysFor(s);
   // plain-language framing of where this subscription stands relative to its contract,
   // instead of just a bare day count
-  let contractStatusText = '';
-  if(remaining !== null){
-    if(remaining < 0) contractStatusText = LANG==='zh' ? `已超过合约期 ${Math.abs(remaining)} 天（已到期）` : `${Math.abs(remaining)} days past contract end — expired`;
-    else if(remaining <= 7) contractStatusText = LANG==='zh' ? `仍在合约内，剩余 ${remaining} 天（即将到期）` : `${remaining} days remaining, in contract — expiring soon`;
-    else contractStatusText = LANG==='zh' ? `仍在合约内，剩余 ${remaining} 天` : `${remaining} days remaining, in contract`;
-  }
+  const contractStatusText = contractStatusTextFor(s, false);
   // one comprehensive info grid covering phone, plan type, subscription type, company/
   // carrier, how long the plan's been used, and how long the customer's been in Korea —
   // shown for BOTH prepaid and postpaid (previously some of this was postpaid-only)
@@ -3710,6 +3754,7 @@ document.getElementById('syncEnabledCheckbox').addEventListener('change', e=>{
   setApiKey(document.getElementById('syncApiKey').value.trim());
   setSyncEnabled(e.target.checked);
   updateSyncStatusUI();
+  if(!e.target.checked) setOfflineBanner(false); // don't leave a stale banner up after turning sync off
   if(e.target.checked) toast(LANG==='zh'?'已启用同步':'Sync enabled');
 });
 document.getElementById('btnTestSync').addEventListener('click', async ()=>{
