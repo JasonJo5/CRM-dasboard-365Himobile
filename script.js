@@ -644,6 +644,23 @@ function repairJoinDates(db){
   });
   if(changed) saveDB(db);
 }
+/* Fills in a missing expiry date for any service that has both an activation date and a
+   duration but no expiry — this is exactly what happened to a large batch of imported
+   customers whose spreadsheet had no explicitly-labeled "expiry date" column that the
+   importer could recognize. Every "days remaining / expired / over contract" calculation in
+   the app depends on expiryDate, so this one gap was silently breaking that everywhere for
+   those customers until fixed here. */
+function repairMissingExpiryDates(db){
+  let changed = false;
+  (db.services||[]).forEach(s=>{
+    if(!s.expiryDate && s.activationDate && isIsoDate(s.activationDate) && s.durationDays){
+      const d = new Date(s.activationDate); d.setDate(d.getDate()+Number(s.durationDays));
+      s.expiryDate = d.toISOString().slice(0,10);
+      changed = true;
+    }
+  });
+  if(changed) saveDB(db);
+}
 
 function loadDB(){
   try{
@@ -656,6 +673,7 @@ function loadDB(){
       repairInvalidDates(db);
       repairActiveSubscriptions(db);
       repairJoinDates(db);
+      repairMissingExpiryDates(db);
       return db;
     }
   }catch(e){}
@@ -743,7 +761,7 @@ async function pushToServer(){
     const res = await fetch(base+'/api/sync', {
       method:'POST',
       headers: authHeaders({'Content-Type':'application/json'}),
-      body: JSON.stringify({customers: DB.customers, services: DB.services}),
+      body: JSON.stringify({customers: DB.customers, services: DB.services, templates: DB.templates, reminderState: DB.reminderState}),
     });
     if(res.status===401) throw new Error(LANG==='zh'?'密钥不正确，请检查服务器同步设置':'Incorrect API key — check server sync settings');
     if(!res.ok) throw new Error('HTTP '+res.status);
@@ -779,6 +797,7 @@ async function pullFromServer(){
     repairInvalidDates(DB);
     repairActiveSubscriptions(DB);
     repairJoinDates(DB);
+    repairMissingExpiryDates(DB);
     localStorage.setItem(DB_KEY, JSON.stringify(DB)); // cache locally, skip re-triggering a push
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     setOfflineBanner(false);
@@ -3389,6 +3408,17 @@ function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
       durationDays = parsedDays>0 ? POSTPAID_CONTRACT_DAYS.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, POSTPAID_CONTRACT_DAYS[0]) : POSTPAID_CONTRACT_DAYS[0];
     }
     if(plan || carrier){
+      const importedActivationDate = parseFlexibleDate(guessField(row,['activationdate','开通日期','开通日']))||todayISO();
+      const importedExpiryDate = parseFlexibleDate(guessField(row,['expirydate','到期日期','有效使用期']));
+      // Most real spreadsheets track contract length + activation date as the source data —
+      // an explicit "expiry date" column often doesn't exist or doesn't match. Without this
+      // fallback, imported customers end up with a permanently blank expiry date, which then
+      // breaks every "days remaining / expired / over contract" calculation everywhere else
+      // in the app for that customer.
+      const computedExpiryDate = importedExpiryDate || (()=>{
+        const d = new Date(importedActivationDate); d.setDate(d.getDate()+durationDays);
+        return d.toISOString().slice(0,10);
+      })();
       // routes through the same enforcement path as every other subscription change, so the
       // imported record is immediately recognized as active — without this, imported customers
       // silently show "No active subscription" everywhere (including Sheet View) until the next
@@ -3396,8 +3426,8 @@ function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
       setActiveSubscription(cust.id, {
         type:resolvedSubType, carrier:String(carrier||''), plan:String(plan||''),
         number:String(guessField(row,['number','号码','currentnumber','开通号码'])||''), simType:'physical',
-        activationDate:parseFlexibleDate(guessField(row,['activationdate','开通日期','开通日']))||todayISO(), durationDays,
-        expiryDate:parseFlexibleDate(guessField(row,['expirydate','到期日期','有效使用期'])), status:'active',
+        activationDate:importedActivationDate, durationDays,
+        expiryDate:computedExpiryDate, status:'active',
         monthlyFee:Number(guessField(row,['monthlyfee','月租','월세']))||0,
         discount:Number(guessField(row,['discount','月租优惠','优惠']))||0,
         firstMonthPayment:Number(guessField(row,['amount','金额','价格','实收']))||0,activationFee:0,simFee:0,
@@ -3990,13 +4020,17 @@ if(isStayUnlocked()){
     btn.disabled = true;
     setServerUrl(url);
     setApiKey(pwd);
+    // enabled BEFORE the pull (not after) so that if the pull's automatic data repairs need
+    // to save anything, that save correctly triggers a push back to the server right away
+    // instead of silently no-op'ing because sync looked "not enabled yet" at that instant
+    setSyncEnabled(true);
     const result = await pullFromServer();
     btn.disabled = false;
     if(result.ok){
-      setSyncEnabled(true); // so changes made this session push automatically too
       localStorage.setItem(UNLOCKED_KEY, '1');
       unlockApp();
     } else {
+      setSyncEnabled(false); // revert — the credentials didn't actually work
       errEl.textContent = (LANG==='zh'?'连接或密钥错误：':'Connection or password error: ')+(result.error||'');
       errEl.style.display = 'block';
     }
