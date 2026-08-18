@@ -9,7 +9,7 @@ const PREETI_TEMPLATE_IMAGE = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA
 const DB_KEY = 'himobile_crm_v1';
 // declared early (before loadDB/saveDB run) since saveDB() can be called immediately during
 // the very first load (seeding fresh data) — these must exist before that happens
-const SERVER_URL_KEY = 'himobile_server_url';   
+const SERVER_URL_KEY = 'himobile_server_url';
 const SYNC_ENABLED_KEY = 'himobile_sync_enabled';
 const LAST_SYNC_KEY = 'himobile_last_sync';
 const API_KEY_STORAGE_KEY = 'himobile_api_key';
@@ -46,7 +46,7 @@ const I18N = {
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
     'modal.chooseType':'新建客户','modal.chooseTypeDesc':'先选择客户类型，两种表单的字段不同','modal.prepaidDesc':'固定3个月充值套餐','modal.postpaidDesc':'按月合约，可选运营商与套餐','modal.newPostpaidCustomer':'新建后付卡客户',
     'f.contactHandle':'联系账号 / ID','f.workType':'业务向','f.handlerName':'办理人','f.referralFriend':'介绍人（朋友姓名）',
-    'f.profitSection':'预期利润与折扣','f.expectedProfit':'预期利润','f.actualProfit':'实际利润','f.discountPerMonth':'每月折扣','f.discountMonths':'折扣月数','f.netExpectedProfit':'净预期利润','f.discountTotal':'折扣总额','f.actualProfitHint':'💡「实际利润」会在月底运营商结算后填写，用于和预期利润核对 — 可在保存客户后于「表格视图」中随时补填。',
+    'f.profitSection':'公司价格与折扣','f.expectedProfit':'公司价格','f.actualProfit':'公司实际结算价','f.usimFee':'USIM 费用','f.discountPerMonth':'每月折扣','f.discountMonths':'折扣月数','f.netExpectedProfit':'预期收入','f.expectedIncome':'预期收入','f.actualIncome':'实际收入','f.discountTotal':'折扣总额','f.actualProfitHint':'💡「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在保存客户后于「表格视图」中随时补填。',
     'f.name':'客户姓名','f.phone':'联系电话','f.nationality':'国籍','f.nationalityPh':'例如：CHINA / VIETNAM','f.dob':'出生日期','f.kakao':'KakaoTalk ID','f.wechat':'微信 WeChat','f.idType':'证件类型','f.idNumber':'证件号码','f.idExpiry':'证件有效期至','f.occupation':'职业','f.workplace':'工作单位','f.years':'在韩年数','f.referral':'客户来源','f.carrierType':'通信网','f.planType':'业务类型','f.branchOffice':'接收处管理编码','f.subType':'开通方式','f.address':'地址','f.addressPh':'韩国地址（用于打印申请表）','f.rating':'客户评分','f.notes':'备注','f.notesPh':'职业、客户来源等',
     'opt.prepaid':'先付卡（3个月充值）','opt.postpaid':'后付卡','opt.prepaidShort':'先付卡','opt.postpaidShort':'后付卡','prepaid3m.hint':'先付卡按充值月数计算，选择3个月时会自动套用프리티电信申请表；1/2个月请另外选择对应模板','postpaid.hint':'后付卡为按月合约，保存时会用下方选择的模板生成申请表（请先在「打印模板」页面上传后付卡运营商表格）',
     'plantype.new':'신규가입 新申请','plantype.mnp':'번호이동 携号转网','plantype.transfer':'명의변경 过户/名义变更','plantype.extend':'기간연장 有效期延长','plantype.convert':'선불전환 转为先付',
@@ -63,9 +63,9 @@ const I18N = {
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
-    'rep.byCarrier':'按通信社的营收 / 利润','rep.byType':'按业务类型的营收 / 利润','rep.popularPlans':'热门套餐 Top 5','rep.rates':'续约率 / 回头客率','rep.monthly':'全部月份对账','rep.renewalRate':'续约率','rep.repeatRate':'回头客率','rep.totalOrders':'累计订单数','rep.avgProfit':'平均单笔利润',
-    'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'利润','rep.totalExpected':'累计预期利润',
-    'stat.weekProfit':'本周利润','stat.monthExpected':'本月预期利润','stat.monthActual':'本月实际利润','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
+    'rep.byCarrier':'按通信社的营收 / 收入','rep.byType':'按业务类型的营收 / 收入','rep.popularPlans':'热门套餐 Top 5','rep.rates':'续约率 / 回头客率','rep.monthly':'全部月份对账','rep.renewalRate':'续约率','rep.repeatRate':'回头客率','rep.totalOrders':'累计订单数','rep.avgProfit':'平均单笔收入',
+    'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入',
+    'stat.weekProfit':'本周收入','stat.monthExpected':'本月预期收入','stat.monthActual':'本月实际收入','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
     'io.import.modeTitle':'导入方式','io.import.modeMerge':'与现有客户合并','io.import.modeMergeDesc':'保留现有客户档案，仅新增导入文件中不重复的客户','io.import.modeReplace':'清空现有客户，改用此文件的数据','io.import.modeReplaceDesc':'导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件','io.import.skipDupes':'自动跳过重复客户（按姓名或电话匹配）',
     'io.import.sheet':'选择表格 Sheet','io.import.sheets':'选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
@@ -130,7 +130,7 @@ const I18N = {
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
     'modal.chooseType':'New customer','modal.chooseTypeDesc':'Choose the customer type first — the two forms have different fields','modal.prepaidDesc':'Fixed 3-month recharge plan','modal.postpaidDesc':'Monthly contract, pick carrier & plan','modal.newPostpaidCustomer':'New postpaid customer',
     'f.contactHandle':'Contact account / ID','f.workType':'Work type','f.handlerName':'Handled by','f.referralFriend':'Referred by (friend\'s name)',
-    'f.profitSection':'Expected profit & discount','f.expectedProfit':'Expected profit','f.actualProfit':'Actual profit','f.discountPerMonth':'Discount / month','f.discountMonths':'Discount months','f.netExpectedProfit':'Net expected profit','f.discountTotal':'Total discount','f.actualProfitHint':'💡 "Actual profit" gets filled in later once the carrier settles at month-end, for comparison against your estimate — you can fill it in anytime from Sheet View after saving.',
+    'f.profitSection':'Company price & discount','f.expectedProfit':'Company price','f.actualProfit':'Real company price','f.usimFee':'USIM fee','f.discountPerMonth':'Discount / month','f.discountMonths':'Discount months','f.netExpectedProfit':'Expected income','f.expectedIncome':'Expected income','f.actualIncome':'Actual income','f.discountTotal':'Total discount','f.actualProfitHint':'💡 "Real company price" gets filled in later once the carrier settles at month-end, used to calculate actual income and compare it against your estimate — you can fill it in anytime from Sheet View after saving.',
     'f.name':'Customer name','f.phone':'Phone number','f.nationality':'Nationality / Country','f.nationalityPh':'e.g. CHINA / VIETNAM','f.dob':'Date of birth','f.kakao':'KakaoTalk ID','f.wechat':'WeChat ID','f.idType':'ID type','f.idNumber':'ID number (ARC/Passport)','f.idExpiry':'ID expiry date','f.occupation':'Occupation','f.workplace':'Workplace','f.years':'Years in Korea','f.referral':'Referral source','f.carrierType':'Carrier network','f.planType':'Plan type','f.branchOffice':'Branch office code','f.subType':'Subscription type','f.address':'Address','f.addressPh':'Korean address (used for printing application forms)','f.rating':'Customer rating','f.notes':'Notes','f.notesPh':'Occupation, referral source, etc.',
     'opt.prepaid':'Prepaid (3-month recharge, fixed)','opt.postpaid':'Postpaid','opt.prepaidShort':'Prepaid','opt.postpaidShort':'Postpaid','prepaid3m.hint':'Prepaid is billed by recharge months — choosing 3 months auto-applies the Preeti Telecom form; 1/2-month plans use whichever other template you select','postpaid.hint':'Postpaid is a monthly contract — saving will generate the application form using the template selected below (upload your postpaid carrier form in Print Templates first)',
     'plantype.new':'신규가입 New sign-up','plantype.mnp':'번호이동 Number port (MNP)','plantype.transfer':'명의변경 Ownership/name change','plantype.extend':'기간연장 Period extension','plantype.convert':'선불전환 Convert to prepaid',
@@ -147,9 +147,9 @@ const I18N = {
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
-    'rep.byCarrier':'Revenue / profit by carrier','rep.byType':'Revenue / profit by service type','rep.popularPlans':'Top 5 popular plans','rep.rates':'Renewal rate / repeat-customer rate','rep.monthly':'All months reconciliation','rep.renewalRate':'Renewal rate','rep.repeatRate':'Repeat-customer rate','rep.totalOrders':'Total orders','rep.avgProfit':'Avg. profit / order',
-    'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Profit','rep.totalExpected':'Total expected profit',
-    'stat.weekProfit':'Profit this week','stat.monthExpected':'Expected profit this month','stat.monthActual':'Actual profit this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
+    'rep.byCarrier':'Revenue / income by carrier','rep.byType':'Revenue / income by service type','rep.popularPlans':'Top 5 popular plans','rep.rates':'Renewal rate / repeat-customer rate','rep.monthly':'All months reconciliation','rep.renewalRate':'Renewal rate','rep.repeatRate':'Repeat-customer rate','rep.totalOrders':'Total orders','rep.avgProfit':'Avg. income / order',
+    'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income',
+    'stat.weekProfit':'Income this week','stat.monthExpected':'Expected income this month','stat.monthActual':'Actual income this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
     'io.import.modeTitle':'Import mode','io.import.modeMerge':'Merge with existing customers','io.import.modeMergeDesc':'Keeps existing customer records; only adds new customers that aren\'t already in the list','io.import.modeReplace':'Clear existing customers and use this file instead','io.import.modeReplaceDesc':'Automatically exports a backup of current customer data (Excel) first, then clears and loads the new file','io.import.skipDupes':'Automatically skip duplicate customers (matched by name or phone)',
     'io.import.sheet':'Sheet','io.import.sheets':'Sheets to import (select multiple — e.g. prepaid and postpaid together)','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
@@ -490,7 +490,7 @@ function renderSheetPage(){
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.carrier')}</th><th>${t('f.svcCarrierType')}</th>`;
   const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.idType')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -520,6 +520,7 @@ function renderSheetPage(){
         <td>${sheetTextCell('service',svc.id,'monthlyFee',svc.monthlyFee,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'expectedProfit',svc.expectedProfit,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'actualProfit',svc.actualProfit,'number')}</td>
+        <td>${sheetTextCell('service',svc.id,'usimFee',svc.usimFee,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'discountPerMonth',svc.discountPerMonth,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'discountMonths',svc.discountMonths,'number')}</td>
         <td>${sheetReadonlyCell(fmtWon(netProfitFor(svc)))}</td>
@@ -530,7 +531,7 @@ function renderSheetPage(){
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="18">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="19">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -942,10 +943,20 @@ function discountTotalFor(svc){
   if(!svc) return 0;
   return (Number(svc.discountPerMonth)||0) * (Number(svc.discountMonths)||0);
 }
+// "Expected income" until the carrier's real settlement figure is filled in, then
+// "Actual income" — used anywhere a single specific service's net figure is labeled
+function netIncomeLabelFor(svc){
+  return svc && svc.actualProfit ? t('f.actualIncome') : t('f.expectedIncome');
+}
+/* expected income = Company Price (catalog estimate) − discount − USIM fee
+   actual income   = Real Company Price (carrier's final settlement) − discount − USIM fee,
+   once that real figure has been filled in — this one function is used everywhere profit
+   is shown (Dashboard, Reports, Customer Detail, Sheet View, Orders, AI Insights), so this
+   is the single place the formula needs to be correct. */
 function netProfitFor(svc){
   if(!svc) return 0;
   const gross = svc.actualProfit ? Number(svc.actualProfit) : Number(svc.expectedProfit)||0;
-  return gross - discountTotalFor(svc);
+  return gross - discountTotalFor(svc) - (Number(svc.usimFee)||0);
 }
 /* The one true "how much did this transaction earn us" figure — prepaid is its full one-time
    catalog price, postpaid is the tracked expected/actual profit net of discount, and every
@@ -1886,6 +1897,7 @@ function openNewPostpaidModal(){
   document.getElementById('pc_monthlyFee').value = '';
   renderTileRadioGroup('pc_handlerName_group', STAFF_MEMBERS, getActiveStaff());
   document.getElementById('pc_expectedProfit').value = '';
+  document.getElementById('pc_usimFee').value = '';
   document.getElementById('pc_discountPerMonth').value = '';
   document.getElementById('pc_discountMonths').value = '';
   document.getElementById('pc_netExpectedPreview').value = '';
@@ -1895,11 +1907,12 @@ function openNewPostpaidModal(){
 }
 function updatePcNetExpectedPreview(){
   const expected = Number(document.getElementById('pc_expectedProfit').value)||0;
+  const usimFee = Number(document.getElementById('pc_usimFee').value)||0;
   const perMonth = Number(document.getElementById('pc_discountPerMonth').value)||0;
   const months = Number(document.getElementById('pc_discountMonths').value)||0;
-  document.getElementById('pc_netExpectedPreview').value = fmtWon(expected - (perMonth*months));
+  document.getElementById('pc_netExpectedPreview').value = fmtWon(expected - (perMonth*months) - usimFee);
 }
-['pc_expectedProfit','pc_discountPerMonth','pc_discountMonths'].forEach(id=>{
+['pc_expectedProfit','pc_usimFee','pc_discountPerMonth','pc_discountMonths'].forEach(id=>{
   document.getElementById(id).addEventListener('input', updatePcNetExpectedPreview);
 });
 document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=>{
@@ -1943,10 +1956,12 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
     monthlyFee: Number(document.getElementById('pc_monthlyFee').value)||0,
     discount:0,
     // this business earns a one-time carrier commission per signup, not recurring monthly
-    // revenue — expectedProfit is staff's estimate now, actualProfit gets filled in later
-    // (via Sheet View) once the carrier settles at month-end, for manual reconciliation
+    // revenue — expectedProfit ("Company Price") is the carrier's catalog/estimated payout
+    // at signup; actualProfit ("Real Company Price") gets filled in later (via Sheet View)
+    // once the carrier settles at month-end. Net income = that price − discount − USIM fee.
     expectedProfit: Number(document.getElementById('pc_expectedProfit').value)||0,
     actualProfit: 0,
+    usimFee: Number(document.getElementById('pc_usimFee').value)||0,
     discountPerMonth: Number(document.getElementById('pc_discountPerMonth').value)||0,
     discountMonths: Number(document.getElementById('pc_discountMonths').value)||0,
     firstMonthPayment:0, activationFee:0, simFee:0,
@@ -2415,8 +2430,9 @@ function serviceCardHtml(s, customer){
     ? `<div class="kv-grid" style="margin-top:10px;">
         <div><div class="k">${t('f.expectedProfit')}</div><div class="v">${fmtWon(s.expectedProfit)}</div></div>
         <div><div class="k">${t('f.actualProfit')}</div><div class="v">${s.actualProfit?fmtWon(s.actualProfit):`<span class="muted">${t('stat.notReconciled')}</span>`}</div></div>
+        <div><div class="k">${t('f.usimFee')}</div><div class="v">${fmtWon(s.usimFee)}</div></div>
         <div><div class="k">${t('f.discountTotal')}</div><div class="v">${fmtWon(discountTotalFor(s))}</div></div>
-        <div><div class="k">${t('f.netExpectedProfit')}</div><div class="v" style="color:var(--green);font-weight:700;">${fmtWon(netProfitFor(s))}</div></div>
+        <div><div class="k">${netIncomeLabelFor(s)}</div><div class="v" style="color:var(--green);font-weight:700;">${fmtWon(netProfitFor(s))}</div></div>
       </div>`
     : `<div class="kv-grid" style="margin-top:10px;">
         <div><div class="k">${t('f.sellingPrice')}</div><div class="v">${fmtWon(s.sellingPrice)}</div></div>
@@ -2497,6 +2513,7 @@ function openOrderModal(service, presetCustomerId){
   document.getElementById('o_notes').value = service?.notes || '';
   document.getElementById('o_expectedProfit').value = service?.expectedProfit ?? '';
   document.getElementById('o_actualProfit').value = service?.actualProfit ?? '';
+  document.getElementById('o_usimFee').value = service?.usimFee ?? '';
   document.getElementById('o_discountPerMonth').value = service?.discountPerMonth ?? '';
   document.getElementById('o_discountMonths').value = service?.discountMonths ?? '';
   // populate the company/partner/carrier dropdowns' options BEFORE assigning their value,
@@ -2544,6 +2561,7 @@ function updateOrderTypeUI(){
   document.getElementById('o_sellingPriceLabel').textContent = isPrepaid ? t('f.price') : t('f.sellingPrice');
   document.getElementById('o_expectedProfitField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_actualProfitField').style.display = isPostpaid ? '' : 'none';
+  document.getElementById('o_usimFeeField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_discountPerMonthField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_discountMonthsField').style.display = isPostpaid ? '' : 'none';
 }
@@ -2595,6 +2613,7 @@ function saveOrderFromForm(){
     svcCarrierType: type==='postpaid' ? document.getElementById('o_svcCarrierType').value : '',
     expectedProfit: type==='postpaid' ? Number(document.getElementById('o_expectedProfit').value)||0 : 0,
     actualProfit: type==='postpaid' ? Number(document.getElementById('o_actualProfit').value)||0 : 0,
+    usimFee: type==='postpaid' ? Number(document.getElementById('o_usimFee').value)||0 : 0,
     discountPerMonth: type==='postpaid' ? Number(document.getElementById('o_discountPerMonth').value)||0 : 0,
     discountMonths: type==='postpaid' ? Number(document.getElementById('o_discountMonths').value)||0 : 0,
   };
