@@ -624,6 +624,23 @@ function repairInvalidDates(db){
   });
   if(changed) saveDB(db);
 }
+/* Corrects createdAt values that were wrongly stamped with a push date instead of being
+   left blank — this happened for any customer whose earliest known activity (a service's
+   activation date) is BEFORE their stored createdAt, which is only possible if createdAt
+   was set incorrectly (a customer can't have a service before becoming a customer). Nulling
+   it out lets customerJoinDate() correctly fall back to that earlier, real date instead. */
+function repairJoinDates(db){
+  let changed = false;
+  (db.customers||[]).forEach(c=>{
+    if(!c.createdAt) return;
+    const svcs = (db.services||[]).filter(s=>s.customerId===c.id).map(s=>s.activationDate).filter(isIsoDate).sort();
+    if(svcs.length && svcs[0] < String(c.createdAt).slice(0,10)){
+      c.createdAt = null;
+      changed = true;
+    }
+  });
+  if(changed) saveDB(db);
+}
 
 function loadDB(){
   try{
@@ -635,6 +652,7 @@ function loadDB(){
       ensurePreetiTemplate(db);
       repairInvalidDates(db);
       repairActiveSubscriptions(db);
+      repairJoinDates(db);
       return db;
     }
   }catch(e){}
@@ -757,12 +775,33 @@ async function pullFromServer(){
     ensurePreetiTemplate(DB);
     repairInvalidDates(DB);
     repairActiveSubscriptions(DB);
+    repairJoinDates(DB);
     localStorage.setItem(DB_KEY, JSON.stringify(DB)); // cache locally, skip re-triggering a push
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     setOfflineBanner(false);
     return {ok:true};
   }catch(err){
     console.warn('Could not reach server on load, using local data:', err.message);
+    setOfflineBanner(true, err.message);
+    return {ok:false, error: err.message};
+  }
+}
+// Deletes a customer on the server too (cascades to their services automatically, via the
+// database's foreign key). This is necessary because /api/sync is deliberately upsert-only
+// (it never removes anything missing from a push, to protect against accidental data loss
+// from an incomplete sync payload) — so a customer removed only from local state would keep
+// reappearing after every pull unless this explicit delete also runs. Used by both "Delete
+// customer" and merging duplicates (which removes the older, folded-in record).
+async function deleteCustomerOnServer(id){
+  if(!isSyncEnabled()) return {ok:true};
+  const base = getServerUrl();
+  try{
+    const res = await fetch(base+'/api/customers/'+id, {method:'DELETE', headers: authHeaders()});
+    if(!res.ok && res.status!==404) throw new Error('HTTP '+res.status);
+    setOfflineBanner(false);
+    return {ok:true};
+  }catch(err){
+    console.warn('Could not delete customer on the server — it may reappear after the next pull until this succeeds:', err.message);
     setOfflineBanner(true, err.message);
     return {ok:false, error: err.message};
   }
@@ -1799,7 +1838,7 @@ function renderCustomers(){
       <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
       <td>${escapeHtml((active&&active.number)||c.phone||'—')}</td>
       <td><span class="cell-ellipsis">${escapeHtml(c.nationality)}</span></td>
-      <td>${t('idtype.'+c.idType)}</td>
+      <td>${(c.idType?t('idtype.'+c.idType):'—')}</td>
       <td>${subBadge}</td>
       <td>${statusCell}</td>
       <td>${recent? t('type.'+recent.type) : '—'}</td>
@@ -1846,6 +1885,7 @@ function mergeDuplicateGroup(customerIds){
     });
     DB.services.filter(s=>s.customerId===otherId).forEach(s=>{ s.customerId = primaryId; });
     DB.customers = DB.customers.filter(c=>c.id!==otherId);
+    deleteCustomerOnServer(otherId);
   });
   // moving records over can leave the primary with more than one "active" subscription at
   // once (e.g. two of the merged duplicates each had their own active plan) — enforce the
@@ -2212,6 +2252,7 @@ function deleteCustomerById(id){
   DB.customers = DB.customers.filter(x=>x.id!==id);
   DB.services = DB.services.filter(s=>s.customerId!==id);
   saveDB(DB);
+  deleteCustomerOnServer(id);
   closeAllModals();
   toast(t('toast.deleted'));
   renderPage(currentPage==='dashboard' ? 'customers' : currentPage);
@@ -2295,7 +2336,7 @@ function openCustomerDetail(id){
         <div class="profile-name">${escapeHtml(c.name)}</div>
         <div class="profile-tags">
           <span class="pill pill-blue">${c.nationality}</span>
-          <span class="pill pill-gray">${t('idtype.'+c.idType)} · ${escapeHtml(c.idNumber||'—')}</span>
+          <span class="pill pill-gray">${(c.idType?t('idtype.'+c.idType):'—')} · ${escapeHtml(c.idNumber||'—')}</span>
           ${age!==null?`<span class="pill pill-gray">${age} ${t('age.years')}</span>`:''}
           <span class="pill pill-gray">${'★'.repeat(c.rating||0)}</span>
         </div>
@@ -3911,6 +3952,15 @@ if(isStayUnlocked()){
   // last showing before the refresh, with no password prompt in between
   DB = loadDB();
   unlockApp();
+  // then silently refresh from the server in the background, using the already-saved
+  // credentials — this is what makes "refresh to get the other computer's changes" work
+  // without re-entering the password each time. Falls back to the local data above if the
+  // server can't be reached, exactly like every other sync attempt in this app.
+  if(isSyncEnabled()){
+    pullFromServer().then(result=>{
+      if(result.ok){ renderPage(currentPage); renderNav(); }
+    });
+  }
 } else {
   document.getElementById('lockServerUrl').value = getServerUrl();
   document.getElementById('lockUnlockBtn').addEventListener('click', async ()=>{
