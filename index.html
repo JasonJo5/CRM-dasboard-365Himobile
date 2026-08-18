@@ -563,16 +563,17 @@
         <div class="form-field full"><label data-i18n="f.handlerName">办理人 Handled by</label><div class="tile-radio-group" id="pc_handlerName_group" data-field="handlerName"></div></div>
 
         <div class="form-hr"></div>
-        <div class="form-subtitle" data-i18n="f.profitSection">预期利润与折扣 Expected profit & discount</div>
-        <div class="form-field"><label data-i18n="f.expectedProfit">预期利润 Expected profit（运营商预计支付）</label><input id="pc_expectedProfit" type="number" min="0"></div>
+        <div class="form-subtitle" data-i18n="f.profitSection">公司价格与折扣 Company price & discount</div>
+        <div class="form-field"><label data-i18n="f.expectedProfit">公司价格 Company price（运营商目录/预估价，非最终结算价）</label><input id="pc_expectedProfit" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.usimFee">USIM 费用 USIM fee（本店承担的成本）</label><input id="pc_usimFee" type="number" min="0"></div>
         <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣 Discount / month</label><input id="pc_discountPerMonth" type="number" min="0"></div>
         <div class="form-field"><label data-i18n="f.discountMonths">折扣月数 Discount months</label><input id="pc_discountMonths" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.netExpectedProfit">净预期利润 Net expected profit</label><input id="pc_netExpectedPreview" disabled></div>
+        <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income（公司价格 − 折扣 − USIM费用）</label><input id="pc_netExpectedPreview" disabled></div>
 
         <div class="form-field full"><label data-i18n="f.referralFriend">介绍人 Referred by (朋友姓名，如有)</label><input id="pc_referralFriend" placeholder="朋友姓名"></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pc_notes"></textarea></div>
       </div>
-      <div class="section-desc" style="margin-top:6px;" data-i18n="f.actualProfitHint">💡 「实际利润」会在月底运营商结算后填写，用于和预期利润核对 — 可在「保存客户」后于表格视图中随时补填。</div>
+      <div class="section-desc" style="margin-top:6px;" data-i18n="f.actualProfitHint">💡 「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在「保存客户」后于表格视图中随时补填。</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
@@ -691,8 +692,9 @@
         <div class="form-field" id="o_receivedField"><label data-i18n="f.received">已收金额</label><input id="o_received" type="number" min="0"></div>
         <div class="form-field" id="o_paymentMethodField"><label data-i18n="f.paymentMethod">付款方式</label><select id="o_paymentMethod"></select></div>
         <div class="form-field" id="o_commissionField"><label data-i18n="f.commission">返点 / 提成</label><input id="o_commission" type="number" min="0"></div>
-        <div class="form-field" id="o_expectedProfitField" style="display:none;"><label data-i18n="f.expectedProfit">预期利润</label><input id="o_expectedProfit" type="number" min="0"></div>
-        <div class="form-field" id="o_actualProfitField" style="display:none;"><label data-i18n="f.actualProfit">实际利润</label><input id="o_actualProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_expectedProfitField" style="display:none;"><label data-i18n="f.expectedProfit">公司价格 Company price</label><input id="o_expectedProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_actualProfitField" style="display:none;"><label data-i18n="f.actualProfit">公司实际结算价 Real company price</label><input id="o_actualProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_usimFeeField" style="display:none;"><label data-i18n="f.usimFee">USIM 费用 USIM fee</label><input id="o_usimFee" type="number" min="0"></div>
         <div class="form-field" id="o_discountPerMonthField" style="display:none;"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="o_discountPerMonth" type="number" min="0"></div>
         <div class="form-field" id="o_discountMonthsField" style="display:none;"><label data-i18n="f.discountMonths">折扣月数</label><input id="o_discountMonths" type="number" min="0"></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="o_notes"></textarea></div>
