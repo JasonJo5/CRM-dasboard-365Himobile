@@ -37,7 +37,7 @@ const I18N = {
     'col.customer':'客户','col.number':'号码','col.service':'业务','col.carrier':'通信社','col.activated':'开通日期','col.status':'状态','col.contact':'联系方式','col.phoneNumber':'电话号码','col.nationality':'国籍','col.id':'证件','col.subType':'开通方式','col.currentNumber':'当前号码','col.recentActivity':'最近业务','col.rating':'评分','col.serviceType':'业务类型','col.plan':'套餐','col.amount':'金额','col.outstanding':'欠款','col.month':'月份','col.orders':'订单数','col.revenue':'营收','col.cost':'成本','col.profit':'利润','col.outstandingTotal':'未收合计','col.dupeReason':'重复原因','col.contractStatus':'合约状态',
     'dupe.reasonName':'姓名相同','dupe.reasonPhone':'电话相同',
     'col.expectedProfit':'预期利润','col.actualProfit':'实际利润（已核对）','col.variance':'差异','col.discountGiven':'折扣总额','col.netExpected':'净预期利润',
-    'custtab.all':'全部客户','custtab.prepaid':'先付卡客户','custtab.postpaid':'后付卡客户','custtab.dupes':'重复客户',
+    'custtab.all':'全部客户','custtab.prepaid':'先付卡客户','custtab.postpaid':'后付卡客户','custtab.inactive':'已停用客户','custtab.dupes':'重复客户',
     'ph.search':'搜索姓名、号码、国籍或证件号',
     'filter.allNationalities':'全部国籍','filter.allRatings':'全部评分','filter.allTypes':'全部业务类型','filter.allStatus':'全部状态',
     'filter.allDurations':'开通时长：不限','filter.duration6':'已开通 6 个月以上','filter.duration8':'已开通 8 个月以上','filter.duration12':'已开通 1 年以上','col.activeFor':'开通时长',
@@ -121,7 +121,7 @@ const I18N = {
     'col.customer':'Customer','col.number':'Number','col.service':'Service','col.carrier':'Carrier','col.activated':'Activated','col.status':'Status','col.contact':'Contact','col.phoneNumber':'Phone number','col.nationality':'Nationality','col.id':'ID','col.subType':'Subscription','col.currentNumber':'Current number','col.recentActivity':'Recent activity','col.rating':'Rating','col.serviceType':'Service type','col.plan':'Plan','col.amount':'Amount','col.outstanding':'Outstanding','col.month':'Month','col.orders':'Orders','col.revenue':'Revenue','col.cost':'Cost','col.profit':'Profit','col.outstandingTotal':'Total outstanding','col.dupeReason':'Match reason','col.contractStatus':'Contract status',
     'dupe.reasonName':'Same name','dupe.reasonPhone':'Same phone',
     'col.expectedProfit':'Expected profit','col.actualProfit':'Actual profit (reconciled)','col.variance':'Variance','col.discountGiven':'Discount given','col.netExpected':'Net expected profit',
-    'custtab.all':'All customers','custtab.prepaid':'Prepaid customers','custtab.postpaid':'Postpaid customers','custtab.dupes':'Duplicate customers',
+    'custtab.all':'All customers','custtab.prepaid':'Prepaid customers','custtab.postpaid':'Postpaid customers','custtab.inactive':'Inactive customers','custtab.dupes':'Duplicate customers',
     'ph.search':'Search name, number, nationality or ID',
     'filter.allNationalities':'All nationalities','filter.allRatings':'All ratings','filter.allTypes':'All service types','filter.allStatus':'All statuses',
     'filter.allDurations':'Active for: any length','filter.duration6':'Active 6+ months','filter.duration8':'Active 8+ months','filter.duration12':'Active 1+ year','col.activeFor':'Active for',
@@ -489,8 +489,8 @@ function renderSheetPage(){
   const commonHead = `
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.carrier')}</th><th>${t('f.svcCarrierType')}</th>`;
-  const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.idType')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
+  const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.idType')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -504,6 +504,8 @@ function renderSheetPage(){
       if(sheetTypeTab==='prepaid'){
         return `<tr>${commonCells}
           <td>${sheetTextCell('service',svc.id,'durationDays',svc.durationDays,'number')}</td>
+          <td>${sheetReadonlyCell((usedDaysFor(svc)??'—')+(usedDaysFor(svc)!==null?(LANG==='zh'?' 天':' d'):''))}</td>
+          <td>${sheetReadonlyCell(contractStatusTextFor(svc, true)||'—')}</td>
           <td>${sheetPillCell('customer',c.id,'idType',c.idType,['ARC','Passport'], t('f.idType'))}</td>
           <td>${sheetTextCell('customer',c.id,'phone',c.phone,'text')}</td>
           <td>${sheetTextCell('customer',c.id,'dob',c.dob,'date')}</td>
@@ -517,6 +519,7 @@ function renderSheetPage(){
         <td>${sheetPillCell('service',svc.id,'partnerCompany',svc.partnerCompany,POSTPAID_PARTNER_COMPANIES, t('f.partnerCompany'))}</td>
         <td>${sheetPillCell('service',svc.id,'durationDays',svc.durationDays?String(svc.durationDays):'',POSTPAID_CONTRACT_DAYS.map(String), t('f.contractLength'))}</td>
         <td>${sheetReadonlyCell((usedDaysFor(svc)??'—')+(usedDaysFor(svc)!==null?(LANG==='zh'?' 天':' d'):''))}</td>
+        <td>${sheetReadonlyCell(contractStatusTextFor(svc, true)||'—')}</td>
         <td>${sheetTextCell('service',svc.id,'monthlyFee',svc.monthlyFee,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'expectedProfit',svc.expectedProfit,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'actualProfit',svc.actualProfit,'number')}</td>
@@ -531,7 +534,7 @@ function renderSheetPage(){
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="19">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="24">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -1751,10 +1754,12 @@ function renderCustomers(){
   const dupeGroups = dupeGroupsRaw.map(g=>[...g].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)))
     .sort((a,b)=> new Date(customerJoinDate(b[0])||0)-new Date(customerJoinDate(a[0])||0));
   const dupeCount = dupeGroups.reduce((n,g)=>n+g.length,0);
+  const inactiveCount = allCusts.filter(c=>!activeSubscriptionFor(c.id)).length;
   const tabs = [
     {key:'all', label:'custtab.all', n:allCusts.length},
     {key:'prepaid', label:'custtab.prepaid', n:allCusts.filter(c=>(c.subType||'prepaid')==='prepaid').length},
     {key:'postpaid', label:'custtab.postpaid', n:allCusts.filter(c=>c.subType==='postpaid').length},
+    {key:'inactive', label:'custtab.inactive', n:inactiveCount},
     {key:'dupes', label:'custtab.dupes', n:dupeCount},
   ];
   document.getElementById('custTypeTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${custTypeTab===tb.key?'active':''} ${tb.key==='dupes'&&tb.n?'chip-tab-warn':''}" data-custtab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
@@ -1788,6 +1793,7 @@ function renderCustomers(){
     list = DB.customers.filter(c=>{
       if(custTypeTab==='prepaid' && (c.subType||'prepaid')!=='prepaid') return false;
       if(custTypeTab==='postpaid' && c.subType!=='postpaid') return false;
+      if(custTypeTab==='inactive' && activeSubscriptionFor(c.id)) return false;
       if(natFilter && c.nationality!==natFilter) return false;
       if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
       if(durFilter){
@@ -1833,6 +1839,13 @@ function renderCustomers(){
       const remainingDays = daysBetween(todayISO(), active.expiryDate);
       const color = remainingDays<0 ? 'var(--red)' : (remainingDays<=7 ? 'var(--orange)' : 'var(--green)');
       statusCell = `<span style="color:${color};font-weight:700;font-size:12px;">${contractStatusTextFor(active, true)}</span>`;
+    } else if(!active && recent){
+      // no active subscription — show why/when their last plan ended, so the Inactive tab
+      // is actually informative instead of just a blank dash
+      const reasonTxt = recent.changeReason==='cancelled' ? t('reason.cancelled') : (LANG==='zh'?'未续约':'Not renewed');
+      const endedOn = recent.endedAt || recent.expiryDate;
+      const daysAgo = endedOn ? daysBetween(endedOn, todayISO()) : null;
+      statusCell = `<span style="color:var(--red);font-weight:700;font-size:12px;">${reasonTxt}${daysAgo!==null && daysAgo>=0 ? (LANG==='zh'?` · ${daysAgo}天前`:` · ${daysAgo}d ago`) : ''}</span>`;
     }
     return `<tr class="row-click ${groupBand}" data-open-customer="${c.id}">
       <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
