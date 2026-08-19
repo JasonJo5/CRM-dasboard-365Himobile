@@ -1266,15 +1266,23 @@ function applyStaticI18n(){
 // useful for a common/default address (e.g. the store's own) that should be suggested even
 // before any customer record has it.
 const DEFAULT_ADDRESS_SUGGESTIONS = ['대전시 동구 동대전로 171'];
-function populateAddressSuggestions(){
+/* A real dropdown, matching the style of Carrier Type / Handled By — pass the address of
+   whichever customer is currently being edited (if any) so their existing address is always
+   included as an option, even if it's unique and not otherwise in the list. Without this,
+   opening an existing customer for editing would silently show/select the wrong address the
+   moment the dropdown defaults to its first option. */
+function populateAddressSuggestions(currentValue){
   const seen = new Set();
   const addresses = [];
+  const cur = (currentValue||'').trim();
+  if(cur){ seen.add(cur); addresses.push(cur); }
   DEFAULT_ADDRESS_SUGGESTIONS.forEach(a=>{ if(a && !seen.has(a)){ seen.add(a); addresses.push(a); } });
   [...DB.customers].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)).forEach(c=>{
     const addr = (c.address||'').trim();
     if(addr && !seen.has(addr)){ seen.add(addr); addresses.push(addr); }
   });
-  document.getElementById('addressSuggestions').innerHTML = addresses.map(a=>`<option value="${escapeHtml(a)}">`).join('');
+  if(!addresses.length) addresses.push('');
+  document.getElementById('f_address').innerHTML = addresses.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)||'—'}</option>`).join('');
 }
 function populateStaticSelects(){
   // nationality is now free-text (f_nationality input) — no options to populate
@@ -2072,7 +2080,7 @@ function openCustomerModal(customer){
   editingCustomerId = customer ? customer.id : null;
   document.getElementById('customerModalTitle').textContent = customer ? t('modal.editCustomer') : t('modal.newCustomer');
   populateStaticSelects();
-  populateAddressSuggestions();
+  populateAddressSuggestions(customer?.address);
   document.getElementById('f_name').value = customer?.name || '';
   document.getElementById('f_phone').value = customer?.phone || '';
   document.getElementById('f_nationality').value = customer?.nationality || '';
@@ -3818,11 +3826,26 @@ document.getElementById('tplSaveBtn').addEventListener('click', ()=>{
   toast(t('toast.customerSaved'));
   renderTemplates();
 });
-document.getElementById('tplDeleteBtn').addEventListener('click', ()=>{
+document.getElementById('tplDeleteBtn').addEventListener('click', async ()=>{
   if(!editingTemplateId) return;
   if(!confirm(t('confirm.delete'))) return;
-  DB.templates = DB.templates.filter(t=>t.id!==editingTemplateId);
+  const deletedId = editingTemplateId;
+  DB.templates = DB.templates.filter(t=>t.id!==deletedId);
   saveDB(DB);
+  // /api/sync is upsert-only by design (never deletes, to protect against an incomplete
+  // sync payload wiping data) — so a deleted template needs this explicit call too, same
+  // as deleting a customer, or it would just reappear on the next pull from any computer
+  if(isSyncEnabled()){
+    const base = getServerUrl();
+    try{
+      const res = await fetch(base+'/api/templates/'+deletedId, {method:'DELETE', headers: authHeaders()});
+      if(!res.ok && res.status!==404) throw new Error('HTTP '+res.status);
+      setOfflineBanner(false);
+    }catch(err){
+      console.warn('Could not delete template on the server — it may reappear after the next pull until this succeeds:', err.message);
+      setOfflineBanner(true, err.message);
+    }
+  }
   closeAllModals();
   toast(t('toast.deleted'));
   renderTemplates();
@@ -4136,11 +4159,18 @@ if(isStayUnlocked()){
     unlockApp();
   });
 }
-document.getElementById('btnLogout').addEventListener('click', ()=>{
+document.getElementById('btnLogout').addEventListener('click', async ()=>{
   const msg = LANG==='zh'
     ? '退出登录后，本机缓存的客户数据会被清除，下次打开需要重新输入服务器地址与密钥。是否继续？'
     : 'Logging out clears this computer\'s cached customer data — next time you open this, you\'ll need to enter the server address and password again. Continue?';
   if(!confirm(msg)) return;
+  // flush any pending debounced push FIRST — logging out reloads the page immediately
+  // afterward, which would silently kill that timer and drop whatever was about to sync
+  // (e.g. an edit made just before logging out) if this weren't awaited here
+  if(isSyncEnabled()){
+    clearTimeout(syncTimer);
+    try{ await pushToServer(); }catch(e){ /* already handled/logged inside pushToServer */ }
+  }
   localStorage.removeItem(UNLOCKED_KEY);
   localStorage.removeItem(DB_KEY);
   localStorage.removeItem(SYNC_ENABLED_KEY);
