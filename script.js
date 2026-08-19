@@ -1262,9 +1262,14 @@ function applyStaticI18n(){
    useful for repeat addresses like shared dorms/apartments where several customers from the
    same university end up typing the exact same thing. Newest-used first, since that's most
    likely to be relevant again soon. */
+// Always-available address, in addition to whatever customers have actually used before —
+// useful for a common/default address (e.g. the store's own) that should be suggested even
+// before any customer record has it.
+const DEFAULT_ADDRESS_SUGGESTIONS = ['대전시 동구 동대전로 171'];
 function populateAddressSuggestions(){
   const seen = new Set();
   const addresses = [];
+  DEFAULT_ADDRESS_SUGGESTIONS.forEach(a=>{ if(a && !seen.has(a)){ seen.add(a); addresses.push(a); } });
   [...DB.customers].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)).forEach(c=>{
     const addr = (c.address||'').trim();
     if(addr && !seen.has(addr)){ seen.add(addr); addresses.push(addr); }
