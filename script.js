@@ -1258,6 +1258,19 @@ function applyStaticI18n(){
   populateStaticSelects();
 }
 
+/* Every address a customer has ever had, remembered as browser-native autocomplete — most
+   useful for repeat addresses like shared dorms/apartments where several customers from the
+   same university end up typing the exact same thing. Newest-used first, since that's most
+   likely to be relevant again soon. */
+function populateAddressSuggestions(){
+  const seen = new Set();
+  const addresses = [];
+  [...DB.customers].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)).forEach(c=>{
+    const addr = (c.address||'').trim();
+    if(addr && !seen.has(addr)){ seen.add(addr); addresses.push(addr); }
+  });
+  document.getElementById('addressSuggestions').innerHTML = addresses.map(a=>`<option value="${escapeHtml(a)}">`).join('');
+}
 function populateStaticSelects(){
   // nationality is now free-text (f_nationality input) — no options to populate
   const fr = document.getElementById('f_referral');
@@ -2054,6 +2067,7 @@ function openCustomerModal(customer){
   editingCustomerId = customer ? customer.id : null;
   document.getElementById('customerModalTitle').textContent = customer ? t('modal.editCustomer') : t('modal.newCustomer');
   populateStaticSelects();
+  populateAddressSuggestions();
   document.getElementById('f_name').value = customer?.name || '';
   document.getElementById('f_phone').value = customer?.phone || '';
   document.getElementById('f_nationality').value = customer?.nationality || '';
