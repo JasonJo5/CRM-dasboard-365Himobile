@@ -70,6 +70,7 @@ const I18N = {
     'io.import.modeTitle':'导入方式','io.import.modeMerge':'与现有客户合并','io.import.modeMergeDesc':'保留现有客户档案，仅新增导入文件中不重复的客户','io.import.modeReplace':'清空现有客户，改用此文件的数据','io.import.modeReplaceDesc':'导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件','io.import.skipDupes':'自动跳过重复客户（按姓名或电话匹配）',
     'io.import.sheet':'选择表格 Sheet','io.import.sheets':'选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
     'io.export.title':'导出备份','io.export.desc':'将客户、订单与提醒数据导出为 Excel 文件','io.export.customers':'导出客户档案','io.export.orders':'导出业务订单','io.export.reminders':'导出到期跟进','io.export.all':'导出全部数据（一体备份）',
+    'io.yearExport.title':'按类型与年份导出','io.yearExport.desc':'按先付/后付与年份导出，格式为一个年份一个分页，月份之间用一行分隔 — 适合整理归档或未来导入数据库','io.yearExport.typeLabel':'业务类型','io.yearExport.yearLabel':'年份','io.yearExport.btn':'📅 导出该年份数据',
     'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
     'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.keyLabel':'密钥 API Key（在服务器 .env 文件中设置）','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
     'lock.title':'365Himobile 客户管理系统','lock.desc':'请输入服务器地址与密钥以载入客户数据','lock.passwordLabel':'密钥 / 密码','lock.unlock':'解锁并载入数据','lock.skip':'跳过 — 仅在本机使用（空白，不含任何客户数据）','lock.logout':'🔒 退出登录 Log out',
@@ -154,6 +155,7 @@ const I18N = {
     'io.import.modeTitle':'Import mode','io.import.modeMerge':'Merge with existing customers','io.import.modeMergeDesc':'Keeps existing customer records; only adds new customers that aren\'t already in the list','io.import.modeReplace':'Clear existing customers and use this file instead','io.import.modeReplaceDesc':'Automatically exports a backup of current customer data (Excel) first, then clears and loads the new file','io.import.skipDupes':'Automatically skip duplicate customers (matched by name or phone)',
     'io.import.sheet':'Sheet','io.import.sheets':'Sheets to import (select multiple — e.g. prepaid and postpaid together)','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
     'io.export.title':'Export backup','io.export.desc':'Export customer, order and reminder data to Excel','io.export.customers':'Export customer profiles','io.export.orders':'Export service orders','io.export.reminders':'Export reminders','io.export.all':'Export everything (full backup)',
+    'io.yearExport.title':'Export by type & year','io.yearExport.desc':'Export by prepaid/postpaid and year, formatted as one sheet per year with months separated by a divider row — good for archiving or a future database import','io.yearExport.typeLabel':'Subscription type','io.yearExport.yearLabel':'Year','io.yearExport.btn':'📅 Export this year',
     'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
     'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.keyLabel':'API Key (set in the server\'s .env file)','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
     'lock.title':'365Himobile Customer Management','lock.desc':'Enter the server address and password to load customer data','lock.passwordLabel':'Password / Key','lock.unlock':'Unlock & Load Data','lock.skip':'Skip — use this computer only (blank, no customer data)','lock.logout':'🔒 Log out',
@@ -3060,6 +3062,13 @@ function renderIO(){
   document.getElementById('syncApiKey').value = getApiKey();
   document.getElementById('syncEnabledCheckbox').checked = isSyncEnabled();
   updateSyncStatusUI();
+  // year dropdown for the by-type-and-year export — only years that actually have data
+  { const yearSel = document.getElementById('yearExportYear');
+    const years = [...new Set(DB.services.map(s=>s.activationDate).filter(isIsoDate).map(d=>d.slice(0,4)))].sort().reverse();
+    const prev = yearSel.value;
+    yearSel.innerHTML = years.length ? years.map(y=>`<option value="${y}">${y}</option>`).join('') : `<option value="">${LANG==='zh'?'无数据':'No data'}</option>`;
+    if(years.includes(prev)) yearSel.value = prev;
+  }
   // data issues
   const issues = [];
   DB.customers.forEach(c=>{
@@ -3114,6 +3123,53 @@ function downloadXlsx(rows, filename, sheetName){
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, sheetName);
   XLSX.writeFile(wb, filename);
+  toast(t('toast.exported'));
+}
+/* Exports one subscription type (prepaid or postpaid) for one year, formatted to match the
+   cleaned reference spreadsheet: one sheet, months grouped with a single divider row between
+   them, same column set and header labels. Prepaid and postpaid have genuinely different
+   financial models in this app (prepaid = one flat one-time price; postpaid = catalog price
+   minus discount minus USIM fee), so each gets its own field mapping below rather than
+   forcing them into one shape. */
+const YEAR_EXPORT_HEADERS = ['Activation Date','Customer Name','Business Type','Company','Partner Company',
+  'Carrier Type','Plan / Monthly Fee','Phone Number','Birth (YYMMDD)','School / Status','Nationality',
+  'Amount','Signup / USIM Fee','Customer Discount','Total'];
+function yearExportRowFor(s, c){
+  const isPostpaid = s.type==='postpaid';
+  const grossAmount = isPostpaid ? (s.actualProfit || s.expectedProfit || 0) : (s.sellingPrice||0);
+  const usimFee = isPostpaid ? (s.usimFee ? -Number(s.usimFee) : 0) : '';
+  const discount = isPostpaid ? (discountTotalFor(s) ? -discountTotalFor(s) : 0) : '';
+  const total = isPostpaid ? netProfitFor(s) : (s.sellingPrice||0);
+  return [
+    s.activationDate||'', c?.name||'', (c?.workType||c?.planType||''), s.company||'',
+    isPostpaid ? (s.partnerCompany||'') : '', s.svcCarrierType||'',
+    isPostpaid ? (s.monthlyFee||0) : (s.plan||''), s.number||c?.phone||'',
+    toYYMMDD(c?.dob)||'', c?.workplace||c?.occupation||'', c?.nationality||'',
+    grossAmount, usimFee, discount, total,
+  ];
+}
+function exportByTypeYear(){
+  const type = document.getElementById('yearExportType').value;
+  const year = document.getElementById('yearExportYear').value;
+  if(!year){ toast(LANG==='zh'?'没有可导出的数据':'No data to export'); return; }
+  const monthNames = LANG==='zh'
+    ? ['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+    : ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+  const svcs = DB.services.filter(s=> s.type===type && isIsoDate(s.activationDate) && s.activationDate.slice(0,4)===year);
+  if(!svcs.length){ toast(LANG==='zh'?'该年份没有可导出的数据':'No data for that year'); return; }
+  const byMonth = {};
+  svcs.forEach(s=>{ const m=Number(s.activationDate.slice(5,7)); (byMonth[m]=byMonth[m]||[]).push(s); });
+  const aoa = [YEAR_EXPORT_HEADERS];
+  Object.keys(byMonth).map(Number).sort((a,b)=>a-b).forEach(m=>{
+    const monthSvcs = byMonth[m].sort((a,b)=> a.activationDate.localeCompare(b.activationDate));
+    aoa.push([`${monthNames[m]} ${year} — ${monthSvcs.length} ${LANG==='zh'?'位客户':'customers'}`]);
+    monthSvcs.forEach(s=> aoa.push(yearExportRowFor(s, getCustomer(s.customerId))));
+  });
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:14},{wch:22},{wch:10},{wch:10},{wch:14},{wch:12},{wch:16},{wch:14},{wch:13},{wch:14},{wch:11},{wch:11},{wch:13},{wch:13},{wch:11}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, year);
+  XLSX.writeFile(wb, `Himobile_${type}_${year}.xlsx`);
   toast(t('toast.exported'));
 }
 function exportAll(){
@@ -3844,6 +3900,7 @@ document.getElementById('exportCustomersBtn').addEventListener('click', exportCu
 document.getElementById('exportOrdersBtn').addEventListener('click', exportOrdersXlsx);
 document.getElementById('exportRemindersBtn').addEventListener('click', exportRemindersXlsx);
 document.getElementById('exportAllBtn').addEventListener('click', exportAll);
+document.getElementById('yearExportBtn').addEventListener('click', exportByTypeYear);
 document.getElementById('syncServerUrl').addEventListener('change', e=> setServerUrl(e.target.value.trim()));
 document.getElementById('syncApiKey').addEventListener('change', e=> setApiKey(e.target.value.trim()));
 document.getElementById('syncEnabledCheckbox').addEventListener('change', e=>{
