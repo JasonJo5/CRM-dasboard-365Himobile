@@ -467,13 +467,8 @@
         <div class="card" style="margin-top:16px;">
           <div class="section-title" data-i18n="io.yearExport.title">按类型与年份导出</div>
           <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.yearExport.desc">按先付/后付与年份导出，格式为一个年份一个分页，月份之间用一行分隔 — 适合整理归档或未来导入数据库</div>
+          <div class="chip-tabs" id="yearExportTypeTabs" style="margin-bottom:14px;"></div>
           <div class="form-grid">
-            <div class="form-field"><label data-i18n="io.yearExport.typeLabel">业务类型</label>
-              <select id="yearExportType">
-                <option value="postpaid" data-i18n="opt.postpaidShort">后付卡 Postpaid</option>
-                <option value="prepaid" data-i18n="opt.prepaidShort">先付卡 Prepaid</option>
-              </select>
-            </div>
             <div class="form-field"><label data-i18n="io.yearExport.yearLabel">年份</label>
               <select id="yearExportYear"></select>
             </div>
