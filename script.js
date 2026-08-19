@@ -3057,14 +3057,24 @@ function renderMoneyBars(elId, map){
 }
 
 /* ---------------- IMPORT / EXPORT ---------------- */
+let yearExportType = 'postpaid';
 function renderIO(){
   document.getElementById('syncServerUrl').value = getServerUrl();
   document.getElementById('syncApiKey').value = getApiKey();
   document.getElementById('syncEnabledCheckbox').checked = isSyncEnabled();
   updateSyncStatusUI();
-  // year dropdown for the by-type-and-year export — only years that actually have data
+  // type tabs for the by-type-and-year export, styled exactly like Sheet View's tabs
+  { const tabs = [
+      {key:'postpaid', label:'custtab.postpaid', n:DB.services.filter(s=>s.type==='postpaid').length},
+      {key:'prepaid', label:'custtab.prepaid', n:DB.services.filter(s=>s.type==='prepaid').length},
+    ];
+    document.getElementById('yearExportTypeTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${yearExportType===tb.key?'active':''}" data-yearexporttab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
+    document.querySelectorAll('[data-yearexporttab]').forEach(b=> b.addEventListener('click', ()=>{ yearExportType=b.dataset.yearexporttab; renderIO(); }));
+  }
+  // year dropdown for the by-type-and-year export — only years that actually have data for
+  // whichever type tab is currently selected
   { const yearSel = document.getElementById('yearExportYear');
-    const years = [...new Set(DB.services.map(s=>s.activationDate).filter(isIsoDate).map(d=>d.slice(0,4)))].sort().reverse();
+    const years = [...new Set(DB.services.filter(s=>s.type===yearExportType).map(s=>s.activationDate).filter(isIsoDate).map(d=>d.slice(0,4)))].sort().reverse();
     const prev = yearSel.value;
     yearSel.innerHTML = years.length ? years.map(y=>`<option value="${y}">${y}</option>`).join('') : `<option value="">${LANG==='zh'?'无数据':'No data'}</option>`;
     if(years.includes(prev)) yearSel.value = prev;
@@ -3149,7 +3159,7 @@ function yearExportRowFor(s, c){
   ];
 }
 function exportByTypeYear(){
-  const type = document.getElementById('yearExportType').value;
+  const type = yearExportType;
   const year = document.getElementById('yearExportYear').value;
   if(!year){ toast(LANG==='zh'?'没有可导出的数据':'No data to export'); return; }
   const monthNames = LANG==='zh'
