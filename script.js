@@ -3600,6 +3600,16 @@ function guessField(row, keys){
   }
   return '';
 }
+// Real-world spreadsheets often format money as text with a currency symbol and thousands
+// separators (e.g. "₩65,000") — Number() on that string alone returns NaN. Strips everything
+// except digits, minus sign, and decimal point before parsing.
+function guessNumber(row, keys){
+  const raw = guessField(row, keys);
+  if(raw===''||raw==null) return 0;
+  if(typeof raw==='number') return raw;
+  const cleaned = String(raw).replace(/[^0-9.-]/g,'');
+  return cleaned==='' ? 0 : (Number(cleaned)||0);
+}
 function updateImportSkipDupesUI(){
   const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'merge';
   const skip = document.getElementById('importSkipDupes').checked;
@@ -3669,15 +3679,20 @@ function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
       address:String(guessField(row,['address','地址'])||''),
       notes:String(guessField(row,['notes','备注','客户备注'])||''),
       rating:Number(guessField(row,['rating','评分','客户星级']))||3,
+      handlerName:String(guessField(row,['handlername','办理人','担当者'])||''),
     };
     DB.customers.push(cust);
     cust.workType = String(guessField(row,['worktype','业务向','업무향'])||'');
     const plan = guessField(row,['plan','套餐']);
-    const carrier = guessField(row,['carrier','通信社','通信公司','签约公司','开通社']);
+    const carrier = guessField(row,['carrier','통신사','통신社','签约公司','开通社']);
     const rawDurationDays = guessField(row,['contractdays','合同天数','已使用天','계약일수','天数']);
     let durationDays;
     if(resolvedSubType==='prepaid'){
-      durationDays = 90;
+      // real prepaid plans come in 15/30/60/90-day tiers — snap to the nearest one instead
+      // of assuming every prepaid signup is 90 days regardless of what the sheet says
+      const parsedDays = Number(rawDurationDays);
+      const tiers = PREPAID_PLANS.map(p=>p.days);
+      durationDays = parsedDays>0 ? tiers.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, tiers[0]) : tiers[tiers.length-1];
     } else {
       const parsedDays = Number(rawDurationDays);
       durationDays = parsedDays>0 ? POSTPAID_CONTRACT_DAYS.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, POSTPAID_CONTRACT_DAYS[0]) : POSTPAID_CONTRACT_DAYS[0];
@@ -3694,24 +3709,44 @@ function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
         const d = new Date(importedActivationDate); d.setDate(d.getDate()+durationDays);
         return d.toISOString().slice(0,10);
       })();
+      const baseFields = {
+        type:resolvedSubType, carrier:String(carrier||''), plan:String(plan||''),
+        number:String(guessField(row,['number','号码','currentnumber','开通号码'])||''), simType:'physical',
+        activationDate:importedActivationDate, durationDays,
+        expiryDate:computedExpiryDate, status:'active', notes:'', paymentMethod:'cash', commission:0,
+        company:String(guessField(row,['company','가입회사','开通社','通信公司'])||''),
+        partnerCompany:String(guessField(row,['partnercompany','签约公司','파트너사'])||''),
+        svcCarrierType:String(guessField(row,['carriertype','통신사','통신사長신사','通信社'])||''),
+      };
       // routes through the same enforcement path as every other subscription change, so the
       // imported record is immediately recognized as active — without this, imported customers
       // silently show "No active subscription" everywhere (including Sheet View) until the next
       // page reload triggers the self-heal migration
-      setActiveSubscription(cust.id, {
-        type:resolvedSubType, carrier:String(carrier||''), plan:String(plan||''),
-        number:String(guessField(row,['number','号码','currentnumber','开通号码'])||''), simType:'physical',
-        activationDate:importedActivationDate, durationDays,
-        expiryDate:computedExpiryDate, status:'active',
-        monthlyFee:Number(guessField(row,['monthlyfee','月租','월세']))||0,
-        discount:Number(guessField(row,['discount','月租优惠','优惠']))||0,
-        firstMonthPayment:Number(guessField(row,['amount','金额','价格','实收']))||0,activationFee:0,simFee:0,
-        sellingPrice:Number(guessField(row,['amount','金额','价格','实收']))||0, cost:0, received:Number(guessField(row,['amount','金额','价格','实收']))||0,
-        paymentMethod:'cash', commission:0, notes:'',
-        company:String(guessField(row,['company','가입회사','开通社'])||''),
-        partnerCompany:String(guessField(row,['partnercompany','签约公司','파트너사'])||''),
-        svcCarrierType:String(guessField(row,['carriertype','통신사','통신사長신사','通信社'])||''),
-      }, 'new');
+      let svcData;
+      if(resolvedSubType==='prepaid'){
+        // Real spreadsheets track price and discount as separate columns that together
+        // explain the final amount received (e.g. price 70,000 minus a 5,000 discount =
+        // 65,000 received) — reading price/discount directly and computing the final price
+        // ourselves is more reliable than trying to parse a "received" column that's often
+        // formatted as currency text (e.g. "₩65,000", which Number() alone can't parse).
+        const price = guessNumber(row, ['price','价格','金额']);
+        const discount = Math.abs(guessNumber(row, ['discount','支出','团体折扣','优惠']));
+        svcData = {
+          ...baseFields, price, discount, sellingPrice:Math.max(0, price-discount), received:Math.max(0, price-discount),
+          cost:0, monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0,
+        };
+      } else {
+        svcData = {
+          ...baseFields,
+          monthlyFee:guessNumber(row, ['monthlyfee','月租','월세']),
+          discount:guessNumber(row, ['discount','月租优惠','优惠']),
+          firstMonthPayment:guessNumber(row, ['amount','金额','价格','实收']),
+          sellingPrice:guessNumber(row, ['amount','金额','价格','实收']),
+          received:guessNumber(row, ['amount','金额','价格','实收']),
+          activationFee:0, simFee:0,
+        };
+      }
+      setActiveSubscription(cust.id, svcData, 'new');
     }
     added++;
   });
