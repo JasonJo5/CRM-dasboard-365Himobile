@@ -70,6 +70,7 @@ const I18N = {
     'io.import.modeTitle':'导入方式','io.import.modeMerge':'与现有客户合并','io.import.modeMergeDesc':'保留现有客户档案，仅新增导入文件中不重复的客户','io.import.modeReplace':'清空现有客户，改用此文件的数据','io.import.modeReplaceDesc':'导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件','io.import.skipDupes':'自动跳过重复客户（按姓名或电话匹配）',
     'io.import.sheet':'选择表格 Sheet','io.import.sheets':'选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
     'io.export.title':'导出备份','io.export.desc':'将客户、订单与提醒数据导出为 Excel 文件','io.export.customers':'导出客户档案','io.export.orders':'导出业务订单','io.export.reminders':'导出到期跟进','io.export.all':'导出全部数据（一体备份）',
+    'io.restore.desc':'⚠️ 从「导出全部数据」生成的备份文件中恢复 — 请勿使用普通的「导入 Excel」来导入此文件，日期会出错','io.restore.btn':'🩹 从完整备份恢复数据',
     'io.yearExport.title':'按类型与年份导出','io.yearExport.desc':'按先付/后付与年份导出，格式为一个年份一个分页，月份之间用一行分隔 — 适合整理归档或未来导入数据库','io.yearExport.typeLabel':'业务类型','io.yearExport.yearLabel':'年份','io.yearExport.btn':'📅 导出该年份数据',
     'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
     'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.keyLabel':'密钥 API Key（在服务器 .env 文件中设置）','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
@@ -155,6 +156,7 @@ const I18N = {
     'io.import.modeTitle':'Import mode','io.import.modeMerge':'Merge with existing customers','io.import.modeMergeDesc':'Keeps existing customer records; only adds new customers that aren\'t already in the list','io.import.modeReplace':'Clear existing customers and use this file instead','io.import.modeReplaceDesc':'Automatically exports a backup of current customer data (Excel) first, then clears and loads the new file','io.import.skipDupes':'Automatically skip duplicate customers (matched by name or phone)',
     'io.import.sheet':'Sheet','io.import.sheets':'Sheets to import (select multiple — e.g. prepaid and postpaid together)','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
     'io.export.title':'Export backup','io.export.desc':'Export customer, order and reminder data to Excel','io.export.customers':'Export customer profiles','io.export.orders':'Export service orders','io.export.reminders':'Export reminders','io.export.all':'Export everything (full backup)',
+    'io.restore.desc':'⚠️ Restore from a file produced by "Export all data" — don\'t use the regular "Import Excel" for this file, dates will come out wrong','io.restore.btn':'🩹 Restore from full backup',
     'io.yearExport.title':'Export by type & year','io.yearExport.desc':'Export by prepaid/postpaid and year, formatted as one sheet per year with months separated by a divider row — good for archiving or a future database import','io.yearExport.typeLabel':'Subscription type','io.yearExport.yearLabel':'Year','io.yearExport.btn':'📅 Export this year',
     'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
     'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.keyLabel':'API Key (set in the server\'s .env file)','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
@@ -3224,6 +3226,69 @@ function exportAll(){
   XLSX.writeFile(wb, `Himobile_Full_Backup_${todayISO()}.xlsx`);
   toast(t('toast.exported'));
 }
+/* Restores from a file produced by exportAll() above — deliberately separate from the
+   general-purpose Excel importer. That importer expects one row per customer with the plan
+   info attached directly (matching messy real-world carrier spreadsheets) and guesses column
+   meaning from header text; this backup format is a direct dump of the app's own internal
+   fields split across two sheets (Customers / Orders) linked by id. Pushing it through the
+   general importer silently defaulted every activation date to "today" because that importer
+   never finds a plan/date on a Customers-sheet row — this reads both sheets by their known
+   exact field names instead, so nothing needs to be guessed. */
+function restoreFromFullBackup(file){
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      if(!wb.SheetNames.includes('Customers') || !wb.SheetNames.includes('Orders')){
+        toast(LANG==='zh'?'这不是「导出全部数据」生成的备份文件（缺少 Customers / Orders 分页）':'This isn\'t a file from "Export all data" (missing the Customers/Orders sheets)');
+        return;
+      }
+      const customers = XLSX.utils.sheet_to_json(wb.Sheets['Customers']);
+      const services = XLSX.utils.sheet_to_json(wb.Sheets['Orders']);
+      if(!customers.length){ toast(LANG==='zh'?'备份文件中没有客户数据':'No customer data found in this backup'); return; }
+      const msg = LANG==='zh'
+        ? `将用备份文件恢复数据：${customers.length} 位客户、${services.length} 条业务记录。这会替换本机当前显示的所有数据。是否继续？`
+        : `Restore from this backup: ${customers.length} customers, ${services.length} service records. This replaces everything currently shown on this computer. Continue?`;
+      if(!confirm(msg)) return;
+      // normalize every date-like field back to a plain 'YYYY-MM-DD' string — sheet_to_json
+      // can hand back either the original string or a JS Date depending on how Excel stored
+      // the cell, and every calculation in this app expects the plain string form
+      const normDate = v => v==null || v==='' ? '' : (isIsoDate(v) ? String(v).slice(0,10) : (parseFlexibleDate(v)||''));
+      DB.customers = customers.map(c=>({
+        ...c,
+        dob: normDate(c.dob), idExpiry: normDate(c.idExpiry),
+        createdAt: c.createdAt || null,
+        years: Number(c.years)||0, rating: c.rating ? Number(c.rating) : undefined,
+      }));
+      DB.services = services.map(s=>({
+        ...s,
+        activationDate: normDate(s.activationDate), expiryDate: normDate(s.expiryDate),
+        endedAt: normDate(s.endedAt) || null,
+        durationDays: s.durationDays!=null ? Number(s.durationDays) : null,
+        isActive: s.isActive===true || s.isActive==='TRUE' || s.isActive==='true',
+        monthlyFee:Number(s.monthlyFee)||0, expectedProfit:Number(s.expectedProfit)||0,
+        actualProfit:Number(s.actualProfit)||0, usimFee:Number(s.usimFee)||0,
+        discountPerMonth:Number(s.discountPerMonth)||0, discountMonths:Number(s.discountMonths)||0,
+        sellingPrice:Number(s.sellingPrice)||0, received:Number(s.received)||0, cost:Number(s.cost)||0,
+        commission:Number(s.commission)||0, firstMonthPayment:Number(s.firstMonthPayment)||0,
+        activationFee:Number(s.activationFee)||0, simFee:Number(s.simFee)||0, discount:Number(s.discount)||0,
+      }));
+      ensurePreetiTemplate(DB);
+      repairInvalidDates(DB);
+      repairActiveSubscriptions(DB);
+      repairJoinDates(DB);
+      repairMissingExpiryDates(DB);
+      saveDB(DB);
+      toast(LANG==='zh'?`已恢复 ${DB.customers.length} 位客户、${DB.services.length} 条业务记录`:`Restored ${DB.customers.length} customers, ${DB.services.length} services`);
+      renderPage(currentPage);
+      renderNav();
+    }catch(err){
+      toast(LANG==='zh'?'备份文件解析失败：':'Failed to read backup file: '+err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
 
 // import
 let pendingImportRows = [];
@@ -3959,6 +4024,11 @@ document.getElementById('exportCustomersBtn').addEventListener('click', exportCu
 document.getElementById('exportOrdersBtn').addEventListener('click', exportOrdersXlsx);
 document.getElementById('exportRemindersBtn').addEventListener('click', exportRemindersXlsx);
 document.getElementById('exportAllBtn').addEventListener('click', exportAll);
+document.getElementById('restoreBackupBtn').addEventListener('click', ()=> document.getElementById('restoreBackupInput').click());
+document.getElementById('restoreBackupInput').addEventListener('change', e=>{
+  if(e.target.files[0]) restoreFromFullBackup(e.target.files[0]);
+  e.target.value = '';
+});
 document.getElementById('yearExportBtn').addEventListener('click', exportByTypeYear);
 document.getElementById('syncServerUrl').addEventListener('change', e=> setServerUrl(e.target.value.trim()));
 document.getElementById('syncApiKey').addEventListener('change', e=> setApiKey(e.target.value.trim()));
