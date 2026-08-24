@@ -767,10 +767,17 @@ async function pushToServer(){
     });
     if(res.status===401) throw new Error(LANG==='zh'?'密钥不正确，请检查服务器同步设置':'Incorrect API key — check server sync settings');
     if(!res.ok) throw new Error('HTTP '+res.status);
+    const result = await res.json();
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     updateSyncStatusUI();
     setOfflineBanner(false);
-    return {ok:true};
+    // the server processes each record independently now, so most records can succeed even
+    // if a few specific ones fail — log it for debugging, but don't toast here since this
+    // function also runs silently in the background after every save; the explicit "Push
+    // now" button handler surfaces this to the user itself
+    const failedCount = (result.failedCustomers?.length||0) + (result.failedServices?.length||0);
+    if(failedCount > 0) console.warn('Some records failed to sync:', result.failedCustomers, result.failedServices);
+    return {ok:true, failedCustomers: result.failedCustomers, failedServices: result.failedServices};
   }catch(err){
     // silent by design: a store computer that's briefly offline, or the server not running
     // yet, should never interrupt someone mid-task — local data keeps working regardless
@@ -3986,9 +3993,18 @@ document.getElementById('btnPushSync').addEventListener('click', async ()=>{
   btn.disabled = true;
   const result = await pushToServer();
   btn.disabled = false;
-  toast(result.ok
-    ? (LANG==='zh'?`已推送 ${DB.customers.length} 位客户、${DB.services.length} 条业务记录`:`Pushed ${DB.customers.length} customers, ${DB.services.length} services`)
-    : (LANG==='zh'?'推送失败：':'Push failed: ')+(result.error||''));
+  if(!result.ok){
+    toast((LANG==='zh'?'推送失败：':'Push failed: ')+(result.error||''));
+    return;
+  }
+  const failedCount = (result.failedCustomers?.length||0) + (result.failedServices?.length||0);
+  if(failedCount > 0){
+    toast(LANG==='zh'
+      ? `已推送大部分数据，但有 ${failedCount} 条记录失败 — 详见浏览器控制台（按 F12 → Console）`
+      : `Most data was pushed, but ${failedCount} record(s) failed — check the browser console (F12 → Console) for details`);
+  } else {
+    toast(LANG==='zh'?`已推送 ${DB.customers.length} 位客户、${DB.services.length} 条业务记录`:`Pushed ${DB.customers.length} customers, ${DB.services.length} services`);
+  }
 });
 document.getElementById('btnPullSync').addEventListener('click', async ()=>{
   const url = document.getElementById('syncServerUrl').value.trim();
