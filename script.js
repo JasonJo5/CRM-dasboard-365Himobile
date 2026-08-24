@@ -791,8 +791,27 @@ function loadDB(){
   return empty;
 }
 function saveDB(db){
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  saveDBToLocalStorage(db);
   scheduleServerSync();
+}
+/* localStorage has a hard size cap per browser (commonly 5-10MB) — a real customer base of
+   hundreds of records plus print templates (which embed real scanned images as base64 data,
+   often the single largest contributor) can exceed it. Without this safety net, a quota
+   error here would throw and block whatever action triggered the save — including, as
+   happened, the unlock flow itself. Falls back to caching without templates (the biggest
+   and least time-critical piece — they're always available again on the next server pull)
+   rather than losing the ability to work locally at all. */
+function saveDBToLocalStorage(db){
+  try{
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+  }catch(err){
+    console.warn('Local cache write failed (likely storage quota), retrying without print templates:', err.message);
+    try{
+      localStorage.setItem(DB_KEY, JSON.stringify({...db, templates:[]}));
+    }catch(err2){
+      console.warn('Local cache write still failed even without templates — continuing with in-memory data only for this session:', err2.message);
+    }
+  }
 }
 // DB starts as a harmless empty placeholder — NOT loaded from localStorage yet. This is
 // intentional: real (or previously-cached) customer data must never sit in memory before
@@ -911,7 +930,9 @@ async function pullFromServer(){
     repairActiveSubscriptions(DB);
     repairJoinDates(DB);
     repairMissingExpiryDates(DB);
-    localStorage.setItem(DB_KEY, JSON.stringify(DB)); // cache locally, skip re-triggering a push
+    saveDBToLocalStorage(DB); // safe against storage-quota errors — a caching failure here
+    // must never block the unlock/pull itself, since the real data was already successfully
+    // retrieved from the server and is correctly sitting in memory at this point
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     setOfflineBanner(false);
     return {ok:true};
