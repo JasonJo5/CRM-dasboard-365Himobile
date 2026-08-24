@@ -461,6 +461,10 @@
               <button class="btn btn-ghost" id="exportOrdersBtn" data-i18n="io.export.orders">导出业务订单</button>
               <button class="btn btn-ghost" id="exportRemindersBtn" data-i18n="io.export.reminders">导出到期跟进</button>
               <button class="btn btn-ghost" id="exportAllBtn" data-i18n="io.export.all">导出全部数据（一体备份）</button>
+              <div class="form-hr" style="margin:4px 0;"></div>
+              <div class="section-desc" style="margin-bottom:2px;" data-i18n="io.restore.desc">⚠️ 从「导出全部数据」生成的备份文件中恢复 — 请勿使用普通的「导入 Excel」来导入此文件，日期会出错</div>
+              <input type="file" id="restoreBackupInput" accept=".xlsx,.xls" style="display:none;">
+              <button class="btn" style="background:#FEF2F2;color:#C0392B;border:1.5px solid #FCA5A5;" id="restoreBackupBtn" data-i18n="io.restore.btn">🩹 从完整备份恢复数据</button>
             </div>
           </div>
         </div>
