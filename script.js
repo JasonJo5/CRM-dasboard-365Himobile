@@ -51,7 +51,7 @@ const I18N = {
     'opt.prepaid':'先付卡（3个月充值）','opt.postpaid':'后付卡','opt.prepaidShort':'先付卡','opt.postpaidShort':'后付卡','prepaid3m.hint':'先付卡按充值月数计算，选择3个月时会自动套用프리티电信申请表；1/2个月请另外选择对应模板','postpaid.hint':'后付卡为按月合约，保存时会用下方选择的模板生成申请表（请先在「打印模板」页面上传后付卡运营商表格）',
     'plantype.new':'신규가입 新申请','plantype.mnp':'번호이동 携号转网','plantype.transfer':'명의변경 过户/名义变更','plantype.extend':'기간연장 有效期延长','plantype.convert':'선불전환 转为先付',
     'f.customer':'客户','f.serviceInfo':'业务信息','f.serviceType':'业务类型','f.planDuration':'套餐期限（月）','f.contractLength':'合约期限','f.carrier':'通信社 / MVNO','f.plan':'套餐名称','f.number':'电话号码','f.simType':'SIM 类型','f.activationDate':'开通日期','f.durationDays':'合同时长（天）','f.expiryDate':'到期日期','f.status':'办理状态','f.feeInfo':'费用信息','f.monthlyFee':'月租费','f.discount':'折扣','f.firstMonthPayment':'首月费用','f.activationFee':'开通费','f.simFee':'SIM 卡费','f.paymentInfo':'收款与利润','f.sellingPrice':'销售价','f.cost':'成本','f.received':'已收金额','f.paymentMethod':'付款方式','f.commission':'返点 / 提成',
-    'f.prepaidPlan':'充值套餐','f.price':'价格','f.usimNumber':'USIM 일련번호',
+    'f.prepaidPlan':'充值套餐','f.price':'价格','f.discount':'折扣','f.finalPrice':'最终价格','f.usimNumber':'USIM 일련번호',
     'f.company':'가입회사 Company','f.partnerCompany':'파트너사 Partner company','f.svcCarrierType':'통신사 Carrier type','f.usedDays':'已使用天数 Used days','f.contactMethod':'联系方式','f.planOptions':'套餐选项',
     'opt.physical':'实体卡',
     'lang.zh':'中文','lang.en':'英文','lang.ko':'韩文',
@@ -69,8 +69,7 @@ const I18N = {
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
     'io.import.modeTitle':'导入方式','io.import.modeMerge':'与现有客户合并','io.import.modeMergeDesc':'保留现有客户档案，仅新增导入文件中不重复的客户','io.import.modeReplace':'清空现有客户，改用此文件的数据','io.import.modeReplaceDesc':'导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件','io.import.skipDupes':'自动跳过重复客户（按姓名或电话匹配）',
     'io.import.sheet':'选择表格 Sheet','io.import.sheets':'选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）','io.import.headerRow':'标题行 Header row','io.import.subType':'这批客户属于','io.import.subTypeAuto':'自动判断（根据表格名称）','io.import.subTypePrepaid':'先付卡','io.import.subTypePostpaid':'后付卡',
-    'io.export.title':'导出备份','io.export.desc':'将客户、订单与提醒数据导出为 Excel 文件','io.export.customers':'导出客户档案','io.export.orders':'导出业务订单','io.export.reminders':'导出到期跟进','io.export.all':'导出全部数据（一体备份）',
-    'io.restore.desc':'⚠️ 从「导出全部数据」生成的备份文件中恢复 — 请勿使用普通的「导入 Excel」来导入此文件，日期会出错','io.restore.btn':'🩹 从完整备份恢复数据',
+    'io.export.title':'导出数据','io.export.desc':'导出全部客户与业务数据为一个 Excel 文件（先付/后付各一个分页），结构与「表格视图」完全一致','io.export.all':'📤 导出全部数据',
     'io.yearExport.title':'按类型与年份导出','io.yearExport.desc':'按先付/后付与年份导出，格式为一个年份一个分页，月份之间用一行分隔 — 适合整理归档或未来导入数据库','io.yearExport.typeLabel':'业务类型','io.yearExport.yearLabel':'年份','io.yearExport.btn':'📅 导出该年份数据',
     'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
     'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.keyLabel':'密钥 API Key（在服务器 .env 文件中设置）','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
@@ -137,7 +136,7 @@ const I18N = {
     'opt.prepaid':'Prepaid (3-month recharge, fixed)','opt.postpaid':'Postpaid','opt.prepaidShort':'Prepaid','opt.postpaidShort':'Postpaid','prepaid3m.hint':'Prepaid is billed by recharge months — choosing 3 months auto-applies the Preeti Telecom form; 1/2-month plans use whichever other template you select','postpaid.hint':'Postpaid is a monthly contract — saving will generate the application form using the template selected below (upload your postpaid carrier form in Print Templates first)',
     'plantype.new':'신규가입 New sign-up','plantype.mnp':'번호이동 Number port (MNP)','plantype.transfer':'명의변경 Ownership/name change','plantype.extend':'기간연장 Period extension','plantype.convert':'선불전환 Convert to prepaid',
     'f.customer':'Customer','f.serviceInfo':'Service details','f.serviceType':'Service type','f.planDuration':'Plan duration (months)','f.contractLength':'Contract length','f.carrier':'Carrier / MVNO','f.plan':'Plan name','f.number':'Phone number','f.simType':'SIM type','f.activationDate':'Activation date','f.durationDays':'Contract length (days)','f.expiryDate':'Expiry date','f.status':'Status','f.feeInfo':'Fee details','f.monthlyFee':'Monthly fee','f.discount':'Discount','f.firstMonthPayment':'First month payment','f.activationFee':'Activation fee','f.simFee':'SIM card fee','f.paymentInfo':'Payment & profit','f.sellingPrice':'Selling price','f.cost':'Cost','f.received':'Amount received','f.paymentMethod':'Payment method','f.commission':'Commission / rebate',
-    'f.prepaidPlan':'Plan','f.price':'Price','f.usimNumber':'USIM serial number',
+    'f.prepaidPlan':'Plan','f.price':'Price','f.discount':'Discount','f.finalPrice':'Final price','f.usimNumber':'USIM serial number',
     'f.company':'Company','f.partnerCompany':'Partner company','f.svcCarrierType':'Carrier type','f.usedDays':'Used days','f.contactMethod':'Contact method','f.planOptions':'Plan options',
     'opt.physical':'Physical SIM',
     'lang.zh':'Chinese','lang.en':'English','lang.ko':'Korean',
@@ -155,8 +154,7 @@ const I18N = {
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
     'io.import.modeTitle':'Import mode','io.import.modeMerge':'Merge with existing customers','io.import.modeMergeDesc':'Keeps existing customer records; only adds new customers that aren\'t already in the list','io.import.modeReplace':'Clear existing customers and use this file instead','io.import.modeReplaceDesc':'Automatically exports a backup of current customer data (Excel) first, then clears and loads the new file','io.import.skipDupes':'Automatically skip duplicate customers (matched by name or phone)',
     'io.import.sheet':'Sheet','io.import.sheets':'Sheets to import (select multiple — e.g. prepaid and postpaid together)','io.import.headerRow':'Header row','io.import.subType':'Customer type for this sheet','io.import.subTypeAuto':'Auto-detect from sheet name','io.import.subTypePrepaid':'Prepaid','io.import.subTypePostpaid':'Postpaid',
-    'io.export.title':'Export backup','io.export.desc':'Export customer, order and reminder data to Excel','io.export.customers':'Export customer profiles','io.export.orders':'Export service orders','io.export.reminders':'Export reminders','io.export.all':'Export everything (full backup)',
-    'io.restore.desc':'⚠️ Restore from a file produced by "Export all data" — don\'t use the regular "Import Excel" for this file, dates will come out wrong','io.restore.btn':'🩹 Restore from full backup',
+    'io.export.title':'Export data','io.export.desc':'Export all customer and business data as one Excel file (Prepaid and Postpaid on separate sheets) — matches Sheet View exactly','io.export.all':'📤 Export all data',
     'io.yearExport.title':'Export by type & year','io.yearExport.desc':'Export by prepaid/postpaid and year, formatted as one sheet per year with months separated by a divider row — good for archiving or a future database import','io.yearExport.typeLabel':'Subscription type','io.yearExport.yearLabel':'Year','io.yearExport.btn':'📅 Export this year',
     'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
     'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.keyLabel':'API Key (set in the server\'s .env file)','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
@@ -391,6 +389,14 @@ function sheetCommitEdit(recordType, recordId, field, value){
       rec.expiryDate = d.toISOString().slice(0,10);
     }
   }
+  // prepaid's Final Price column is derived, not directly editable — editing either Price
+  // or Discount here recomputes sellingPrice/received (the app's actual revenue fields)
+  // the same way the New Customer form's live preview already does
+  if(recordType==='service' && rec.type==='prepaid' && (field==='price' || field==='discount')){
+    const finalPrice = Math.max(0, (Number(rec.price)||0) - (Number(rec.discount)||0));
+    rec.sellingPrice = finalPrice;
+    rec.received = finalPrice;
+  }
   saveDB(DB);
   renderNav();
 }
@@ -458,11 +464,16 @@ document.getElementById('sheetRecentFilter').addEventListener('change', renderSh
 
 let sheetTypeTab = 'prepaid';
 function renderSheetPage(){
+  const dupeGroupsRaw = getDuplicateGroups();
+  const dupeGroupsForTabCount = dupeGroupsRaw.map(g=>[...g].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)))
+    .sort((a,b)=> new Date(customerJoinDate(b[0])||0)-new Date(customerJoinDate(a[0])||0));
   const tabs = [
     {key:'prepaid', label:'custtab.prepaid', n:DB.customers.filter(c=>{const a=activeSubscriptionFor(c.id); return a && a.type==='prepaid';}).length},
     {key:'postpaid', label:'custtab.postpaid', n:DB.customers.filter(c=>{const a=activeSubscriptionFor(c.id); return a && a.type==='postpaid';}).length},
+    {key:'inactive', label:'custtab.inactive', n:DB.customers.filter(c=>!activeSubscriptionFor(c.id)).length},
+    {key:'dupes', label:'custtab.dupes', n:dupeGroupsForTabCount.reduce((n,g)=>n+g.length,0)},
   ];
-  document.getElementById('sheetTypeTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${sheetTypeTab===tb.key?'active':''}" data-sheettab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
+  document.getElementById('sheetTypeTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${sheetTypeTab===tb.key?'active':''} ${tb.key==='dupes'&&tb.n?'chip-tab-warn':''}" data-sheettab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
   document.querySelectorAll('[data-sheettab]').forEach(b=> b.addEventListener('click', ()=>{ sheetTypeTab=b.dataset.sheettab; renderSheetPage(); }));
 
   // nationality filter options — only populate once, preserving whatever's selected
@@ -474,6 +485,14 @@ function renderSheetPage(){
   const ratingFilter = ratingSel.value;
   const recentFilter = document.getElementById('sheetRecentFilter').value;
   const search = (document.getElementById('sheetSearch').value||'').toLowerCase();
+
+  // Inactive / Duplicate don't have a "current plan" to show in the editable-spreadsheet
+  // format the way Prepaid/Postpaid do — those two tabs render a simpler, read-only summary
+  // table instead of the editable financial columns, sharing the same filter values above.
+  if(sheetTypeTab==='inactive' || sheetTypeTab==='dupes'){
+    renderSheetSimpleView(sheetTypeTab, dupeGroupsForTabCount, {natFilter, ratingFilter, recentFilter, search});
+    return;
+  }
 
   let rows = DB.customers.map(c=>({c, svc:activeSubscriptionFor(c.id)})).filter(({svc})=> svc && svc.type===sheetTypeTab);
   rows = rows.filter(({c})=>{
@@ -493,7 +512,7 @@ function renderSheetPage(){
   const commonHead = `
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.carrier')}</th><th>${t('f.svcCarrierType')}</th>`;
-  const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.idType')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th>`;
+  const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
   const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
@@ -506,16 +525,23 @@ function renderSheetPage(){
         <td>${sheetTextCell('service',svc.id,'carrier',svc.carrier,'text')}</td>
         <td>${sheetPillCell('service',svc.id,'svcCarrierType',svc.svcCarrierType,POSTPAID_CARRIER_TYPES, t('f.svcCarrierType'))}</td>`;
       if(sheetTypeTab==='prepaid'){
+        const finalPrice = Math.max(0, (Number(svc.price)||0) - (Number(svc.discount)||0));
         return `<tr>${commonCells}
           <td>${sheetTextCell('service',svc.id,'durationDays',svc.durationDays,'number')}</td>
           <td>${sheetReadonlyCell((usedDaysFor(svc)??'—')+(usedDaysFor(svc)!==null?(LANG==='zh'?' 天':' d'):''))}</td>
           <td>${sheetReadonlyCell(contractStatusTextFor(svc, true)||'—')}</td>
+          <td>${sheetTextCell('service',svc.id,'price',svc.price,'number')}</td>
+          <td>${sheetTextCell('service',svc.id,'discount',svc.discount,'number')}</td>
+          <td>${sheetReadonlyCell(fmtWon(finalPrice))}</td>
+          <td>${sheetPillCell('service',svc.id,'company',svc.company,PREPAID_COMPANIES, t('f.company'))}</td>
           <td>${sheetPillCell('customer',c.id,'idType',c.idType,['ARC','Passport'], t('f.idType'))}</td>
+          <td>${sheetTextCell('customer',c.id,'idNumber',c.idNumber,'text')}</td>
           <td>${sheetTextCell('customer',c.id,'phone',c.phone,'text')}</td>
           <td>${sheetTextCell('customer',c.id,'dob',c.dob,'date')}</td>
           <td>${sheetPillCell('customer',c.id,'nationality',c.nationality,NATIONALITIES, t('f.nationality'))}</td>
           <td>${sheetTextCell('customer',c.id,'years',c.years,'number')}</td>
           <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
+          <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
         </tr>`;
       }
       return `<tr>${commonCells}
@@ -542,6 +568,80 @@ function renderSheetPage(){
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
+  });
+}
+/* Simple read-only table for Sheet View's Inactive / Duplicate tabs — these show WHY a
+   customer has no active plan or which records look duplicated, not editable financial
+   columns, so they don't fit the same shape as the Prepaid/Postpaid sheet. */
+function renderSheetSimpleView(tab, dupeGroups, filters){
+  const {natFilter, ratingFilter, recentFilter, search} = filters;
+  const isDupeView = tab==='dupes';
+  const groupIndexById = {};
+  if(isDupeView) dupeGroups.forEach((g,i)=> g.forEach(c=> groupIndexById[c.id]=i));
+
+  let list;
+  if(isDupeView){
+    list = dupeGroups.flat();
+  } else {
+    list = DB.customers.filter(c=>!activeSubscriptionFor(c.id));
+  }
+  list = list.filter(c=>{
+    if(natFilter && c.nationality!==natFilter) return false;
+    if(ratingFilter && String(c.rating)!==ratingFilter) return false;
+    if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
+    if(search){
+      const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
+      if(!hay.includes(search)) return false;
+    }
+    return true;
+  });
+  if(!isDupeView) list.sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0));
+
+  document.getElementById('sheetCount').textContent = isDupeView
+    ? `${dupeGroups.length} ${LANG==='zh'?'组重复 · 共':'duplicate groups · '} ${list.length} ${LANG==='zh'?'位客户 · 按姓名或电话匹配':'customers involved · matched by name or phone'}`
+    : `${list.length} ${LANG==='zh'?'位客户':'customers'}`;
+
+  const head = `<th>${t('col.customer')}</th><th>${t('f.phone')}</th><th>${t('f.nationality')}</th><th>${t('f.idType')}</th>
+    <th>${isDupeView ? t('col.dupeReason') : t('col.contractStatus')}</th><th>${t('col.recentActivity')}</th><th>${t('col.dateAdded')}</th><th>${t('col.rating')}</th><th></th>`;
+  const rowsHtml = list.length ? list.map(c=>{
+    const svcs = customerServices(c.id);
+    const recent = [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0))[0];
+    const groupBand = isDupeView ? (groupIndexById[c.id]%2===0 ? 'dupe-band-a' : 'dupe-band-b') : '';
+    let statusCell;
+    if(isDupeView){
+      const group = dupeGroups[groupIndexById[c.id]];
+      const isNewestInGroup = group[0].id === c.id;
+      const sameName = group.filter(x=>x.id!==c.id).some(x=>x.name.trim().toLowerCase()===c.name.trim().toLowerCase());
+      const samePhone = c.phone && group.filter(x=>x.id!==c.id).some(x=>x.phone===c.phone);
+      const reasons = [sameName?t('dupe.reasonName'):null, samePhone?t('dupe.reasonPhone'):null].filter(Boolean).join(' + ');
+      statusCell = `<td><span class="pill pill-red">${reasons||t('dupe.reasonName')}</span></td>`;
+      var mergeBtn = isNewestInGroup ? `<button class="btn btn-sm btn-primary" data-merge-group="${groupIndexById[c.id]}" title="${LANG==='zh'?'将本组其他重复客户合并到这条最新记录中':'Merge the other duplicates in this group into this newest record'}">🔀 ${t('btn.merge')}</button> ` : '';
+    } else {
+      const reasonTxt = recent && recent.changeReason==='cancelled' ? t('reason.cancelled') : (LANG==='zh'?'未续约':'Not renewed');
+      const endedOn = recent && (recent.endedAt || recent.expiryDate);
+      const daysAgo = endedOn ? daysBetween(endedOn, todayISO()) : null;
+      statusCell = `<td><span style="color:var(--red);font-weight:700;font-size:12px;">${recent ? reasonTxt+(daysAgo!==null && daysAgo>=0 ? (LANG==='zh'?` · ${daysAgo}天前`:` · ${daysAgo}d ago`) : '') : '—'}</span></td>`;
+      var mergeBtn = '';
+    }
+    return `<tr class="row-click ${groupBand}" data-open-customer="${c.id}">
+      <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
+      <td>${escapeHtml(c.phone||'—')}</td>
+      <td><span class="cell-ellipsis">${escapeHtml(c.nationality)}</span></td>
+      <td>${c.idType?t('idtype.'+c.idType):'—'}</td>
+      ${statusCell}
+      <td>${recent? t('type.'+recent.type) : '—'}</td>
+      <td>${fmtDate(customerJoinDate(c))}</td>
+      <td>${'★'.repeat(c.rating||0)}<span style="color:#DADEEA">${'★'.repeat(5-(c.rating||0))}</span></td>
+      <td style="white-space:nowrap;">${mergeBtn}<button class="btn btn-sm btn-ghost" data-open-customer="${c.id}">${t('btn.view')}</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="9">${isDupeView ? emptyStateDupes() : emptyState()}</td></tr>`;
+
+  document.getElementById('sheetTable').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${rowsHtml}</tbody>`;
+  document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
+    el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
+  });
+  document.getElementById('sheetTable').querySelectorAll('[data-merge-group]').forEach(el=>{
+    el.addEventListener('click', (e)=>{ e.stopPropagation(); mergeDuplicateGroup(dupeGroups[Number(el.dataset.mergeGroup)].map(c=>c.id)); renderSheetPage(); });
   });
 }
 
@@ -1203,7 +1303,8 @@ function buildReminders(){
 /* ---------------- rendering: shell ---------------- */
 const NAV_ITEMS = [
   {key:'dashboard', icon:'grid', label:'nav.dashboard'},
-  {key:'customers', icon:'user', label:'nav.customers'},
+  // "Customers" as a standalone page was merged into Sheet View (which now has its own
+  // search/filters plus Inactive/Duplicate tabs) — no longer a separate nav destination
   {key:'sheet', icon:'sheet', label:'nav.sheet'},
   {key:'ai', icon:'sparkle', label:'nav.ai'},
   {key:'reminders', icon:'clock', label:'nav.reminders'},
@@ -1385,7 +1486,7 @@ function renderDashboard(){
       <div class="alert-banner-text">⚠️ ${t('dash.dupeBanner').replace('{groups}',dupeGroups.length).replace('{n}',n)}</div>
       <button class="btn btn-primary" id="dashDupeBannerBtn">${t('dash.dupeBannerBtn')}</button>
     </div>`;
-    document.getElementById('dashDupeBannerBtn').addEventListener('click', ()=>{ custTypeTab='dupes'; goTo('customers'); });
+    document.getElementById('dashDupeBannerBtn').addEventListener('click', ()=>{ sheetTypeTab='dupes'; goTo('sheet'); });
   } else {
     dupeBanner.style.display = 'none';
   }
@@ -1479,9 +1580,8 @@ function renderWinback(){
   bindRowOpens();
 }
 document.getElementById('dashWinbackViewAll').addEventListener('click', ()=>{
-  custTypeTab = 'all';
-  goTo('customers');
-  toast(LANG==='zh' ? '提示：可在客户档案中逐一查看「暂无有效订阅」的客户' : 'Tip: look for the "No active subscription" badge in the customer list');
+  sheetTypeTab = 'inactive';
+  goTo('sheet');
 });
 
 /* revenue trend: last 6 months of actual received payments */
@@ -2112,6 +2212,7 @@ function openCustomerModal(customer){
   document.getElementById('p3_number').value = customer?.phone || '';
   document.getElementById('p3_activationDate').value = todayISO();
   document.getElementById('p3_usimNumber').value = '';
+  document.getElementById('p3_discount').value = '0';
   renderPrepaidPlanTiles('90');
   updatePrepaidPriceFromPlan();
   // this modal is now prepaid-only for NEW customers; when editing an EXISTING postpaid
@@ -2163,8 +2264,17 @@ function updatePrepaidPriceFromPlan(){
   renderTileRadioGroup('p3_company_group', companies, companies.includes(curCompany) ? curCompany : '');
   renderTileRadioGroup('p3_svcCarrierType_group', carriers, carriers.includes(curCarrier) ? curCarrier : '');
   refreshP3TemplateOptions();
+  updateP3FinalPricePreview();
 }
 document.getElementById('p3_prepaidPlan_group').addEventListener('click', ()=> setTimeout(updatePrepaidPriceFromPlan, 0));
+function updateP3FinalPricePreview(){
+  const price = Number(document.getElementById('p3_price').value)||0;
+  const discount = Number(document.getElementById('p3_discount').value)||0;
+  document.getElementById('p3_finalPricePreview').value = fmtWon(Math.max(0, price - discount));
+}
+['p3_price','p3_discount'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateP3FinalPricePreview);
+});
 function refreshP3TemplateOptions(){
   const days = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
   const p3tpl = document.getElementById('p3_template');
@@ -2275,6 +2385,8 @@ function saveCustomerAndPrint(){
   const activationDate = document.getElementById('p3_activationDate').value || todayISO();
   const durationDays = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
   const price = Number(document.getElementById('p3_price').value)||0;
+  const discount = Number(document.getElementById('p3_discount').value)||0;
+  const finalPrice = Math.max(0, price - discount);
   const planInfo = PREPAID_PLANS.find(p=>p.days===durationDays);
   const d = new Date(activationDate); d.setDate(d.getDate()+durationDays);
   const svcData = {
@@ -2285,10 +2397,12 @@ function saveCustomerAndPrint(){
     usimNumber: document.getElementById('p3_usimNumber').value.trim(),
     simType:'physical', activationDate, durationDays,
     expiryDate: d.toISOString().slice(0,10), status:'active',
-    // prepaid is a one-time payment, paid in full at signup — no recurring fee, cost, or
-    // partial-payment tracking needed the way postpaid has
-    monthlyFee:0, discount:0, firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:price, cost:0, received:price, paymentMethod:'cash', commission:0, notes:'',
+    // prepaid is a one-time payment, paid in full at signup — no recurring fee or cost
+    // tracking needed the way postpaid has, but it does have a one-time discount, unlike
+    // before: price is the catalog price before discount, sellingPrice/received are the
+    // FINAL price after it — both stored explicitly so Sheet View can show and edit either
+    monthlyFee:0, price, discount, firstMonthPayment:0, activationFee:0, simFee:0,
+    sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod:'cash', commission:0, notes:'',
     company: document.getElementById('p3_company_group').dataset.selected || '',
     svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
   };
@@ -3093,28 +3207,11 @@ function renderMoneyBars(elId, map){
 }
 
 /* ---------------- IMPORT / EXPORT ---------------- */
-let yearExportType = 'postpaid';
 function renderIO(){
   document.getElementById('syncServerUrl').value = getServerUrl();
   document.getElementById('syncApiKey').value = getApiKey();
   document.getElementById('syncEnabledCheckbox').checked = isSyncEnabled();
   updateSyncStatusUI();
-  // type tabs for the by-type-and-year export, styled exactly like Sheet View's tabs
-  { const tabs = [
-      {key:'postpaid', label:'custtab.postpaid', n:DB.services.filter(s=>s.type==='postpaid').length},
-      {key:'prepaid', label:'custtab.prepaid', n:DB.services.filter(s=>s.type==='prepaid').length},
-    ];
-    document.getElementById('yearExportTypeTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${yearExportType===tb.key?'active':''}" data-yearexporttab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
-    document.querySelectorAll('[data-yearexporttab]').forEach(b=> b.addEventListener('click', ()=>{ yearExportType=b.dataset.yearexporttab; renderIO(); }));
-  }
-  // year dropdown for the by-type-and-year export — only years that actually have data for
-  // whichever type tab is currently selected
-  { const yearSel = document.getElementById('yearExportYear');
-    const years = [...new Set(DB.services.filter(s=>s.type===yearExportType).map(s=>s.activationDate).filter(isIsoDate).map(d=>d.slice(0,4)))].sort().reverse();
-    const prev = yearSel.value;
-    yearSel.innerHTML = years.length ? years.map(y=>`<option value="${y}">${y}</option>`).join('') : `<option value="">${LANG==='zh'?'无数据':'No data'}</option>`;
-    if(years.includes(prev)) yearSel.value = prev;
-  }
   // data issues
   const issues = [];
   DB.customers.forEach(c=>{
@@ -3171,123 +3268,112 @@ function downloadXlsx(rows, filename, sheetName){
   XLSX.writeFile(wb, filename);
   toast(t('toast.exported'));
 }
-/* Exports one subscription type (prepaid or postpaid) for one year, formatted to match the
-   cleaned reference spreadsheet: one sheet, months grouped with a single divider row between
-   them, same column set and header labels. Prepaid and postpaid have genuinely different
-   financial models in this app (prepaid = one flat one-time price; postpaid = catalog price
-   minus discount minus USIM fee), so each gets its own field mapping below rather than
-   forcing them into one shape. */
-const YEAR_EXPORT_HEADERS = ['Activation Date','Customer Name','Business Type','Company','Partner Company',
-  'Carrier Type','Plan / Monthly Fee','Phone Number','Birth (YYMMDD)','School / Status','Nationality',
-  'Amount','Signup / USIM Fee','Customer Discount','Total'];
-function yearExportRowFor(s, c){
-  const isPostpaid = s.type==='postpaid';
-  const grossAmount = isPostpaid ? (s.actualProfit || s.expectedProfit || 0) : (s.sellingPrice||0);
-  const usimFee = isPostpaid ? (s.usimFee ? -Number(s.usimFee) : 0) : '';
-  const discount = isPostpaid ? (discountTotalFor(s) ? -discountTotalFor(s) : 0) : '';
-  const total = isPostpaid ? netProfitFor(s) : (s.sellingPrice||0);
-  return [
-    s.activationDate||'', c?.name||'', (c?.workType||c?.planType||''), s.company||'',
-    isPostpaid ? (s.partnerCompany||'') : '', s.svcCarrierType||'',
-    isPostpaid ? (s.monthlyFee||0) : (s.plan||''), s.number||c?.phone||'',
-    toYYMMDD(c?.dob)||'', c?.workplace||c?.occupation||'', c?.nationality||'',
-    grossAmount, usimFee, discount, total,
-  ];
+/* ---------------- unified export/import — matches Sheet View exactly ---------------- */
+// One button, one file, two sheets (Prepaid / Postpaid) — every column exactly matches what
+// Sheet View shows, in the same order, so what you see on screen is what you get in Excel.
+// This replaces the old separate "export customers/orders/reminders/full backup" buttons —
+// simpler, and (critically) round-trips cleanly through the matching import below, since the
+// headers and field meanings are the same as this app already understands natively.
+const PREPAID_EXPORT_HEADERS = ['Customer','Nationality','Phone','Date of Birth','ID Type','ID Number',
+  'Occupation','Years in Korea','Handled By','Plan Type','Carrier','Carrier Type','Company',
+  'Activation Date','Expiry Date','Contract Length (days)','Price','Discount','Final Price','Notes'];
+const POSTPAID_EXPORT_HEADERS = ['Customer','Nationality','Phone','Date of Birth','ID Type','ID Number',
+  'Occupation','Years in Korea','Handled By','Plan Type','Carrier','Carrier Type','Company','Partner Company',
+  'Activation Date','Expiry Date','Contract Length (days)','Monthly Fee','Company Price','Real Company Price',
+  'USIM Fee','Discount / Month','Discount Months','Expected Income','Notes'];
+function prepaidExportRow(c, s){
+  return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
+    c.handlerName||'', c.planType||'', s.carrier||'', s.svcCarrierType||'', s.company||'',
+    s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.price)||0, Number(s.discount)||0,
+    Math.max(0,(Number(s.price)||0)-(Number(s.discount)||0)), s.notes||''];
 }
-function exportByTypeYear(){
-  const type = yearExportType;
-  const year = document.getElementById('yearExportYear').value;
-  if(!year){ toast(LANG==='zh'?'没有可导出的数据':'No data to export'); return; }
-  const monthNames = LANG==='zh'
-    ? ['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
-    : ['','January','February','March','April','May','June','July','August','September','October','November','December'];
-  const svcs = DB.services.filter(s=> s.type===type && isIsoDate(s.activationDate) && s.activationDate.slice(0,4)===year);
-  if(!svcs.length){ toast(LANG==='zh'?'该年份没有可导出的数据':'No data for that year'); return; }
-  const byMonth = {};
-  svcs.forEach(s=>{ const m=Number(s.activationDate.slice(5,7)); (byMonth[m]=byMonth[m]||[]).push(s); });
-  const aoa = [YEAR_EXPORT_HEADERS];
-  Object.keys(byMonth).map(Number).sort((a,b)=>a-b).forEach(m=>{
-    const monthSvcs = byMonth[m].sort((a,b)=> a.activationDate.localeCompare(b.activationDate));
-    aoa.push([`${monthNames[m]} ${year} — ${monthSvcs.length} ${LANG==='zh'?'位客户':'customers'}`]);
-    monthSvcs.forEach(s=> aoa.push(yearExportRowFor(s, getCustomer(s.customerId))));
-  });
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = [{wch:14},{wch:22},{wch:10},{wch:10},{wch:14},{wch:12},{wch:16},{wch:14},{wch:13},{wch:14},{wch:11},{wch:11},{wch:13},{wch:13},{wch:11}];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, year);
-  XLSX.writeFile(wb, `Himobile_${type}_${year}.xlsx`);
-  toast(t('toast.exported'));
+function postpaidExportRow(c, s){
+  return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
+    c.handlerName||'', c.workType||c.planType||'', s.carrier||'', s.svcCarrierType||'', s.company||'', s.partnerCompany||'',
+    s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.monthlyFee)||0, Number(s.expectedProfit)||0,
+    Number(s.actualProfit)||0, Number(s.usimFee)||0, Number(s.discountPerMonth)||0, Number(s.discountMonths)||0,
+    netProfitFor(s), s.notes||''];
 }
 function exportAll(){
+  const prepaidRows = [PREPAID_EXPORT_HEADERS];
+  const postpaidRows = [POSTPAID_EXPORT_HEADERS];
+  DB.customers.forEach(c=>{
+    customerServices(c.id).forEach(s=>{
+      if(s.type==='prepaid') prepaidRows.push(prepaidExportRow(c, s));
+      else if(s.type==='postpaid') postpaidRows.push(postpaidExportRow(c, s));
+    });
+  });
+  // safety net: a header/row column-count mismatch silently shifts every value into the
+  // wrong column (this happened once already — a missing phone number field shifted every
+  // later column by one, corrupting activation dates and prices without any visible error)
+  [['Prepaid', PREPAID_EXPORT_HEADERS, prepaidRows], ['Postpaid', POSTPAID_EXPORT_HEADERS, postpaidRows]].forEach(([label, headers, rows])=>{
+    rows.slice(1).forEach((row,i)=>{
+      if(row.length !== headers.length) console.error(`Export column mismatch on ${label} row ${i+1}: expected ${headers.length} columns, got ${row.length}`);
+    });
+  });
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.customers.map(c=>({...c}))), 'Customers');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.services.map(s=>({...s}))), 'Orders');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(buildReminders().map(r=>({customer:getCustomer(r.customerId)?.name, type:r.type, dueDate:r.dueDate, status:r.uiStatus}))), 'Reminders');
-  XLSX.writeFile(wb, `Himobile_Full_Backup_${todayISO()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(prepaidRows), 'Prepaid');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(postpaidRows), 'Postpaid');
+  XLSX.writeFile(wb, `Himobile_Export_${todayISO()}.xlsx`);
   toast(t('toast.exported'));
 }
-/* Restores from a file produced by exportAll() above — deliberately separate from the
-   general-purpose Excel importer. That importer expects one row per customer with the plan
-   info attached directly (matching messy real-world carrier spreadsheets) and guesses column
-   meaning from header text; this backup format is a direct dump of the app's own internal
-   fields split across two sheets (Customers / Orders) linked by id. Pushing it through the
-   general importer silently defaulted every activation date to "today" because that importer
-   never finds a plan/date on a Customers-sheet row — this reads both sheets by their known
-   exact field names instead, so nothing needs to be guessed. */
-function restoreFromFullBackup(file){
-  const reader = new FileReader();
-  reader.onload = (e)=>{
-    try{
-      const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, {type:'array'});
-      if(!wb.SheetNames.includes('Customers') || !wb.SheetNames.includes('Orders')){
-        toast(LANG==='zh'?'这不是「导出全部数据」生成的备份文件（缺少 Customers / Orders 分页）':'This isn\'t a file from "Export all data" (missing the Customers/Orders sheets)');
-        return;
-      }
-      const customers = XLSX.utils.sheet_to_json(wb.Sheets['Customers']);
-      const services = XLSX.utils.sheet_to_json(wb.Sheets['Orders']);
-      if(!customers.length){ toast(LANG==='zh'?'备份文件中没有客户数据':'No customer data found in this backup'); return; }
-      const msg = LANG==='zh'
-        ? `将用备份文件恢复数据：${customers.length} 位客户、${services.length} 条业务记录。这会替换本机当前显示的所有数据。是否继续？`
-        : `Restore from this backup: ${customers.length} customers, ${services.length} service records. This replaces everything currently shown on this computer. Continue?`;
-      if(!confirm(msg)) return;
-      // normalize every date-like field back to a plain 'YYYY-MM-DD' string — sheet_to_json
-      // can hand back either the original string or a JS Date depending on how Excel stored
-      // the cell, and every calculation in this app expects the plain string form
-      const normDate = v => v==null || v==='' ? '' : (isIsoDate(v) ? String(v).slice(0,10) : (parseFlexibleDate(v)||''));
-      DB.customers = customers.map(c=>({
-        ...c,
-        dob: normDate(c.dob), idExpiry: normDate(c.idExpiry),
-        createdAt: c.createdAt || null,
-        years: Number(c.years)||0, rating: c.rating ? Number(c.rating) : undefined,
-      }));
-      DB.services = services.map(s=>({
-        ...s,
-        activationDate: normDate(s.activationDate), expiryDate: normDate(s.expiryDate),
-        endedAt: normDate(s.endedAt) || null,
-        durationDays: s.durationDays!=null ? Number(s.durationDays) : null,
-        isActive: s.isActive===true || s.isActive==='TRUE' || s.isActive==='true',
-        monthlyFee:Number(s.monthlyFee)||0, expectedProfit:Number(s.expectedProfit)||0,
-        actualProfit:Number(s.actualProfit)||0, usimFee:Number(s.usimFee)||0,
-        discountPerMonth:Number(s.discountPerMonth)||0, discountMonths:Number(s.discountMonths)||0,
-        sellingPrice:Number(s.sellingPrice)||0, received:Number(s.received)||0, cost:Number(s.cost)||0,
-        commission:Number(s.commission)||0, firstMonthPayment:Number(s.firstMonthPayment)||0,
-        activationFee:Number(s.activationFee)||0, simFee:Number(s.simFee)||0, discount:Number(s.discount)||0,
-      }));
-      ensurePreetiTemplate(DB);
-      repairInvalidDates(DB);
-      repairActiveSubscriptions(DB);
-      repairJoinDates(DB);
-      repairMissingExpiryDates(DB);
-      saveDB(DB);
-      toast(LANG==='zh'?`已恢复 ${DB.customers.length} 位客户、${DB.services.length} 条业务记录`:`Restored ${DB.customers.length} customers, ${DB.services.length} services`);
-      renderPage(currentPage);
-      renderNav();
-    }catch(err){
-      toast(LANG==='zh'?'备份文件解析失败：':'Failed to read backup file: '+err.message);
+/* Recognizes this app's own export by its distinctive header combination (real carrier
+   spreadsheets never have "Final Price" or "Real Company Price" columns) — when detected,
+   restores directly by exact field position instead of guessing column meaning the way the
+   general importer does for messy real-world files. This is what lets ONE import button
+   correctly handle both this app's own export AND an unrelated carrier spreadsheet. */
+function looksLikeOwnExportSheet(headerRow){
+  const h = (headerRow||[]).map(v=>String(v||'').trim());
+  return h.includes('Final Price') || h.includes('Real Company Price');
+}
+function restoreOwnExportSheet(sheetName, rows){
+  const isPrepaid = sheetName==='Prepaid';
+  let added = 0;
+  rows.forEach(row=>{
+    const name = String(row['Customer']||'').trim();
+    if(!name) return;
+    let cust = DB.customers.find(c=>c.name.toUpperCase()===name.toUpperCase() && (c.phone||'')===String(row['Phone']||'').trim());
+    if(!cust){
+      cust = {
+        id: uid('c'), name: name.toUpperCase(), nationality: String(row['Nationality']||'').toUpperCase(),
+        dob: normDateForImport(row['Date of Birth']), phone: String(row['Phone']||'').trim(),
+        idType: row['ID Type']||'ARC', idNumber: String(row['ID Number']||'').toUpperCase(),
+        occupation: row['Occupation']||'', years: Number(row['Years in Korea'])||0,
+        handlerName: row['Handled By']||'', planType: row['Plan Type']||'신규가입',
+        workType: !isPrepaid ? (row['Plan Type']||'신규가입') : undefined,
+        subType: isPrepaid?'prepaid':'postpaid', referral:'other', carrierType:'SKT',
+        address:'', notes: row['Notes']||'', rating:5, createdAt: normDateForImport(row['Activation Date'])||todayISO(),
+      };
+      DB.customers.push(cust);
     }
-  };
-  reader.readAsArrayBuffer(file);
+    const activationDate = normDateForImport(row['Activation Date'])||todayISO();
+    const expiryDate = normDateForImport(row['Expiry Date'])||'';
+    const base = {
+      customerId: cust.id, type: isPrepaid?'prepaid':'postpaid', carrier: row['Carrier']||'',
+      svcCarrierType: row['Carrier Type']||'', company: row['Company']||'',
+      number: cust.phone, simType:'physical', activationDate, expiryDate,
+      durationDays: Number(row['Contract Length (days)'])||null, status:'active', notes:'',
+    };
+    const svcData = isPrepaid ? {
+      ...base, price: Number(row['Price'])||0, discount: Number(row['Discount'])||0,
+      sellingPrice: Number(row['Final Price'])||0, received: Number(row['Final Price'])||0,
+      cost:0, commission:0, paymentMethod:'cash', monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0,
+    } : {
+      ...base, partnerCompany: row['Partner Company']||'', monthlyFee: Number(row['Monthly Fee'])||0,
+      expectedProfit: Number(row['Company Price'])||0, actualProfit: Number(row['Real Company Price'])||0,
+      usimFee: Number(row['USIM Fee'])||0, discountPerMonth: Number(row['Discount / Month'])||0,
+      discountMonths: Number(row['Discount Months'])||0, sellingPrice:0, cost:0, received:0,
+      commission:0, paymentMethod:'cash', firstMonthPayment:0, activationFee:0, simFee:0, discount:0,
+    };
+    setActiveSubscription(cust.id, svcData, 'new');
+    added++;
+  });
+  return added;
+}
+function normDateForImport(v){
+  if(v==null || v==='') return '';
+  if(isIsoDate(v)) return String(v).slice(0,10);
+  return parseFlexibleDate(v)||'';
 }
 
 // import
@@ -3630,21 +3716,37 @@ function confirmImport(){
   let added = 0, dupes = 0, retagged = 0;
   const perSheetResults = [];
   if(checkedImportSheets.length===1){
-    // single-sheet mode respects the manual header-row/type overrides shown in the form
-    const subTypeChoice = document.getElementById('importSubType').value;
-    const r = importRowsIntoDB(pendingImportRows, pendingSheetName, subTypeChoice, skipDupes);
-    added+=r.added; dupes+=r.dupes; retagged+=r.retagged;
-    perSheetResults.push({name:pendingSheetName, ...r});
+    // single-sheet mode respects the manual header-row/type overrides shown in the form —
+    // except when this app's own export format is detected, which always takes priority
+    // since it doesn't need any of those manual overrides (everything is already unambiguous)
+    if(looksLikeOwnExportSheet(Object.keys(pendingImportRows[0]||{}))){
+      const n = restoreOwnExportSheet(pendingSheetName, pendingImportRows);
+      added += n;
+      perSheetResults.push({name:pendingSheetName, added:n, dupes:0, retagged:0});
+    } else {
+      const subTypeChoice = document.getElementById('importSubType').value;
+      const r = importRowsIntoDB(pendingImportRows, pendingSheetName, subTypeChoice, skipDupes);
+      added+=r.added; dupes+=r.dupes; retagged+=r.retagged;
+      perSheetResults.push({name:pendingSheetName, ...r});
+    }
   } else {
     // multi-sheet mode: each sheet is parsed and auto-detected fresh and independently —
-    // this is what lets prepaid + postpaid (or any combination) import together in one go
+    // this is what lets prepaid + postpaid (or any combination) import together in one go,
+    // and each sheet is checked for this app's own export format before falling back to the
+    // general column-guessing importer meant for messy real-world carrier spreadsheets
     checkedImportSheets.forEach(sheetName=>{
       const aoa = XLSX.utils.sheet_to_json(pendingWorkbook.Sheets[sheetName], {header:1, defval:''});
       const headerIdx = detectHeaderRowIndex(aoa);
       const rows = rowsFromHeaderIndex(aoa, headerIdx);
-      const r = importRowsIntoDB(rows, sheetName, 'auto', skipDupes);
-      added+=r.added; dupes+=r.dupes; retagged+=r.retagged;
-      perSheetResults.push({name:sheetName, ...r});
+      if(looksLikeOwnExportSheet(aoa[headerIdx])){
+        const n = restoreOwnExportSheet(sheetName, rows);
+        added += n;
+        perSheetResults.push({name:sheetName, added:n, dupes:0, retagged:0});
+      } else {
+        const r = importRowsIntoDB(rows, sheetName, 'auto', skipDupes);
+        added+=r.added; dupes+=r.dupes; retagged+=r.retagged;
+        perSheetResults.push({name:sheetName, ...r});
+      }
     });
   }
   saveDB(DB);
@@ -4019,17 +4121,8 @@ document.getElementById('custRecentFilter').addEventListener('change', renderCus
 document.getElementById('orderTypeFilter').addEventListener('change', renderOrders);
 document.getElementById('orderStatusFilter').addEventListener('change', renderOrders);
 document.getElementById('orderShowHistory').addEventListener('change', renderOrders);
-document.getElementById('btnExportCustomers').addEventListener('click', exportCustomersXlsx);
-document.getElementById('exportCustomersBtn').addEventListener('click', exportCustomersXlsx);
-document.getElementById('exportOrdersBtn').addEventListener('click', exportOrdersXlsx);
-document.getElementById('exportRemindersBtn').addEventListener('click', exportRemindersXlsx);
+document.getElementById('btnExportCustomers').addEventListener('click', exportAll);
 document.getElementById('exportAllBtn').addEventListener('click', exportAll);
-document.getElementById('restoreBackupBtn').addEventListener('click', ()=> document.getElementById('restoreBackupInput').click());
-document.getElementById('restoreBackupInput').addEventListener('change', e=>{
-  if(e.target.files[0]) restoreFromFullBackup(e.target.files[0]);
-  e.target.value = '';
-});
-document.getElementById('yearExportBtn').addEventListener('click', exportByTypeYear);
 document.getElementById('syncServerUrl').addEventListener('change', e=> setServerUrl(e.target.value.trim()));
 document.getElementById('syncApiKey').addEventListener('change', e=> setApiKey(e.target.value.trim()));
 document.getElementById('syncEnabledCheckbox').addEventListener('change', e=>{
