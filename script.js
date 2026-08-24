@@ -403,7 +403,9 @@ function sheetCommitEdit(recordType, recordId, field, value){
 document.getElementById('cellPopover').addEventListener('click', e=> e.stopPropagation());
 document.addEventListener('click', e=>{
   if(!e.target.closest('#cellPopover') && !e.target.closest('[data-sheet-select]') && !e.target.closest('[data-option-trigger]')) closeCellPopover();
+  if(!e.target.closest('#statBreakdownPopover') && !e.target.closest('[data-stat-breakdown]')) document.getElementById('statBreakdownPopover').style.display = 'none';
 });
+document.getElementById('statBreakdownPopover').addEventListener('click', e=> e.stopPropagation());
 function closeCellPopover(){ document.getElementById('cellPopover').style.display = 'none'; }
 function openCellPopoverFor(anchorEl){
   const recordType = anchorEl.dataset.recordType, recordId = anchorEl.dataset.recordId, field = anchorEl.dataset.field;
@@ -1445,18 +1447,41 @@ function renderDashboard(){
   document.getElementById('pageSub').textContent = new Date().toLocaleDateString(LANG==='zh'?'zh-CN':'en-US',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
 
   const deltaHtml = d => d.na ? '' : (d.isNew ? `<span class="up">${t('stat.newActivity')}</span>` : `<span class="${d.up?'up':'down'}">${d.up?'↑':'↓'} ${d.pct}%</span> ${t('stat.vsLastMonth')}`);
+  // total + new-this-month are clickable — show a prepaid/postpaid breakdown popover
+  const totalPrepaid = custs.filter(c=>(c.subType||'prepaid')==='prepaid').length;
+  const totalPostpaid = custs.filter(c=>c.subType==='postpaid').length;
+  const newThisMonthPrepaid = custs.filter(c=> joinMonth(c)===monthStr && (c.subType||'prepaid')==='prepaid').length;
+  const newThisMonthPostpaid = custs.filter(c=> joinMonth(c)===monthStr && c.subType==='postpaid').length;
   const stats = [
-    {label:t('stat.totalCustomers'), value:custs.length, sub:t('stat.fromRecords'), deltaHtml:null},
-    {label:t('stat.newThisMonth'), value:newThisMonth, deltaHtml:deltaHtml(newDelta)},
+    {label:t('stat.totalCustomers'), value:custs.length, sub:t('stat.fromRecords'), deltaHtml:null, breakdown:{prepaid:totalPrepaid, postpaid:totalPostpaid}},
+    {label:t('stat.newThisMonth'), value:newThisMonth, deltaHtml:deltaHtml(newDelta), breakdown:{prepaid:newThisMonthPrepaid, postpaid:newThisMonthPostpaid}},
     {label:t('stat.followup7'), value:due7.length, sub:t('stat.includesExpiry'), deltaHtml:null, orange:true},
     {label:t('stat.revenueMonth'), value:fmtWon(monthRevenue), deltaHtml:deltaHtml(revDelta)},
   ];
-  document.getElementById('dashStats').innerHTML = stats.map(s=>`
-    <div class="card stat-card">
+  document.getElementById('dashStats').innerHTML = stats.map((s,i)=>`
+    <div class="card stat-card" ${s.breakdown?`style="cursor:pointer;" data-stat-breakdown="${i}"`:''}>
       <div class="stat-label">${s.label}</div>
       <div class="stat-value" style="${s.orange?'color:var(--orange)':''}">${s.value}</div>
       <div class="stat-delta">${s.deltaHtml || s.sub || ''}</div>
     </div>`).join('');
+  document.querySelectorAll('[data-stat-breakdown]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const s = stats[Number(el.dataset.statBreakdown)];
+      const pop = document.getElementById('statBreakdownPopover');
+      document.getElementById('statBreakdownTitle').textContent = s.label;
+      document.getElementById('statBreakdownBody').innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:20px;padding:6px 4px;">
+          <span class="pill pill-orange">${t('opt.prepaidShort')}</span><b>${s.breakdown.prepaid}</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:20px;padding:6px 4px;">
+          <span class="pill pill-blue">${t('opt.postpaidShort')}</span><b>${s.breakdown.postpaid}</b>
+        </div>`;
+      const rect = el.getBoundingClientRect();
+      pop.style.left = (rect.left+window.scrollX)+'px';
+      pop.style.top = (rect.bottom+window.scrollY+6)+'px';
+      pop.style.display = 'block';
+    });
+  });
 
   // second stats row: active book composition, money at risk, renewals coming up
   const activePrepaid = custs.filter(c=>{ const a=activeSubscriptionFor(c.id); return a && a.type==='prepaid'; }).length;
@@ -1495,9 +1520,11 @@ function renderDashboard(){
   const top = reminders.slice(0,4);
   document.getElementById('dashFollowups').innerHTML = top.length? top.map(r=>renderFollowRow(r)).join('') : emptyState();
 
-  // donut by type this month
+  // service overview: prepaid vs postpaid activations this month — kept to just these two
+  // categories (not every raw transaction type) since that's the actual question this widget
+  // should answer clearly, matching how the rest of the app is organized around this split
   const byType = {};
-  svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===monthStr).forEach(s=>{ byType[s.type]=(byType[s.type]||0)+1; });
+  svcs.filter(s=>s.activationDate && s.activationDate.slice(0,7)===monthStr && (s.type==='prepaid'||s.type==='postpaid')).forEach(s=>{ byType[s.type]=(byType[s.type]||0)+1; });
   renderDonut(byType);
 
   // contract renewals (postpaid ending within 30 days)
@@ -2513,7 +2540,6 @@ function openCustomerDetail(id){
 
   document.getElementById('detailBody').innerHTML = `
     ${dupeBannerHtml}
-    ${aiInsightHtml}
     <div class="profile-head">
       <div class="profile-avatar">${initials(c.name)}</div>
       <div>
@@ -2530,16 +2556,12 @@ function openCustomerDetail(id){
       <div><div class="k">${t('f.phone')}</div><div class="v">${escapeHtml(c.phone||'—')}</div></div>
       <div><div class="k">${t('f.idExpiry')}</div><div class="v">${fmtDate(c.idExpiry)}</div></div>
       <div><div class="k">${t('f.occupation')}</div><div class="v">${escapeHtml(c.occupation||'—')}</div></div>
-      <div><div class="k">${t('f.workplace')}</div><div class="v">${escapeHtml(c.workplace||'—')}</div></div>
       <div><div class="k">${t('f.years')}</div><div class="v">${c.years||0} ${t('years.suffix')}</div></div>
-      <div><div class="k">${t('f.referral')}</div><div class="v">${REFERRALS_LABEL[LANG][c.referral]||c.referral||'—'}</div></div>
       <div><div class="k">${t('f.carrierType')}</div><div class="v">${escapeHtml(c.carrierType||'—')}</div></div>
       <div><div class="k">${t('f.planType')}</div><div class="v">${escapeHtml(c.planType||'—')}</div></div>
-      <div><div class="k">${t('f.branchOffice')}</div><div class="v">${escapeHtml(c.branchOffice||'—')}</div></div>
       <div><div class="k">${t('f.subType')}</div><div class="v">${c.subType==='postpaid'?t('opt.postpaidShort'):t('opt.prepaidShort')}</div></div>
       ${c.workType?`<div><div class="k">${t('f.workType')}</div><div class="v">${escapeHtml(c.workType)}</div></div>`:''}
       ${c.handlerName?`<div><div class="k">${t('f.handlerName')}</div><div class="v">${escapeHtml(c.handlerName)}</div></div>`:''}
-      ${c.referralFriendName?`<div><div class="k">${t('f.referralFriend')}</div><div class="v">${escapeHtml(c.referralFriendName)}</div></div>`:''}
       <div style="grid-column:1/-1;"><div class="k">${t('f.address')}</div><div class="v">${escapeHtml(c.address||'—')}</div></div>
       <div style="grid-column:1/-1;"><div class="k">${t('f.notes')}</div><div class="v">${escapeHtml(c.notes||'—')}</div></div>
     </div>
@@ -2559,6 +2581,8 @@ function openCustomerDetail(id){
     <div class="form-hr" style="margin:18px 0;"></div>
     <div class="section-title" style="margin-bottom:10px;">${t('detail.otherRecords')}</div>
     <div id="detailOtherRecords">${otherRecords.map(s=>serviceCardHtml(s, c)).join('')}</div>` : ''}
+
+    ${aiInsightHtml ? `<div class="form-hr" style="margin:18px 0;"></div>${aiInsightHtml}` : ''}
   `;
   document.getElementById('detailModalOverlay').classList.add('show');
   document.getElementById('detailBody').querySelectorAll('[data-edit-service]').forEach(b=>{
