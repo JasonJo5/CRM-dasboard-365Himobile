@@ -370,6 +370,10 @@
 
       <!-- REPORTS -->
       <section class="page" id="page-reports">
+        <div class="chip-tabs" id="reportViewTabs" style="margin-bottom:16px;"></div>
+
+        <!-- MONTHLY VIEW -->
+        <div id="repMonthlyView">
         <div class="card" style="margin-bottom:16px;">
           <div class="section-head">
             <div>
@@ -379,51 +383,50 @@
             <select class="select-input" id="repMonthSelect" style="min-width:180px;"></select>
           </div>
         </div>
-        <div class="card" id="repHeroCard" style="margin-bottom:16px;padding:28px 30px;background:linear-gradient(135deg,#0F1B3D,#1E3A6E);color:#fff;">
-          <div id="repHero"></div>
-        </div>
-        <div class="grid-4" id="reportStats" style="margin-bottom:16px;"></div>
+        <div class="grid-4" id="repIncomeCards" style="margin-bottom:16px;"></div>
+        <div class="grid-2" id="repSecondaryStats" style="margin-bottom:16px;"></div>
         <div class="grid-2">
           <div class="card">
-            <div class="section-title" data-i18n="rep.byCarrier">按通信社的营收 / 利润</div>
-            <div id="repByCarrier" style="margin-top:14px;"></div>
-          </div>
-          <div class="card">
-            <div class="section-title" data-i18n="rep.byType">按业务类型的营收 / 利润</div>
+            <div class="section-title" data-i18n="rep.byType">按业务类型的营收 / 收入</div>
             <div id="repByType" style="margin-top:14px;"></div>
           </div>
-        </div>
-        <div class="grid-2" style="margin-top:16px;">
           <div class="card">
             <div class="section-title" data-i18n="rep.popularPlans">热门套餐 Top 5</div>
             <div id="repPlans" style="margin-top:14px;"></div>
           </div>
-          <div class="card">
-            <div class="section-title" data-i18n="rep.rates">续约率 / 回头客率</div>
-            <div id="repRates" style="margin-top:14px;"></div>
-          </div>
         </div>
         <div class="card" style="margin-top:16px;">
           <div class="section-head">
-            <div>
-              <div class="section-title" id="repTxTitle" data-i18n="rep.transactions">本月交易明细</div>
-              <div class="section-desc" id="repTxDesc"></div>
-            </div>
-          </div>
-          <div class="tbl-wrap"><table>
-            <thead><tr><th data-i18n="col.customer">客户</th><th data-i18n="col.serviceType">业务类型</th><th data-i18n="col.carrier">通信社</th><th data-i18n="col.activated">开通日期</th><th data-i18n="rep.profit">利润</th></tr></thead>
-            <tbody id="repTxBody"></tbody>
-          </table></div>
-        </div>
-        <div class="card" style="margin-top:16px;">
-          <div class="section-head">
-            <div class="section-title" data-i18n="rep.monthly">全部月份对账</div>
+            <div class="section-title" data-i18n="rep.monthlyComparison">月度对比 — 先付 / 后付收入</div>
             <button class="btn btn-ghost" id="btnExportReport" data-i18n="btn.exportExcel">导出 Excel</button>
           </div>
+          <div id="repMonthlyChart" style="margin:14px 0;"></div>
           <div class="tbl-wrap"><table>
-            <thead><tr><th data-i18n="col.month">月份</th><th data-i18n="col.orders">订单数</th><th data-i18n="col.expectedProfit">预期利润</th><th data-i18n="col.actualProfit">实际利润（已核对）</th><th data-i18n="col.variance">差异</th><th data-i18n="col.discountGiven">折扣总额</th><th data-i18n="col.netExpected">净预期利润</th></tr></thead>
+            <thead><tr><th data-i18n="col.month">月份</th><th data-i18n="col.prepaidCustomers">先付客户数</th><th data-i18n="col.prepaidIncome">先付收入</th><th data-i18n="col.postpaidCustomers">后付客户数</th><th data-i18n="col.postpaidExpected">后付预期收入</th><th data-i18n="col.postpaidActual">后付实际收入</th><th data-i18n="col.monthTotal">合计</th></tr></thead>
             <tbody id="repMonthlyBody"></tbody>
           </table></div>
+        </div>
+        </div>
+
+        <!-- DAILY VIEW -->
+        <div id="repDailyView" style="display:none;">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="rep.daily.title">每日报表</div>
+                <div class="section-desc" data-i18n="rep.daily.desc">按日期查看先付 / 后付客户数与收入</div>
+              </div>
+              <input type="date" class="select-input" id="repDaySelect" style="min-width:170px;">
+            </div>
+          </div>
+          <div class="grid-4" id="repDailyCards" style="margin-bottom:16px;"></div>
+          <div class="card">
+            <div class="section-title" data-i18n="rep.daily.recent">近期每日记录</div>
+            <div class="tbl-wrap" style="margin-top:14px;"><table>
+              <thead><tr><th data-i18n="col.date">日期</th><th data-i18n="col.prepaidCustomers">先付客户数</th><th data-i18n="col.prepaidIncome">先付收入</th><th data-i18n="col.postpaidCustomers">后付客户数</th><th data-i18n="col.postpaidExpected">后付预期收入</th><th data-i18n="col.monthTotal">合计</th></tr></thead>
+              <tbody id="repDailyBody"></tbody>
+            </table></div>
+          </div>
         </div>
       </section>
 
@@ -706,29 +709,47 @@
 
 <!-- change subscription modal (used for both "Change to Postpaid" and "Change Plan") -->
 <div class="overlay" id="changeSubModalOverlay">
-  <div class="modal">
+  <div class="modal wide">
     <div class="modal-head">
       <div class="modal-title" id="changeSubModalTitle" data-i18n="modal.changeToPostpaid">转为后付卡</div>
       <button class="modal-close" data-close>×</button>
     </div>
     <div class="modal-body">
       <div class="section-desc" id="changeSubCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="section-desc" style="margin-bottom:14px;color:var(--blue);">💡 <span data-i18n="cs.autofillHint">姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改</span></div>
       <div class="form-grid">
-        <div class="form-field"><label data-i18n="f.carrier">通信社 / MVNO</label><input id="cs_carrier" placeholder="LG U+ 알뜰폰"></div>
-        <div class="form-field"><label data-i18n="f.plan">套餐名称</label><input id="cs_plan" placeholder="Premium 50GB"></div>
-        <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><select id="cs_contractLength">
-          <option value="185">185일 (185 days)</option>
-          <option value="245">245일 (245 days)</option>
-          <option value="365">365일 (365 days)</option>
-        </select></div>
-        <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><select id="cs_company"></select></div>
-        <div class="form-field"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><select id="cs_partnerCompany"></select></div>
-        <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><select id="cs_svcCarrierType"></select></div>
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="cs_name" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="cs_nationality" placeholder="例如：CHINA"></div>
         <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="cs_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="cs_occupation"></div>
+        <div class="form-field"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="cs_idType_group" data-field="idType"></div></div>
+        <div class="form-field"><label data-i18n="cs.idNumberArc">证件号码 (ARC)</label><input id="cs_idNumber"></div>
+
+        <div class="form-field full">
+          <label data-i18n="f.planOptions">套餐选项 Plan options</label>
+          <div class="plan-options-box">
+            <div class="form-field"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="cs_workType_group" data-field="workType"></div></div>
+            <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="cs_contractLength_group" data-field="contractLength"></div></div>
+            <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="cs_company_group" data-field="company"></div></div>
+            <div class="form-field"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="cs_partnerCompany_group" data-field="partnerCompany"></div></div>
+            <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="cs_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+          </div>
+        </div>
+
+        <div class="form-hr"></div>
+        <div class="form-field"><label data-i18n="f.plan">套餐名称</label><input id="cs_plan" placeholder="Premium 50GB"></div>
         <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="cs_activationDate" type="date"></div>
-        <div class="form-field"><label data-i18n="f.monthlyFee">月租费</label><input id="cs_monthlyFee" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.firstMonthPayment">首月费用</label><input id="cs_firstMonthPayment" type="number" min="0"></div>
-        <div class="form-field"><label data-i18n="f.sellingPrice">销售价</label><input id="cs_sellingPrice" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.monthlyFee">月租费（客户付给运营商，非本店收入）</label><input id="cs_monthlyFee" type="number" min="0"></div>
+        <div class="form-field full"><label data-i18n="f.handlerName">办理人 Handled by</label><div class="tile-radio-group" id="cs_handlerName_group" data-field="handlerName"></div></div>
+
+        <div class="form-hr"></div>
+        <div class="form-subtitle" data-i18n="f.profitSection">公司价格与折扣 Company price & discount</div>
+        <div class="form-field"><label data-i18n="f.expectedProfit">公司价格 Company price</label><input id="cs_expectedProfit" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.usimFee">USIM 费用 USIM fee</label><input id="cs_usimFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣 Discount / month</label><input id="cs_discountPerMonth" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountMonths">折扣月数 Discount months</label><input id="cs_discountMonths" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income</label><input id="cs_netExpectedPreview" disabled></div>
+
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="cs_notes"></textarea></div>
       </div>
     </div>
