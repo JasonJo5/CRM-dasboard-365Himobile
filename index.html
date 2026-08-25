@@ -239,9 +239,14 @@
             <select class="select-input" id="sheetRatingFilter"></select>
             <select class="select-input" id="sheetRecentFilter">
               <option value="" data-i18n="filter.allTime">添加时间：不限</option>
-              <option value="1" data-i18n="filter.today">今天新增</option>
+              <option value="0" data-i18n="filter.today">今天新增</option>
               <option value="7" data-i18n="filter.last7">最近7天</option>
               <option value="30" data-i18n="filter.last30">最近30天</option>
+            </select>
+            <select class="select-input" id="sheetSortOrder">
+              <option value="" data-i18n="sort.newest">排序：最新优先</option>
+              <option value="az" data-i18n="sort.nameAsc">姓名 A → Z</option>
+              <option value="za" data-i18n="sort.nameDesc">姓名 Z → A</option>
             </select>
           </div>
           <div class="section-desc" style="margin:10px 0;" id="sheetCount"></div>
@@ -402,7 +407,7 @@
           </div>
           <div id="repMonthlyChart" style="margin:14px 0;"></div>
           <div class="tbl-wrap"><table>
-            <thead><tr><th data-i18n="col.month">月份</th><th data-i18n="col.prepaidCustomers">先付客户数</th><th data-i18n="col.prepaidIncome">先付收入</th><th data-i18n="col.postpaidCustomers">后付客户数</th><th data-i18n="col.postpaidExpected">后付预期收入</th><th data-i18n="col.postpaidActual">后付实际收入</th><th data-i18n="col.monthTotal">合计</th></tr></thead>
+            <thead><tr><th data-i18n="col.month">月份</th><th data-i18n="col.prepaidCustomers">先付客户数</th><th data-i18n="col.prepaidIncome">先付收入</th><th data-i18n="col.postpaidCustomers">后付客户数</th><th data-i18n="col.postpaidExpected">后付预期收入</th><th data-i18n="col.postpaidActual">后付实际收入</th><th data-i18n="col.monthTotal">合计</th><th data-i18n="col.accumulated">累计总收入</th></tr></thead>
             <tbody id="repMonthlyBody"></tbody>
           </table></div>
         </div>
@@ -420,6 +425,16 @@
             </div>
           </div>
           <div class="grid-4" id="repDailyCards" style="margin-bottom:16px;"></div>
+          <div class="grid-2" style="margin-bottom:16px;">
+            <div class="card">
+              <div class="section-title" data-i18n="rep.daily.prepaidListTitle">先付客户明细（本日）</div>
+              <div id="repDailyPrepaidList" style="margin-top:10px;"></div>
+            </div>
+            <div class="card">
+              <div class="section-title" data-i18n="rep.daily.postpaidListTitle">后付客户明细（本日）</div>
+              <div id="repDailyPostpaidList" style="margin-top:10px;"></div>
+            </div>
+          </div>
           <div class="card">
             <div class="section-title" data-i18n="rep.daily.recent">近期每日记录</div>
             <div class="tbl-wrap" style="margin-top:14px;"><table>
