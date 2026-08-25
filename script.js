@@ -44,6 +44,7 @@ const I18N = {
     'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.last30':'最近30天','col.dateAdded':'添加日期',
     'sort.newest':'排序：最新优先','sort.oldest':'排序：最旧优先','sort.nameAsc':'姓名 A → Z','sort.nameDesc':'姓名 Z → A','sort.ratingHigh':'评分：高到低','sort.ratingLow':'评分：低到高',
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
+    'cs.autofillHint':'姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改','cs.idNumberArc':'证件号码 (ARC)',
     'modal.chooseType':'新建客户','modal.chooseTypeDesc':'先选择客户类型，两种表单的字段不同','modal.prepaidDesc':'固定3个月充值套餐','modal.postpaidDesc':'按月合约，可选运营商与套餐','modal.newPostpaidCustomer':'新建后付卡客户',
     'f.contactHandle':'联系账号 / ID','f.workType':'业务向','f.handlerName':'办理人','f.referralFriend':'介绍人（朋友姓名）',
     'f.profitSection':'公司价格与折扣','f.expectedProfit':'公司价格','f.actualProfit':'公司实际结算价','f.usimFee':'USIM 费用','f.discountPerMonth':'每月折扣','f.discountMonths':'折扣月数','f.netExpectedProfit':'预期收入','f.expectedIncome':'预期收入','f.actualIncome':'实际收入','f.discountTotal':'折扣总额','f.actualProfitHint':'💡「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在保存客户后于「表格视图」中随时补填。',
@@ -64,6 +65,9 @@ const I18N = {
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
     'rep.byCarrier':'按通信社的营收 / 收入','rep.byType':'按业务类型的营收 / 收入','rep.popularPlans':'热门套餐 Top 5','rep.rates':'续约率 / 回头客率','rep.monthly':'全部月份对账','rep.renewalRate':'续约率','rep.repeatRate':'回头客率','rep.totalOrders':'累计订单数','rep.avgProfit':'平均单笔收入',
+    'rep.view.monthly':'📅 月度报表','rep.view.daily':'📆 每日报表','rep.monthlyComparison':'月度对比 — 先付 / 后付收入','rep.prepaidIncome':'先付总收入','rep.postpaidExpected':'后付预期收入','rep.postpaidActual':'后付实际收入','rep.accumulated':'累计总收入',
+    'rep.daily.title':'每日报表','rep.daily.desc':'按日期查看先付 / 后付客户数与收入','rep.daily.recent':'近期每日记录','rep.daily.prepaidCustomers':'先付客户数','rep.daily.postpaidCustomers':'后付客户数',
+    'col.prepaidCustomers':'先付客户数','col.postpaidCustomers':'后付客户数','col.prepaidIncome':'先付收入','col.postpaidExpected':'后付预期收入','col.postpaidActual':'后付实际收入','col.monthTotal':'合计','col.date':'日期',
     'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入',
     'stat.weekProfit':'本周收入','stat.monthExpected':'本月预期收入','stat.monthActual':'本月实际收入','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
@@ -129,6 +133,7 @@ const I18N = {
     'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.last30':'Last 30 days','col.dateAdded':'Date added',
     'sort.newest':'Sort: Newest first','sort.oldest':'Sort: Oldest first','sort.nameAsc':'Name A → Z','sort.nameDesc':'Name Z → A','sort.ratingHigh':'Rating: High to low','sort.ratingLow':'Rating: Low to high',
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
+    'cs.autofillHint':'Name / phone / nationality / occupation / ID number are auto-filled from the existing customer record — edit directly if needed','cs.idNumberArc':'ID number (ARC)',
     'modal.chooseType':'New customer','modal.chooseTypeDesc':'Choose the customer type first — the two forms have different fields','modal.prepaidDesc':'Fixed 3-month recharge plan','modal.postpaidDesc':'Monthly contract, pick carrier & plan','modal.newPostpaidCustomer':'New postpaid customer',
     'f.contactHandle':'Contact account / ID','f.workType':'Work type','f.handlerName':'Handled by','f.referralFriend':'Referred by (friend\'s name)',
     'f.profitSection':'Company price & discount','f.expectedProfit':'Company price','f.actualProfit':'Real company price','f.usimFee':'USIM fee','f.discountPerMonth':'Discount / month','f.discountMonths':'Discount months','f.netExpectedProfit':'Expected income','f.expectedIncome':'Expected income','f.actualIncome':'Actual income','f.discountTotal':'Total discount','f.actualProfitHint':'💡 "Real company price" gets filled in later once the carrier settles at month-end, used to calculate actual income and compare it against your estimate — you can fill it in anytime from Sheet View after saving.',
@@ -149,6 +154,9 @@ const I18N = {
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
     'rep.byCarrier':'Revenue / income by carrier','rep.byType':'Revenue / income by service type','rep.popularPlans':'Top 5 popular plans','rep.rates':'Renewal rate / repeat-customer rate','rep.monthly':'All months reconciliation','rep.renewalRate':'Renewal rate','rep.repeatRate':'Repeat-customer rate','rep.totalOrders':'Total orders','rep.avgProfit':'Avg. income / order',
+    'rep.view.monthly':'📅 Monthly Report','rep.view.daily':'📆 Daily Report','rep.monthlyComparison':'Month-to-month comparison — Prepaid / Postpaid income','rep.prepaidIncome':'Prepaid total income','rep.postpaidExpected':'Postpaid expected income','rep.postpaidActual':'Postpaid actual income','rep.accumulated':'Accumulated income',
+    'rep.daily.title':'Daily Report','rep.daily.desc':'View prepaid / postpaid customer counts and income by date','rep.daily.recent':'Recent daily records','rep.daily.prepaidCustomers':'Prepaid customers','rep.daily.postpaidCustomers':'Postpaid customers',
+    'col.prepaidCustomers':'Prepaid customers','col.postpaidCustomers':'Postpaid customers','col.prepaidIncome':'Prepaid income','col.postpaidExpected':'Postpaid expected','col.postpaidActual':'Postpaid actual','col.monthTotal':'Total','col.date':'Date',
     'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income',
     'stat.weekProfit':'Income this week','stat.monthExpected':'Expected income this month','stat.monthActual':'Actual income this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
@@ -879,6 +887,30 @@ function setOfflineBanner(show, errorMsg){
     el.style.display = 'none';
   }
 }
+// Checks the server's own schema self-check (added after a real outage where the database
+// was missing columns the server code expected — every sync silently failed for as long as
+// nobody happened to check the database directly in psql). Surfaced right in the app instead
+// of a server console log nobody's watching, since the server runs headless in the background.
+async function checkServerSchema(){
+  const base = getServerUrl();
+  if(!base) return;
+  try{
+    const res = await fetch(base+'/api/health', {method:'GET'});
+    const data = await res.json();
+    const el = document.getElementById('offlineBanner');
+    if(data.schemaOk === false){
+      document.getElementById('offlineBannerText').textContent = LANG==='zh'
+        ? `⚠️ 服务器数据库需要更新（缺少字段：${data.missingColumns.join(', ')}）— 请在服务器电脑上重新运行 schema.sql，部分功能可能无法正常保存`
+        : `⚠️ Server database needs an update (missing: ${data.missingColumns.join(', ')}) — re-run schema.sql on the server computer, some data may not save correctly until then`;
+      el.style.display = '';
+    }
+    // if schema IS ok, deliberately don't touch the banner here — it may already correctly
+    // be showing/hiding based on connection status from the pull that triggered this check
+  }catch(err){
+    // silent — this is a supplementary check; a failure here shouldn't itself alarm anyone,
+    // the regular connection check already covers "can't reach the server at all"
+  }
+}
 async function pushToServer(){
   const base = getServerUrl();
   if(!base) return {ok:false, error:'no server configured'};
@@ -935,6 +967,7 @@ async function pullFromServer(){
     // retrieved from the server and is correctly sitting in memory at this point
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
     setOfflineBanner(false);
+    checkServerSchema(); // don't block the pull on this — just surface a warning if it's stale
     return {ok:true};
   }catch(err){
     console.warn('Could not reach server on load, using local data:', err.message);
@@ -2930,47 +2963,92 @@ function openChangeSubModal(customerId, mode){
   if(!cust) return;
   changeSubCustomerId = customerId;
   changeSubMode = mode;
-  populatePostpaidOptionSelects('cs_');
   document.getElementById('changeSubModalTitle').textContent = mode==='to_postpaid' ? t('modal.changeToPostpaid') : t('modal.changePlan');
   document.getElementById('changeSubCurrentPlan').innerHTML = current
     ? `${t('detail.currentPlan')}: <b>${planLabel(current)}</b>`
     : `<i>${t('detail.noActiveSubscription')}</i>`;
-  document.getElementById('cs_carrier').value = current?.carrier || cust.carrierType || '';
-  document.getElementById('cs_plan').value = '';
-  document.getElementById('cs_contractLength').value = current?.durationDays ? String(POSTPAID_CONTRACT_DAYS.reduce((b,v)=>Math.abs(v-current.durationDays)<Math.abs(b-current.durationDays)?v:b,POSTPAID_CONTRACT_DAYS[0])) : String(POSTPAID_CONTRACT_DAYS[0]);
-  document.getElementById('cs_company').value = current?.company || '';
-  document.getElementById('cs_partnerCompany').value = current?.partnerCompany || '';
-  document.getElementById('cs_svcCarrierType').value = current?.svcCarrierType || '';
+
+  // auto-fill everything already known about this existing customer — they're not a new
+  // signup, just switching plan type, so there's no reason to make staff retype this
+  document.getElementById('cs_name').value = cust.name || '';
+  document.getElementById('cs_nationality').value = cust.nationality || '';
   document.getElementById('cs_number').value = current?.number || cust.phone || '';
+  document.getElementById('cs_occupation').value = cust.occupation || '';
+  document.getElementById('cs_idNumber').value = cust.idNumber || '';
+  // ARC only for this flow — a customer already in the store's system converting to
+  // postpaid is essentially always ARC-eligible; Passport isn't offered here
+  renderCompactOptionField('cs_idType_group', ['ARC'], 'ARC', t('f.idType'));
+
+  renderCompactOptionField('cs_workType_group', POSTPAID_WORK_TYPES, current?.workType || cust.workType || '신규가입', t('f.workType'));
+  renderCompactOptionField('cs_contractLength_group', POSTPAID_CONTRACT_DAYS.map(String),
+    current?.durationDays ? String(POSTPAID_CONTRACT_DAYS.reduce((b,v)=>Math.abs(v-current.durationDays)<Math.abs(b-current.durationDays)?v:b,POSTPAID_CONTRACT_DAYS[0])) : String(POSTPAID_CONTRACT_DAYS[0]),
+    t('f.contractLength'));
+  renderCompactOptionField('cs_company_group', POSTPAID_COMPANIES, current?.company || '', t('f.company'));
+  renderCompactOptionField('cs_partnerCompany_group', POSTPAID_PARTNER_COMPANIES, current?.partnerCompany || '', t('f.partnerCompany'));
+  renderCompactOptionField('cs_svcCarrierType_group', POSTPAID_CARRIER_TYPES, current?.svcCarrierType || '', t('f.svcCarrierType'));
+
+  // genuinely new information for this signup — left blank for staff to fill in
+  document.getElementById('cs_plan').value = '';
   document.getElementById('cs_activationDate').value = todayISO();
-  document.getElementById('cs_monthlyFee').value = current?.monthlyFee ?? '';
-  document.getElementById('cs_firstMonthPayment').value = '';
-  document.getElementById('cs_sellingPrice').value = '';
+  document.getElementById('cs_monthlyFee').value = '';
+  renderTileRadioGroup('cs_handlerName_group', STAFF_MEMBERS, getActiveStaff());
+  document.getElementById('cs_expectedProfit').value = '';
+  document.getElementById('cs_usimFee').value = '';
+  document.getElementById('cs_discountPerMonth').value = '';
+  document.getElementById('cs_discountMonths').value = '';
+  document.getElementById('cs_netExpectedPreview').value = '';
   document.getElementById('cs_notes').value = '';
   document.getElementById('changeSubModalOverlay').classList.add('show');
 }
+function updateCsNetExpectedPreview(){
+  const expected = Number(document.getElementById('cs_expectedProfit').value)||0;
+  const usimFee = Number(document.getElementById('cs_usimFee').value)||0;
+  const perMonth = Number(document.getElementById('cs_discountPerMonth').value)||0;
+  const months = Number(document.getElementById('cs_discountMonths').value)||0;
+  document.getElementById('cs_netExpectedPreview').value = fmtWon(expected - (perMonth*months) - usimFee);
+}
+['cs_expectedProfit','cs_usimFee','cs_discountPerMonth','cs_discountMonths'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateCsNetExpectedPreview);
+});
 document.getElementById('saveChangeSubBtn').addEventListener('click', ()=>{
   if(!changeSubCustomerId) return;
+  const workType = document.getElementById('cs_workType_group').dataset.selected;
+  if(!workType){ toast(LANG==='zh'?'请选择「业务向」':'Please select a work type'); return; }
+  const cust = getCustomer(changeSubCustomerId);
+  // the auto-filled identity fields are editable, so save any corrections back onto the
+  // customer record itself — not just the new service
+  cust.name = document.getElementById('cs_name').value.trim() || cust.name;
+  cust.nationality = document.getElementById('cs_nationality').value.trim().toUpperCase() || cust.nationality;
+  cust.phone = document.getElementById('cs_number').value.trim() || cust.phone;
+  cust.occupation = document.getElementById('cs_occupation').value.trim();
+  cust.idNumber = document.getElementById('cs_idNumber').value.trim();
+  cust.idType = document.getElementById('cs_idType_group').dataset.selected || 'ARC';
+  cust.workType = workType;
+
+  const contractLength = Number(document.getElementById('cs_contractLength_group').dataset.selected || POSTPAID_CONTRACT_DAYS[0]);
+  const company = document.getElementById('cs_company_group').dataset.selected || '';
+  const partnerCompany = document.getElementById('cs_partnerCompany_group').dataset.selected || '';
+  const svcCarrierType = document.getElementById('cs_svcCarrierType_group').dataset.selected || '';
   const activationDate = document.getElementById('cs_activationDate').value || todayISO();
-  const durationDays = Number(document.getElementById('cs_contractLength').value||POSTPAID_CONTRACT_DAYS[0]);
-  const d = new Date(activationDate); d.setDate(d.getDate()+durationDays);
+  const d = new Date(activationDate); d.setDate(d.getDate()+contractLength);
   const svcData = {
     customerId: changeSubCustomerId, type:'postpaid',
-    carrier: document.getElementById('cs_carrier').value.trim(),
+    carrier: svcCarrierType,
     plan: document.getElementById('cs_plan').value.trim(),
     number: document.getElementById('cs_number').value.trim(),
-    simType:'physical', activationDate, durationDays,
+    simType:'physical', activationDate, durationDays: contractLength,
     expiryDate: d.toISOString().slice(0,10), status:'active',
-    monthlyFee:Number(document.getElementById('cs_monthlyFee').value)||0,
+    monthlyFee: Number(document.getElementById('cs_monthlyFee').value)||0,
     discount:0,
-    firstMonthPayment:Number(document.getElementById('cs_firstMonthPayment').value)||0,
-    activationFee:0, simFee:0,
-    sellingPrice:Number(document.getElementById('cs_sellingPrice').value)||0,
-    cost:0, received:0, paymentMethod:'cash', commission:0,
+    expectedProfit: Number(document.getElementById('cs_expectedProfit').value)||0,
+    actualProfit: 0,
+    usimFee: Number(document.getElementById('cs_usimFee').value)||0,
+    discountPerMonth: Number(document.getElementById('cs_discountPerMonth').value)||0,
+    discountMonths: Number(document.getElementById('cs_discountMonths').value)||0,
+    firstMonthPayment:0, activationFee:0, simFee:0,
+    sellingPrice:0, cost:0, received:0, paymentMethod:'cash', commission:0,
     notes:document.getElementById('cs_notes').value.trim(),
-    company: document.getElementById('cs_company').value,
-    partnerCompany: document.getElementById('cs_partnerCompany').value,
-    svcCarrierType: document.getElementById('cs_svcCarrierType').value,
+    company, partnerCompany, svcCarrierType,
   };
   const reason = changeSubMode==='to_postpaid' ? 'upgraded_to_postpaid' : 'plan_change';
   setActiveSubscription(changeSubCustomerId, svcData, reason);
@@ -3100,12 +3178,28 @@ function renderOrders(){
 
 /* ---------------- REPORTS ---------------- */
 let repSelectedMonth = null; // null = all time
+let reportView = 'monthly';
+let repSelectedDay = null;
+/* Always the catalog/estimated figure, regardless of whether a real settlement exists yet —
+   netProfitFor() deliberately prefers the real figure once reconciled, which is right for
+   "current best-known income" but wrong for a card that specifically means "expected". */
+function expectedIncomeFor(s){
+  if(!s || s.type!=='postpaid') return 0;
+  return (Number(s.expectedProfit)||0) - discountTotalFor(s) - (Number(s.usimFee)||0);
+}
 function renderReports(){
+  const tabs = [{key:'monthly', label:'rep.view.monthly'}, {key:'daily', label:'rep.view.daily'}];
+  document.getElementById('reportViewTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${reportView===tb.key?'active':''}" data-reportview="${tb.key}">${t(tb.label)}</button>`).join('');
+  document.querySelectorAll('[data-reportview]').forEach(b=> b.addEventListener('click', ()=>{ reportView=b.dataset.reportview; renderReports(); }));
+  document.getElementById('repMonthlyView').style.display = reportView==='monthly' ? '' : 'none';
+  document.getElementById('repDailyView').style.display = reportView==='daily' ? '' : 'none';
+  if(reportView==='monthly') renderMonthlyReport(); else renderDailyReport();
+}
+function renderMonthlyReport(){
   const allSvcs = DB.services.filter(s=>isSubscriptionType(s.type));
   const now = new Date();
   const curMonthStr = now.toISOString().slice(0,7);
 
-  // month selector — every month that actually has a signup, newest first, plus "all time"
   const monthsWithData = [...new Set(allSvcs.map(s=>(s.activationDate||'').slice(0,7)).filter(Boolean))].sort().reverse();
   if(repSelectedMonth===null){
     repSelectedMonth = monthsWithData.includes(curMonthStr) ? curMonthStr : (monthsWithData[0] || 'all');
@@ -3116,122 +3210,123 @@ function renderReports(){
 
   const isAllTime = repSelectedMonth==='all';
   const svcs = isAllTime ? allSvcs : allSvcs.filter(s=>(s.activationDate||'').slice(0,7)===repSelectedMonth);
+  const prepaidSvcs = svcs.filter(s=>s.type==='prepaid');
+  const postpaidSvcs = svcs.filter(s=>s.type==='postpaid');
 
-  // --- hero card: the big "seller center" style summary for the selected scope ---
-  const heroExpected = svcs.reduce((a,s)=>a+(Number(s.expectedProfit)||0)-discountTotalFor(s),0);
-  const heroReconciled = svcs.filter(s=>s.actualProfit);
-  const heroActual = heroReconciled.reduce((a,s)=>a+netProfitFor(s),0);
-  const heroDiscount = svcs.reduce((a,s)=>a+discountTotalFor(s),0);
-  const prepaidCount = svcs.filter(s=>s.type==='prepaid').length;
-  const postpaidCount = svcs.filter(s=>s.type==='postpaid').length;
-  // vs previous month, only meaningful when a specific month is selected
-  let deltaHtml = '';
-  if(!isAllTime){
-    const idx = monthsWithData.indexOf(repSelectedMonth);
-    const prevMonth = monthsWithData[idx+1];
-    if(prevMonth){
-      const prevSvcs = allSvcs.filter(s=>(s.activationDate||'').slice(0,7)===prevMonth);
-      const prevExpected = prevSvcs.reduce((a,s)=>a+(Number(s.expectedProfit)||0)-discountTotalFor(s),0);
-      const delta = prevExpected ? Math.round(((heroExpected-prevExpected)/Math.abs(prevExpected))*100) : (heroExpected>0?100:0);
-      deltaHtml = `<span style="color:${delta>=0?'#7CE3B8':'#FF9B9B'};font-weight:700;">${delta>=0?'▲':'▼'} ${Math.abs(delta)}%</span> <span style="opacity:.7;">${LANG==='zh'?'较上月':'vs'} ${fmtMonthLabel(prevMonth)}</span>`;
-    }
-  }
-  document.getElementById('repTxTitle').textContent = isAllTime ? t('rep.allTransactions') : t('rep.transactions');
-  document.getElementById('repTxDesc').textContent = isAllTime
-    ? (LANG==='zh'?'全部时间的每一笔业务':'Every signup across all time')
-    : `${fmtMonthLabel(repSelectedMonth)} · ${svcs.length} ${t('io.rows')}`;
-  document.getElementById('repHero').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
-      <div>
-        <div style="font-size:12.5px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.05em;">${isAllTime ? t('rep.allTime') : fmtMonthLabel(repSelectedMonth)}</div>
-        <div style="font-size:38px;font-weight:800;margin-top:6px;">${fmtWon(heroExpected)}</div>
-        <div style="font-size:12.5px;margin-top:6px;opacity:.9;">${isAllTime ? t('rep.totalExpected') : t('stat.monthExpected')} ${deltaHtml}</div>
-      </div>
-      <div style="display:flex;gap:28px;flex-wrap:wrap;">
-        <div><div style="font-size:11px;opacity:.7;text-transform:uppercase;">${t('stat.monthActual')}</div><div style="font-size:20px;font-weight:800;margin-top:4px;">${heroReconciled.length?fmtWon(heroActual):'—'}</div><div style="font-size:11px;opacity:.7;margin-top:2px;">${heroReconciled.length}/${svcs.length} ${t('stat.reconciledCount')}</div></div>
-        <div><div style="font-size:11px;opacity:.7;text-transform:uppercase;">${t('f.discountTotal')}</div><div style="font-size:20px;font-weight:800;margin-top:4px;">${fmtWon(heroDiscount)}</div></div>
-        <div><div style="font-size:11px;opacity:.7;text-transform:uppercase;">${t('rep.totalOrders')}</div><div style="font-size:20px;font-weight:800;margin-top:4px;">${svcs.length}</div><div style="font-size:11px;opacity:.7;margin-top:2px;">${prepaidCount} ${t('opt.prepaidShort')} · ${postpaidCount} ${t('opt.postpaidShort')}</div></div>
-      </div>
-    </div>`;
+  const prepaidIncome = prepaidSvcs.reduce((a,s)=>a+(Number(s.sellingPrice)||0),0);
+  const postpaidExpected = postpaidSvcs.reduce((a,s)=>a+expectedIncomeFor(s),0);
+  const reconciled = postpaidSvcs.filter(s=>s.actualProfit);
+  const postpaidActual = reconciled.reduce((a,s)=>a+netProfitFor(s),0);
+  const accumulated = prepaidIncome + postpaidSvcs.reduce((a,s)=>a+netProfitFor(s),0);
+  document.getElementById('repIncomeCards').innerHTML = [
+    {label:t('rep.prepaidIncome'), value:fmtWon(prepaidIncome), sub:`${prepaidSvcs.length} ${t('opt.prepaidShort')}`},
+    {label:t('rep.postpaidExpected'), value:fmtWon(postpaidExpected), sub:`${postpaidSvcs.length} ${t('opt.postpaidShort')}`},
+    {label:t('rep.postpaidActual'), value:reconciled.length?fmtWon(postpaidActual):t('stat.notReconciled'), sub:`${reconciled.length}/${postpaidSvcs.length} ${t('stat.reconciledCount')}`},
+    {label:t('rep.accumulated'), value:fmtWon(accumulated), sub:isAllTime?t('rep.allTime'):fmtMonthLabel(repSelectedMonth), highlight:true},
+  ].map(s=>`<div class="card stat-card" ${s.highlight?'style="background:linear-gradient(135deg,#0F1B3D,#1E3A6E);"':''}>
+      <div class="stat-label" ${s.highlight?'style="color:#B9C2E0;"':''}>${s.label}</div>
+      <div class="stat-value" ${s.highlight?'style="color:#fff;"':''}>${s.value}</div>
+      <div class="stat-delta" ${s.highlight?'style="color:#B9C2E0;"':''}>${s.sub}</div>
+    </div>`).join('');
 
-  const weekAgo = new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
-  const weekProfit = allSvcs.filter(s=>s.activationDate>=weekAgo).reduce((a,s)=>a+netProfitFor(s),0);
+  const newCustomerIds = new Set(svcs.map(s=>s.customerId));
   const pendingReminders = buildReminders().filter(r=>r.uiStatus==='pending').length;
-  document.getElementById('reportStats').innerHTML = [
-    {label:t('stat.weekProfit'), value:fmtWon(weekProfit)},
-    {label:isAllTime?t('rep.avgProfit'):t('stat.monthExpected'), value: isAllTime ? fmtWon(svcs.length?Math.round(heroExpected/svcs.length):0) : fmtWon(heroExpected)},
-    {label:t('stat.monthActual'), value:heroReconciled.length?fmtWon(heroActual):t('stat.notReconciled'), sub:heroReconciled.length?`${heroReconciled.length}/${svcs.length} ${t('stat.reconciledCount')}`:''},
+  document.getElementById('repSecondaryStats').innerHTML = [
+    {label:t('stat.newThisMonth'), value:newCustomerIds.size, sub:`${prepaidSvcs.length} ${t('opt.prepaidShort')} · ${postpaidSvcs.length} ${t('opt.postpaidShort')}`},
     {label:t('stat.pendingReminders'), value:pendingReminders},
   ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div>${s.sub?`<div class="stat-delta">${s.sub}</div>`:''}</div>`).join('');
-
-  // by carrier — net expected profit (falls back to expected if not yet reconciled), scoped
-  // to the selected month
-  const carrierMap = {};
-  svcs.forEach(s=>{ const k=s.carrier||'—'; carrierMap[k]=carrierMap[k]||{rev:0}; carrierMap[k].rev+=netProfitFor(s); });
-  renderMoneyBars('repByCarrier', carrierMap);
 
   const typeMap = {};
   svcs.forEach(s=>{ const k=t('type.'+s.type); typeMap[k]=typeMap[k]||{rev:0}; typeMap[k].rev+=netProfitFor(s); });
   renderMoneyBars('repByType', typeMap);
 
-  // popular plans
   const planMap = {};
   svcs.forEach(s=>{ const k=(s.carrier||'')+' · '+(s.plan||''); planMap[k]=(planMap[k]||0)+1; });
   const topPlans = Object.entries(planMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
   renderBarChart('repPlans', topPlans);
 
-  // rates — scoped to the selected month
-  const custIdsInScope = new Set(svcs.map(s=>s.customerId));
-  const custWithMulti = [...custIdsInScope].filter(cid=>customerServices(cid).length>1).length;
-  const repeatRate = custIdsInScope.size? Math.round(custWithMulti/custIdsInScope.size*100):0;
-  const renewable = svcs.filter(s=>['prepaid','postpaid','topup'].includes(s.type));
-  const renewed = svcs.filter(s=>s.type==='topup').length;
-  const renewalRate = renewable.length? Math.round(renewed/renewable.length*100):0;
-  const avgProfit = svcs.length? Math.round(svcs.reduce((a,s)=>a+netProfitFor(s),0)/svcs.length):0;
-  document.getElementById('repRates').innerHTML = `
-    <div class="kv-grid" style="grid-template-columns:1fr 1fr;">
-      <div><div class="k">${t('rep.renewalRate')}</div><div class="v" style="font-size:20px;">${renewalRate}%</div></div>
-      <div><div class="k">${t('rep.repeatRate')}</div><div class="v" style="font-size:20px;">${repeatRate}%</div></div>
-      <div><div class="k">${t('rep.totalOrders')}</div><div class="v" style="font-size:20px;">${svcs.length}</div></div>
-      <div><div class="k">${t('rep.avgProfit')}</div><div class="v" style="font-size:20px;">${fmtWon(avgProfit)}</div></div>
-    </div>`;
-
-  // transaction detail list for the selected scope
-  const txSorted = [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0));
-  document.getElementById('repTxBody').innerHTML = txSorted.length ? txSorted.slice(0,200).map(s=>{
-    const c = getCustomer(s.customerId);
-    return `<tr class="row-click" data-open-customer="${s.customerId}">
-      <td class="name-cell" title="${c?escapeHtml(c.name):''}"><span class="avatar">${initials(c?c.name:'?')}</span><span class="name-text">${c?escapeHtml(c.name):'—'}</span></td>
-      <td><span class="cell-ellipsis">${t('type.'+s.type)}</span></td>
-      <td><span class="cell-ellipsis">${escapeHtml(s.carrier||'—')}</span></td>
-      <td>${fmtDate(s.activationDate)}</td>
-      <td style="font-weight:700;">${fmtWon(netProfitFor(s))}</td>
-    </tr>`;
-  }).join('') : `<tr><td colspan="5">${emptyState()}</td></tr>`;
-  bindRowOpens();
-
-  // monthly reconciliation table: expected vs actual profit, per signup month — always shows
-  // ALL months regardless of the selector above, as a historical comparison view
   const byMonth = {};
-  allSvcs.forEach(s=>{ const m=(s.activationDate||'').slice(0,7); if(!m) return; byMonth[m]=byMonth[m]||{orders:0,expected:0,actual:0,actualCount:0,discount:0};
-    byMonth[m].orders++;
-    byMonth[m].expected += Number(s.expectedProfit)||0;
-    byMonth[m].discount += discountTotalFor(s);
-    if(s.actualProfit){ byMonth[m].actual += Number(s.actualProfit)||0; byMonth[m].actualCount++; }
+  allSvcs.forEach(s=>{
+    const m=(s.activationDate||'').slice(0,7); if(!m) return;
+    byMonth[m]=byMonth[m]||{prepaidN:0,prepaidIncome:0,postpaidN:0,postpaidExpected:0,postpaidActual:0,postpaidReconciled:0};
+    if(s.type==='prepaid'){ byMonth[m].prepaidN++; byMonth[m].prepaidIncome+=Number(s.sellingPrice)||0; }
+    else if(s.type==='postpaid'){
+      byMonth[m].postpaidN++;
+      byMonth[m].postpaidExpected+=expectedIncomeFor(s);
+      if(s.actualProfit){ byMonth[m].postpaidActual+=netProfitFor(s); byMonth[m].postpaidReconciled++; }
+    }
   });
   const months = Object.keys(byMonth).sort().reverse();
+  const chartMax = Math.max(1, ...months.map(m=>byMonth[m].prepaidIncome + (byMonth[m].postpaidReconciled===byMonth[m].postpaidN ? byMonth[m].postpaidActual : byMonth[m].postpaidExpected)));
+  document.getElementById('repMonthlyChart').innerHTML = months.slice(0,12).reverse().map(m=>{
+    const d = byMonth[m];
+    const monthTotal = d.prepaidIncome + (d.postpaidReconciled===d.postpaidN && d.postpaidN ? d.postpaidActual : d.postpaidExpected);
+    const prepaidPct = monthTotal ? (d.prepaidIncome/chartMax*100) : 0;
+    const postpaidVal = d.postpaidReconciled===d.postpaidN && d.postpaidN ? d.postpaidActual : d.postpaidExpected;
+    const postpaidPct = monthTotal ? (postpaidVal/chartMax*100) : 0;
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div style="width:70px;font-size:11px;color:var(--text-soft);flex-shrink:0;">${fmtMonthLabel(m).replace(/^\D*(\d)/,'$1')}</div>
+      <div style="flex:1;display:flex;height:16px;border-radius:4px;overflow:hidden;background:var(--gray-light);">
+        <div style="width:${prepaidPct}%;background:var(--orange);" title="${t('opt.prepaidShort')}: ${fmtWon(d.prepaidIncome)}"></div>
+        <div style="width:${postpaidPct}%;background:var(--blue);" title="${t('opt.postpaidShort')}: ${fmtWon(postpaidVal)}"></div>
+      </div>
+      <div style="width:90px;text-align:right;font-size:12px;font-weight:700;flex-shrink:0;">${fmtWon(monthTotal)}</div>
+    </div>`;
+  }).join('') + `<div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--text-soft);">
+      <span><span style="display:inline-block;width:9px;height:9px;background:var(--orange);border-radius:2px;margin-right:5px;"></span>${t('opt.prepaidShort')}</span>
+      <span><span style="display:inline-block;width:9px;height:9px;background:var(--blue);border-radius:2px;margin-right:5px;"></span>${t('opt.postpaidShort')}</span>
+    </div>`;
+
   document.getElementById('repMonthlyBody').innerHTML = months.length ? months.map(m=>{
     const d = byMonth[m];
-    const variance = d.actualCount ? (d.actual - (d.actualCount===d.orders ? d.expected : 0)) : null;
-    const netExpected = d.expected - d.discount;
-    return `<tr class="row-click" data-month-row="${m}"><td>${fmtMonthLabel(m)}</td><td>${d.orders}</td><td>${fmtWon(d.expected)}</td>
-      <td>${d.actualCount ? `${fmtWon(d.actual)} <span class="muted" style="font-size:11px;">(${d.actualCount}/${d.orders})</span>` : `<span class="muted">${t('stat.notReconciled')}</span>`}</td>
-      <td>${d.actualCount===d.orders ? `<span style="color:${variance>=0?'var(--green)':'var(--red)'};font-weight:700;">${variance>=0?'+':''}${fmtWon(variance)}</span>` : '—'}</td>
-      <td>${fmtWon(d.discount)}</td>
-      <td>${fmtWon(netExpected)}</td></tr>`;
+    const postpaidVal = d.postpaidReconciled===d.postpaidN && d.postpaidN ? d.postpaidActual : d.postpaidExpected;
+    return `<tr class="row-click" data-month-row="${m}">
+      <td>${fmtMonthLabel(m)}</td>
+      <td>${d.prepaidN}</td>
+      <td>${fmtWon(d.prepaidIncome)}</td>
+      <td>${d.postpaidN}</td>
+      <td>${fmtWon(d.postpaidExpected)}</td>
+      <td>${d.postpaidReconciled ? `${fmtWon(d.postpaidActual)} <span class="muted" style="font-size:11px;">(${d.postpaidReconciled}/${d.postpaidN})</span>` : `<span class="muted">${t('stat.notReconciled')}</span>`}</td>
+      <td style="font-weight:700;">${fmtWon(d.prepaidIncome + postpaidVal)}</td>
+    </tr>`;
   }).join('') : `<tr><td colspan="7">${emptyState()}</td></tr>`;
   document.querySelectorAll('[data-month-row]').forEach(el=>{
     el.addEventListener('click', ()=>{ repSelectedMonth = el.getAttribute('data-month-row'); renderReports(); window.scrollTo({top:0,behavior:'smooth'}); });
+  });
+}
+function renderDailyReport(){
+  const allSvcs = DB.services.filter(s=>isSubscriptionType(s.type) && isIsoDate(s.activationDate));
+  const daySel = document.getElementById('repDaySelect');
+  if(!repSelectedDay) repSelectedDay = todayISO();
+  daySel.value = repSelectedDay;
+
+  const byDay = {};
+  allSvcs.forEach(s=>{
+    const d = s.activationDate;
+    byDay[d]=byDay[d]||{prepaidN:0,prepaidIncome:0,postpaidN:0,postpaidExpected:0};
+    if(s.type==='prepaid'){ byDay[d].prepaidN++; byDay[d].prepaidIncome+=Number(s.sellingPrice)||0; }
+    else if(s.type==='postpaid'){ byDay[d].postpaidN++; byDay[d].postpaidExpected+=expectedIncomeFor(s); }
+  });
+
+  const sel = byDay[repSelectedDay] || {prepaidN:0,prepaidIncome:0,postpaidN:0,postpaidExpected:0};
+  document.getElementById('repDailyCards').innerHTML = [
+    {label:t('rep.daily.prepaidCustomers'), value:sel.prepaidN},
+    {label:t('rep.prepaidIncome'), value:fmtWon(sel.prepaidIncome)},
+    {label:t('rep.daily.postpaidCustomers'), value:sel.postpaidN},
+    {label:t('rep.postpaidExpected'), value:fmtWon(sel.postpaidExpected)},
+  ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`).join('');
+
+  const days = Object.keys(byDay).sort().reverse().slice(0,30);
+  document.getElementById('repDailyBody').innerHTML = days.length ? days.map(d=>{
+    const v = byDay[d];
+    return `<tr class="row-click" data-day-row="${d}">
+      <td>${fmtDate(d)}</td><td>${v.prepaidN}</td><td>${fmtWon(v.prepaidIncome)}</td>
+      <td>${v.postpaidN}</td><td>${fmtWon(v.postpaidExpected)}</td>
+      <td style="font-weight:700;">${fmtWon(v.prepaidIncome+v.postpaidExpected)}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="6">${emptyState()}</td></tr>`;
+  document.querySelectorAll('[data-day-row]').forEach(el=>{
+    el.addEventListener('click', ()=>{ repSelectedDay = el.getAttribute('data-day-row'); renderReports(); window.scrollTo({top:0,behavior:'smooth'}); });
   });
 }
 function fmtMonthLabel(m){
@@ -3240,6 +3335,7 @@ function fmtMonthLabel(m){
   return LANG==='zh' ? `${y}年${Number(mo)}月` : new Date(Number(y),Number(mo)-1,1).toLocaleDateString('en-US',{year:'numeric',month:'long'});
 }
 document.getElementById('repMonthSelect').addEventListener('change', e=>{ repSelectedMonth = e.target.value; renderReports(); });
+document.getElementById('repDaySelect').addEventListener('change', e=>{ repSelectedDay = e.target.value; renderReports(); });
 function renderMoneyBars(elId, map){
   const entries = Object.entries(map).sort((a,b)=>b[1].rev-a[1].rev);
   const max = Math.max(1, ...entries.map(([,v])=>Math.abs(v.rev)));
