@@ -67,7 +67,8 @@ const I18N = {
     'rep.byCarrier':'按通信社的营收 / 收入','rep.byType':'按业务类型的营收 / 收入','rep.popularPlans':'热门套餐 Top 5','rep.rates':'续约率 / 回头客率','rep.monthly':'全部月份对账','rep.renewalRate':'续约率','rep.repeatRate':'回头客率','rep.totalOrders':'累计订单数','rep.avgProfit':'平均单笔收入',
     'rep.view.monthly':'📅 月度报表','rep.view.daily':'📆 每日报表','rep.monthlyComparison':'月度对比 — 先付 / 后付收入','rep.prepaidIncome':'先付总收入','rep.postpaidExpected':'后付预期收入','rep.postpaidActual':'后付实际收入','rep.accumulated':'累计总收入',
     'rep.daily.title':'每日报表','rep.daily.desc':'按日期查看先付 / 后付客户数与收入','rep.daily.recent':'近期每日记录','rep.daily.prepaidCustomers':'先付客户数','rep.daily.postpaidCustomers':'后付客户数',
-    'col.prepaidCustomers':'先付客户数','col.postpaidCustomers':'后付客户数','col.prepaidIncome':'先付收入','col.postpaidExpected':'后付预期收入','col.postpaidActual':'后付实际收入','col.monthTotal':'合计','col.date':'日期',
+    'col.prepaidCustomers':'先付客户数','col.postpaidCustomers':'后付客户数','col.prepaidIncome':'先付收入','col.postpaidExpected':'后付预期收入','col.postpaidActual':'后付实际收入','col.monthTotal':'合计','col.date':'日期','col.accumulated':'累计总收入',
+    'rep.daily.prepaidListTitle':'先付客户明细（本日）','rep.daily.postpaidListTitle':'后付客户明细（本日）',
     'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入',
     'stat.weekProfit':'本周收入','stat.monthExpected':'本月预期收入','stat.monthActual':'本月实际收入','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
@@ -156,7 +157,8 @@ const I18N = {
     'rep.byCarrier':'Revenue / income by carrier','rep.byType':'Revenue / income by service type','rep.popularPlans':'Top 5 popular plans','rep.rates':'Renewal rate / repeat-customer rate','rep.monthly':'All months reconciliation','rep.renewalRate':'Renewal rate','rep.repeatRate':'Repeat-customer rate','rep.totalOrders':'Total orders','rep.avgProfit':'Avg. income / order',
     'rep.view.monthly':'📅 Monthly Report','rep.view.daily':'📆 Daily Report','rep.monthlyComparison':'Month-to-month comparison — Prepaid / Postpaid income','rep.prepaidIncome':'Prepaid total income','rep.postpaidExpected':'Postpaid expected income','rep.postpaidActual':'Postpaid actual income','rep.accumulated':'Accumulated income',
     'rep.daily.title':'Daily Report','rep.daily.desc':'View prepaid / postpaid customer counts and income by date','rep.daily.recent':'Recent daily records','rep.daily.prepaidCustomers':'Prepaid customers','rep.daily.postpaidCustomers':'Postpaid customers',
-    'col.prepaidCustomers':'Prepaid customers','col.postpaidCustomers':'Postpaid customers','col.prepaidIncome':'Prepaid income','col.postpaidExpected':'Postpaid expected','col.postpaidActual':'Postpaid actual','col.monthTotal':'Total','col.date':'Date',
+    'col.prepaidCustomers':'Prepaid customers','col.postpaidCustomers':'Postpaid customers','col.prepaidIncome':'Prepaid income','col.postpaidExpected':'Postpaid expected','col.postpaidActual':'Postpaid actual','col.monthTotal':'Total','col.date':'Date','col.accumulated':'Accumulated total',
+    'rep.daily.prepaidListTitle':'Prepaid customers (today)','rep.daily.postpaidListTitle':'Postpaid customers (today)',
     'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income',
     'stat.weekProfit':'Income this week','stat.monthExpected':'Expected income this month','stat.monthActual':'Actual income this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
@@ -471,6 +473,7 @@ document.getElementById('sheetSearch').addEventListener('input', renderSheetPage
 document.getElementById('sheetNationalityFilter').addEventListener('change', renderSheetPage);
 document.getElementById('sheetRatingFilter').addEventListener('change', renderSheetPage);
 document.getElementById('sheetRecentFilter').addEventListener('change', renderSheetPage);
+document.getElementById('sheetSortOrder').addEventListener('change', renderSheetPage);
 
 let sheetTypeTab = 'prepaid';
 function renderSheetPage(){
@@ -495,6 +498,7 @@ function renderSheetPage(){
   const ratingFilter = ratingSel.value;
   const recentFilter = document.getElementById('sheetRecentFilter').value;
   const search = (document.getElementById('sheetSearch').value||'').toLowerCase();
+  const sortOrder = document.getElementById('sheetSortOrder').value;
 
   // Inactive / Duplicate don't have a "current plan" to show in the editable-spreadsheet
   // format the way Prepaid/Postpaid do — those two tabs render a simpler, read-only summary
@@ -505,25 +509,32 @@ function renderSheetPage(){
   }
 
   let rows = DB.customers.map(c=>({c, svc:activeSubscriptionFor(c.id)})).filter(({svc})=> svc && svc.type===sheetTypeTab);
-  rows = rows.filter(({c})=>{
+  rows = rows.filter(({c, svc})=>{
     if(natFilter && c.nationality!==natFilter) return false;
     if(ratingFilter && String(c.rating)!==ratingFilter) return false;
-    if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
+    // check THIS ROW'S service activation date, not the customer's overall join date —
+    // a customer's record can be created at a very different time than a specific service
+    // shown here (e.g. imported historical data), so those two dates can genuinely differ
+    if(recentFilter){ if(!svc.activationDate || daysBetween(svc.activationDate, todayISO())>Number(recentFilter)) return false; }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
       if(!hay.includes(search)) return false;
     }
     return true;
   })
-  // newest signups first by default, same as the Customers page
-  .sort((a,b)=> new Date(customerJoinDate(b.c)||0)-new Date(customerJoinDate(a.c)||0));
+  .sort((a,b)=>{
+    if(sortOrder==='az') return a.c.name.localeCompare(b.c.name);
+    if(sortOrder==='za') return b.c.name.localeCompare(a.c.name);
+    // default: newest signups first, same as the Customers page
+    return new Date(customerJoinDate(b.c)||0)-new Date(customerJoinDate(a.c)||0);
+  });
   document.getElementById('sheetCount').textContent = `${rows.length} ${LANG==='zh'?'位客户':'customers'}`;
 
   const commonHead = `
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.carrier')}</th><th>${t('f.svcCarrierType')}</th>`;
   const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -566,7 +577,8 @@ function renderSheetPage(){
         <td>${sheetTextCell('service',svc.id,'usimFee',svc.usimFee,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'discountPerMonth',svc.discountPerMonth,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'discountMonths',svc.discountMonths,'number')}</td>
-        <td>${sheetReadonlyCell(fmtWon(netProfitFor(svc)))}</td>
+        <td>${sheetReadonlyCell(fmtWon(expectedIncomeFor(svc)))}</td>
+        <td>${sheetReadonlyCell(svc.actualProfit ? fmtWon(netProfitFor(svc)) : (LANG==='zh'?'—':'—'))}</td>
         <td>${sheetTextCell('customer',c.id,'phone',c.phone,'text')}</td>
         <td>${sheetTextCell('customer',c.id,'dob',c.dob,'date')}</td>
         <td>${sheetPillCell('customer',c.id,'nationality',c.nationality,NATIONALITIES, t('f.nationality'))}</td>
@@ -574,7 +586,7 @@ function renderSheetPage(){
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="24">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="25">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -870,7 +882,10 @@ async function testServerConnection(url){
 function scheduleServerSync(){
   if(!isSyncEnabled()) return;
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(pushToServer, 1000);
+  // 400ms — short enough that changes reach the server almost immediately, while still
+  // batching truly rapid-fire edits (e.g. typing in Sheet View) into one request instead
+  // of one per keystroke. Previously 1000ms, which was part of why sync felt sluggish.
+  syncTimer = setTimeout(pushToServer, 400);
 }
 // Persistent "not connected" banner — only shown when sync is actually turned ON but a
 // recent attempt failed (an unexpected disconnection), never for someone who deliberately
@@ -1184,7 +1199,9 @@ function netIncomeLabelFor(svc){
 function netProfitFor(svc){
   if(!svc) return 0;
   const gross = svc.actualProfit ? Number(svc.actualProfit) : Number(svc.expectedProfit)||0;
-  return gross - discountTotalFor(svc) - (Number(svc.usimFee)||0);
+  // never a negative "income" — if there's no real company price known yet (0), that means
+  // "not estimated," not "this signup is expected to lose money"
+  return Math.max(0, gross - discountTotalFor(svc) - (Number(svc.usimFee)||0));
 }
 /* The one true "how much did this transaction earn us" figure — prepaid is its full one-time
    catalog price, postpaid is the tracked expected/actual profit net of discount, and every
@@ -2200,7 +2217,7 @@ function updatePcNetExpectedPreview(){
   const usimFee = Number(document.getElementById('pc_usimFee').value)||0;
   const perMonth = Number(document.getElementById('pc_discountPerMonth').value)||0;
   const months = Number(document.getElementById('pc_discountMonths').value)||0;
-  document.getElementById('pc_netExpectedPreview').value = fmtWon(expected - (perMonth*months) - usimFee);
+  document.getElementById('pc_netExpectedPreview').value = fmtWon(Math.max(0, expected - (perMonth*months) - usimFee));
 }
 ['pc_expectedProfit','pc_usimFee','pc_discountPerMonth','pc_discountMonths'].forEach(id=>{
   document.getElementById(id).addEventListener('input', updatePcNetExpectedPreview);
@@ -3005,7 +3022,7 @@ function updateCsNetExpectedPreview(){
   const usimFee = Number(document.getElementById('cs_usimFee').value)||0;
   const perMonth = Number(document.getElementById('cs_discountPerMonth').value)||0;
   const months = Number(document.getElementById('cs_discountMonths').value)||0;
-  document.getElementById('cs_netExpectedPreview').value = fmtWon(expected - (perMonth*months) - usimFee);
+  document.getElementById('cs_netExpectedPreview').value = fmtWon(Math.max(0, expected - (perMonth*months) - usimFee));
 }
 ['cs_expectedProfit','cs_usimFee','cs_discountPerMonth','cs_discountMonths'].forEach(id=>{
   document.getElementById(id).addEventListener('input', updateCsNetExpectedPreview);
@@ -3185,7 +3202,7 @@ let repSelectedDay = null;
    "current best-known income" but wrong for a card that specifically means "expected". */
 function expectedIncomeFor(s){
   if(!s || s.type!=='postpaid') return 0;
-  return (Number(s.expectedProfit)||0) - discountTotalFor(s) - (Number(s.usimFee)||0);
+  return Math.max(0, (Number(s.expectedProfit)||0) - discountTotalFor(s) - (Number(s.usimFee)||0));
 }
 function renderReports(){
   const tabs = [{key:'monthly', label:'rep.view.monthly'}, {key:'daily', label:'rep.view.daily'}];
@@ -3277,6 +3294,19 @@ function renderMonthlyReport(){
       <span><span style="display:inline-block;width:9px;height:9px;background:var(--blue);border-radius:2px;margin-right:5px;"></span>${t('opt.postpaidShort')}</span>
     </div>`;
 
+  // running cumulative total — computed chronologically (oldest first) regardless of the
+  // table's newest-first display order, so each month's figure genuinely represents
+  // "everything earned up to and including this month"
+  const monthsChrono = [...months].reverse();
+  let cumulative = 0;
+  const cumulativeByMonth = {};
+  monthsChrono.forEach(m=>{
+    const d = byMonth[m];
+    const postpaidVal = d.postpaidReconciled===d.postpaidN && d.postpaidN ? d.postpaidActual : d.postpaidExpected;
+    cumulative += d.prepaidIncome + postpaidVal;
+    cumulativeByMonth[m] = cumulative;
+  });
+
   document.getElementById('repMonthlyBody').innerHTML = months.length ? months.map(m=>{
     const d = byMonth[m];
     const postpaidVal = d.postpaidReconciled===d.postpaidN && d.postpaidN ? d.postpaidActual : d.postpaidExpected;
@@ -3288,8 +3318,9 @@ function renderMonthlyReport(){
       <td>${fmtWon(d.postpaidExpected)}</td>
       <td>${d.postpaidReconciled ? `${fmtWon(d.postpaidActual)} <span class="muted" style="font-size:11px;">(${d.postpaidReconciled}/${d.postpaidN})</span>` : `<span class="muted">${t('stat.notReconciled')}</span>`}</td>
       <td style="font-weight:700;">${fmtWon(d.prepaidIncome + postpaidVal)}</td>
+      <td style="font-weight:700;color:var(--blue);">${fmtWon(cumulativeByMonth[m])}</td>
     </tr>`;
-  }).join('') : `<tr><td colspan="7">${emptyState()}</td></tr>`;
+  }).join('') : `<tr><td colspan="8">${emptyState()}</td></tr>`;
   document.querySelectorAll('[data-month-row]').forEach(el=>{
     el.addEventListener('click', ()=>{ repSelectedMonth = el.getAttribute('data-month-row'); renderReports(); window.scrollTo({top:0,behavior:'smooth'}); });
   });
@@ -3315,6 +3346,27 @@ function renderDailyReport(){
     {label:t('rep.daily.postpaidCustomers'), value:sel.postpaidN},
     {label:t('rep.postpaidExpected'), value:fmtWon(sel.postpaidExpected)},
   ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`).join('');
+
+  // per-customer breakdown for the selected day — exactly who signed up and for how much,
+  // not just an aggregate count, split by type so it's immediately clear which is which
+  const dayPrepaid = allSvcs.filter(s=>s.type==='prepaid' && s.activationDate===repSelectedDay)
+    .sort((a,b)=> (Number(b.sellingPrice)||0)-(Number(a.sellingPrice)||0));
+  const dayPostpaid = allSvcs.filter(s=>s.type==='postpaid' && s.activationDate===repSelectedDay)
+    .sort((a,b)=> expectedIncomeFor(b)-expectedIncomeFor(a));
+
+  const custListHtml = (list, priceFn) => list.length ? list.map(s=>{
+    const c = getCustomer(s.customerId);
+    return `<div class="row-click" data-open-customer="${s.customerId}" style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--border);cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:9px;"><span class="avatar" style="width:26px;height:26px;font-size:11px;">${initials(c?c.name:'?')}</span><span>${c?escapeHtml(c.name):'—'}</span></div>
+      <b>${fmtWon(priceFn(s))}</b>
+    </div>`;
+  }).join('') : `<div class="muted" style="padding:10px 4px;">${LANG==='zh'?'当天没有记录':'No signups this day'}</div>`;
+
+  document.getElementById('repDailyPrepaidList').innerHTML = custListHtml(dayPrepaid, s=>Number(s.sellingPrice)||0);
+  document.getElementById('repDailyPostpaidList').innerHTML = custListHtml(dayPostpaid, s=>expectedIncomeFor(s));
+  document.querySelectorAll('#repDailyPrepaidList [data-open-customer], #repDailyPostpaidList [data-open-customer]').forEach(el=>{
+    el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
+  });
 
   const days = Object.keys(byDay).sort().reverse().slice(0,30);
   document.getElementById('repDailyBody').innerHTML = days.length ? days.map(d=>{
@@ -3415,25 +3467,25 @@ function downloadXlsx(rows, filename, sheetName){
 // This replaces the old separate "export customers/orders/reminders/full backup" buttons —
 // simpler, and (critically) round-trips cleanly through the matching import below, since the
 // headers and field meanings are the same as this app already understands natively.
-const PREPAID_EXPORT_HEADERS = ['Customer','Nationality','Phone','Date of Birth','ID Type','ID Number',
-  'Occupation','Years in Korea','Handled By','Plan Type','Carrier','Carrier Type','Company',
-  'Activation Date','Expiry Date','Contract Length (days)','Price','Discount','Final Price','Notes'];
-const POSTPAID_EXPORT_HEADERS = ['Customer','Nationality','Phone','Date of Birth','ID Type','ID Number',
-  'Occupation','Years in Korea','Handled By','Plan Type','Carrier','Carrier Type','Company','Partner Company',
-  'Activation Date','Expiry Date','Contract Length (days)','Monthly Fee','Company Price','Real Company Price',
-  'USIM Fee','Discount / Month','Discount Months','Expected Income','Notes'];
+const PREPAID_EXPORT_HEADERS = ['CUSTOMER','NATIONALITY','PHONE','DATE OF BIRTH','ID TYPE','ID NUMBER',
+  'OCCUPATION','YEARS IN KOREA','HANDLED BY','PLAN TYPE','CARRIER TYPE','COMPANY',
+  'ACTIVATION DATE','EXPIRY DATE','CONTRACT LENGTH (DAYS)','PRICE','DISCOUNT','FINAL PRICE','NOTES'];
+const POSTPAID_EXPORT_HEADERS = ['CUSTOMER','NATIONALITY','PHONE','DATE OF BIRTH','ID TYPE','ID NUMBER',
+  'OCCUPATION','YEARS IN KOREA','HANDLED BY','PLAN TYPE','CARRIER TYPE','COMPANY','PARTNER COMPANY',
+  'ACTIVATION DATE','EXPIRY DATE','CONTRACT LENGTH (DAYS)','MONTHLY FEE','COMPANY PRICE','REAL COMPANY PRICE',
+  'USIM FEE','DISCOUNT / MONTH','DISCOUNT MONTHS','EXPECTED INCOME','NOTES'];
 function prepaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
-    c.handlerName||'', c.planType||'', s.carrier||'', s.svcCarrierType||'', s.company||'',
+    c.handlerName||'', c.planType||'', s.svcCarrierType||'', s.company||'',
     s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.price)||0, Number(s.discount)||0,
     Math.max(0,(Number(s.price)||0)-(Number(s.discount)||0)), s.notes||''];
 }
 function postpaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
-    c.handlerName||'', c.workType||c.planType||'', s.carrier||'', s.svcCarrierType||'', s.company||'', s.partnerCompany||'',
+    c.handlerName||'', c.workType||c.planType||'', s.svcCarrierType||'', s.company||'', s.partnerCompany||'',
     s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.monthlyFee)||0, Number(s.expectedProfit)||0,
     Number(s.actualProfit)||0, Number(s.usimFee)||0, Number(s.discountPerMonth)||0, Number(s.discountMonths)||0,
-    netProfitFor(s), s.notes||''];
+    expectedIncomeFor(s), s.notes||''];
 }
 function exportAll(){
   const prepaidRows = [PREPAID_EXPORT_HEADERS];
@@ -3464,46 +3516,55 @@ function exportAll(){
    general importer does for messy real-world files. This is what lets ONE import button
    correctly handle both this app's own export AND an unrelated carrier spreadsheet. */
 function looksLikeOwnExportSheet(headerRow){
-  const h = (headerRow||[]).map(v=>String(v||'').trim());
-  return h.includes('Final Price') || h.includes('Real Company Price');
+  const h = (headerRow||[]).map(v=>String(v||'').trim().toUpperCase());
+  return h.includes('FINAL PRICE') || h.includes('REAL COMPANY PRICE');
 }
 function restoreOwnExportSheet(sheetName, rows){
   const isPrepaid = sheetName==='Prepaid';
   let added = 0;
-  rows.forEach(row=>{
-    const name = String(row['Customer']||'').trim();
+  rows.forEach(rawRow=>{
+    // case-insensitive field lookup — works whether the file has the current ALL CAPS
+    // headers or an older export's Title Case headers, without needing two code paths
+    const norm = {};
+    Object.keys(rawRow).forEach(k=> norm[k.trim().toUpperCase()] = rawRow[k]);
+    const row = norm;
+    const name = String(row['CUSTOMER']||'').trim();
     if(!name) return;
-    let cust = DB.customers.find(c=>c.name.toUpperCase()===name.toUpperCase() && (c.phone||'')===String(row['Phone']||'').trim());
+    let cust = DB.customers.find(c=>c.name.toUpperCase()===name.toUpperCase() && (c.phone||'')===String(row['PHONE']||'').trim());
     if(!cust){
       cust = {
-        id: uid('c'), name: name.toUpperCase(), nationality: String(row['Nationality']||'').toUpperCase(),
-        dob: normDateForImport(row['Date of Birth']), phone: String(row['Phone']||'').trim(),
-        idType: row['ID Type']||'ARC', idNumber: String(row['ID Number']||'').toUpperCase(),
-        occupation: row['Occupation']||'', years: Number(row['Years in Korea'])||0,
-        handlerName: row['Handled By']||'', planType: row['Plan Type']||'신규가입',
-        workType: !isPrepaid ? (row['Plan Type']||'신규가입') : undefined,
+        id: uid('c'), name: name.toUpperCase(), nationality: String(row['NATIONALITY']||'').toUpperCase(),
+        dob: normDateForImport(row['DATE OF BIRTH']), phone: String(row['PHONE']||'').trim(),
+        idType: row['ID TYPE']||'ARC', idNumber: String(row['ID NUMBER']||'').toUpperCase(),
+        occupation: row['OCCUPATION']||'', years: Number(row['YEARS IN KOREA'])||0,
+        handlerName: row['HANDLED BY']||'', planType: row['PLAN TYPE']||'신규가입',
+        workType: !isPrepaid ? (row['PLAN TYPE']||'신규가입') : undefined,
         subType: isPrepaid?'prepaid':'postpaid', referral:'other', carrierType:'SKT',
-        address:'', notes: row['Notes']||'', rating:5, createdAt: normDateForImport(row['Activation Date'])||todayISO(),
+        address:'', notes: row['NOTES']||'', rating:5, createdAt: normDateForImport(row['ACTIVATION DATE'])||todayISO(),
       };
       DB.customers.push(cust);
     }
-    const activationDate = normDateForImport(row['Activation Date'])||todayISO();
-    const expiryDate = normDateForImport(row['Expiry Date'])||'';
+    const activationDate = normDateForImport(row['ACTIVATION DATE'])||todayISO();
+    const expiryDate = normDateForImport(row['EXPIRY DATE'])||'';
+    // "Carrier" and "Carrier Type" were merged into one column (Carrier Type) — populate
+    // both internal fields from it, so the rest of the app (forms, Sheet View, print
+    // templates) that still reference either one keeps working exactly as before
+    const carrierType = row['CARRIER TYPE']||'';
     const base = {
-      customerId: cust.id, type: isPrepaid?'prepaid':'postpaid', carrier: row['Carrier']||'',
-      svcCarrierType: row['Carrier Type']||'', company: row['Company']||'',
+      customerId: cust.id, type: isPrepaid?'prepaid':'postpaid', carrier: carrierType,
+      svcCarrierType: carrierType, company: row['COMPANY']||'',
       number: cust.phone, simType:'physical', activationDate, expiryDate,
-      durationDays: Number(row['Contract Length (days)'])||null, status:'active', notes:'',
+      durationDays: Number(row['CONTRACT LENGTH (DAYS)'])||null, status:'active', notes:'',
     };
     const svcData = isPrepaid ? {
-      ...base, price: Number(row['Price'])||0, discount: Number(row['Discount'])||0,
-      sellingPrice: Number(row['Final Price'])||0, received: Number(row['Final Price'])||0,
+      ...base, price: Number(row['PRICE'])||0, discount: Number(row['DISCOUNT'])||0,
+      sellingPrice: Number(row['FINAL PRICE'])||0, received: Number(row['FINAL PRICE'])||0,
       cost:0, commission:0, paymentMethod:'cash', monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0,
     } : {
-      ...base, partnerCompany: row['Partner Company']||'', monthlyFee: Number(row['Monthly Fee'])||0,
-      expectedProfit: Number(row['Company Price'])||0, actualProfit: Number(row['Real Company Price'])||0,
-      usimFee: Number(row['USIM Fee'])||0, discountPerMonth: Number(row['Discount / Month'])||0,
-      discountMonths: Number(row['Discount Months'])||0, sellingPrice:0, cost:0, received:0,
+      ...base, partnerCompany: row['PARTNER COMPANY']||'', monthlyFee: Number(row['MONTHLY FEE'])||0,
+      expectedProfit: Number(row['COMPANY PRICE'])||0, actualProfit: Number(row['REAL COMPANY PRICE'])||0,
+      usimFee: Number(row['USIM FEE'])||0, discountPerMonth: Number(row['DISCOUNT / MONTH'])||0,
+      discountMonths: Number(row['DISCOUNT MONTHS'])||0, sellingPrice:0, cost:0, received:0,
       commission:0, paymentMethod:'cash', firstMonthPayment:0, activationFee:0, simFee:0, discount:0,
     };
     setActiveSubscription(cust.id, svcData, 'new');
@@ -4451,6 +4512,26 @@ function unlockApp(){
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('appRoot').style.display = '';
   boot();
+  startBackgroundSyncPolling();
+}
+// Silently pulls fresh data from the server every 15 seconds while the app is just sitting
+// open — without this, two computers only ever compared notes when someone happened to
+// refresh, so a change on one could sit invisible on another for however long it stayed
+// open. Only re-renders when something actually changed, so it doesn't interrupt whatever
+// page someone's looking at for no reason.
+let backgroundSyncInterval = null;
+function startBackgroundSyncPolling(){
+  if(backgroundSyncInterval) return; // never start a second one
+  backgroundSyncInterval = setInterval(async ()=>{
+    if(!isSyncEnabled()) return;
+    if(document.hidden) return; // don't burn requests on a tab nobody's looking at
+    const before = JSON.stringify(DB.customers)+JSON.stringify(DB.services);
+    const result = await pullFromServer();
+    if(result.ok){
+      const after = JSON.stringify(DB.customers)+JSON.stringify(DB.services);
+      if(before !== after){ renderPage(currentPage); renderNav(); }
+    }
+  }, 15000);
 }
 function isStayUnlocked(){ return localStorage.getItem(UNLOCKED_KEY)==='1'; }
 if(isStayUnlocked()){
