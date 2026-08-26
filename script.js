@@ -237,6 +237,11 @@ const PREPAID_PLANS = [
   {days:60, price:40000, label:'Korea 60'},
   {days:90, price:55000, label:'Korea 90'},
 ];
+// Recharge is deliberately just one option — an existing customer extending their line
+// isn't shopping between plan tiers the way a new signup is, so there's no need to show
+// the full catalog list. "Change to Prepaid" (a postpaid customer's first prepaid signup)
+// still uses the full PREPAID_PLANS list above, since that's closer to a new signup.
+const RECHARGE_PLAN = [{days:30, price:36000, label:'Recharge 30'}];
 const STAFF_MEMBERS = ['Jason','Jihan','Himobile365'];
 /* the store's active staff profile — persists across sessions, and is what the "Handled by"
    field on new customers defaults to (staff can still override it per-customer) */
@@ -306,12 +311,13 @@ function renderTileRadioGroup(containerId, options, currentVal){
 }
 /* Same tile-radio pattern but for the prepaid catalog specifically — the visible label
    ("15 Days · ₩20,000") is friendlier than the stored value (just the day count). */
-function renderPrepaidPlanTiles(currentVal, elId){
+function renderPrepaidPlanTiles(currentVal, elId, plansList){
   const el = document.getElementById(elId||'p3_prepaidPlan_group');
   if(!el) return;
   el.dataset.selected = currentVal || '';
-  const values = PREPAID_PLANS.map(p=>String(p.days));
-  el.innerHTML = PREPAID_PLANS.map(p=>{
+  const plans = plansList || PREPAID_PLANS;
+  const values = plans.map(p=>String(p.days));
+  el.innerHTML = plans.map(p=>{
     const val = String(p.days);
     const c = sheetColorFor(values, val);
     const selected = val===currentVal;
@@ -2480,10 +2486,12 @@ document.getElementById('f_dob').addEventListener('input', e=>{
 });
 /* postpaid-only companies/carrier that a given prepaid plan is allowed to use — three months
    uses one supplier pairing, 1-2 months uses another, and the 15-day plan is unrestricted */
+/* All company / carrier type options are available for every prepaid duration — there's no
+   real reason 30/60/90-day plans should be more restricted than 15-day ones, and it was
+   confusing staff who expected the same full set of choices no matter which plan length
+   they picked, whether signing someone up new or recharging an existing customer. */
 function prepaidCompanyCarrierOptionsFor(days){
-  if(days===90) return {companies:['프리티Free T','스마텔SMS'], carriers:['SKT알뜰폰','LGU알뜰폰']};
-  if(days===30 || days===60) return {companies:['아시아Asia','벨류컨Vcnk'], carriers:['KT알뜰폰','LGU알뜰폰']};
-  return {companies:PREPAID_COMPANIES, carriers:POSTPAID_CARRIER_TYPES}; // 15 days — no restriction
+  return {companies:PREPAID_COMPANIES, carriers:POSTPAID_CARRIER_TYPES};
 }
 /* prepaid is a flat one-time catalog price — auto-fill it from the selected plan, but leave
    it editable in case of a discount or special case */
@@ -3298,7 +3306,8 @@ function openPrepaidAssignModal(customerId, mode){
     ? `${t('detail.currentPlan')}: <b>${planLabel(current)}</b>`
     : `<i>${t('detail.noActiveSubscription')}</i>`;
 
-  renderPrepaidPlanTiles('90', 'pa_prepaidPlan_group');
+  const plansForMode = mode==='recharge' ? RECHARGE_PLAN : PREPAID_PLANS;
+  renderPrepaidPlanTiles(String(plansForMode[0].days), 'pa_prepaidPlan_group', plansForMode);
   document.getElementById('pa_activationDate').value = todayISO();
   // carries over the same physical SIM by default (recharging usually means "keep using
   // what they have"), and the same company/carrier they were already on — staff can still
@@ -3310,8 +3319,9 @@ function openPrepaidAssignModal(customerId, mode){
   document.getElementById('prepaidAssignModalOverlay').classList.add('show');
 }
 function updatePrepaidAssignPriceFromPlan(){
-  const days = Number(document.getElementById('pa_prepaidPlan_group').dataset.selected)||90;
-  const plan = PREPAID_PLANS.find(p=>p.days===days);
+  const plansForMode = prepaidAssignMode==='recharge' ? RECHARGE_PLAN : PREPAID_PLANS;
+  const days = Number(document.getElementById('pa_prepaidPlan_group').dataset.selected)||plansForMode[0].days;
+  const plan = plansForMode.find(p=>p.days===days);
   document.getElementById('pa_price').value = plan ? plan.price : '';
   const {companies, carriers} = prepaidCompanyCarrierOptionsFor(days);
   const current = activeSubscriptionFor(prepaidAssignCustomerId);
