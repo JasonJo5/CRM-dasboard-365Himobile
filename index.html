@@ -637,6 +637,30 @@
             <div class="form-field full"><label data-i18n="print.template">打印模板</label><select id="p3_template"></select></div>
           </div>
         </div>
+
+        <!-- shown only when editing an existing postpaid customer's profile — the postpaid
+             equivalent of the prepaid box above, so "Edit profile" has the same full field
+             access as creating a new customer would, regardless of plan type -->
+        <div class="prepaid3m-box" id="postpaidEditFields" style="display:none;">
+          <div class="section-desc" data-i18n="postpaidEdit.hint">编辑该客户当前后付套餐的完整信息</div>
+          <div class="prepaid3m-fields">
+            <div class="form-field full"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="pe_workType_group" data-field="workType"></div></div>
+            <div class="form-field"><label data-i18n="f.plan">套餐名称</label><input id="pe_plan"></div>
+            <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="pe_contractLength_group" data-field="contractLength"></div></div>
+            <div class="form-field full"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pe_company_group" data-field="company"></div></div>
+            <div class="form-field full"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="pe_partnerCompany_group" data-field="partnerCompany"></div></div>
+            <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pe_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+            <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="pe_number" placeholder="010-0000-0000"></div>
+            <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pe_activationDate" type="date"></div>
+            <div class="form-field"><label data-i18n="f.monthlyFee">月租费</label><input id="pe_monthlyFee" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.expectedProfit">公司价格 Company price</label><input id="pe_expectedProfit" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.actualProfit">公司实际结算价</label><input id="pe_actualProfit" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.usimFee">USIM 费用</label><input id="pe_usimFee" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="pe_discountPerMonth" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.discountMonths">折扣月数</label><input id="pe_discountMonths" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入</label><input id="pe_netExpectedPreview" disabled></div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-foot">
@@ -771,6 +795,37 @@
     <div class="modal-foot">
       <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
       <button class="btn btn-primary" id="saveChangeSubBtn" data-i18n="btn.confirmChange">确认变更</button>
+    </div>
+  </div>
+</div>
+
+<!-- shared prepaid plan assignment modal — used for both "Recharge" (existing prepaid
+     customer whose plan is ending/ended) and "Change to Prepaid" (postpaid customer
+     switching back), since both are really the same action: assign a fresh prepaid plan
+     to a customer who already exists in the system -->
+<div class="overlay" id="prepaidAssignModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="prepaidAssignModalTitle">Recharge</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" id="prepaidAssignCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="form-grid">
+        <div class="form-field full"><label class="tile-radio-required" data-i18n="f.prepaidPlan">充值套餐 Plan</label><div class="tile-radio-group" id="pa_prepaidPlan_group" data-field="prepaidPlan"></div></div>
+        <div class="form-field"><label data-i18n="f.price">价格 Price</label><input id="pa_price" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discount">折扣 Discount</label><input id="pa_discount" type="number" min="0" value="0"></div>
+        <div class="form-field"><label data-i18n="f.finalPrice">最终价格 Final price</label><input id="pa_finalPricePreview" disabled></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pa_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호</label><input id="pa_usimNumber"></div>
+        <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pa_company_group" data-field="company"></div></div>
+        <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pa_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pa_notes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="savePrepaidAssignBtn">Confirm</button>
     </div>
   </div>
 </div>
