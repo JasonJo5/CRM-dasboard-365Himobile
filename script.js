@@ -28,8 +28,8 @@ const I18N = {
     'sub.sheet':'像表格一样直接编辑客户与套餐信息',
     'sheet.hint':'💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存',
     'sub.dashboard':'门店运营总览','sub.customers':'客户资料与套餐管理','sub.ai':'商机识别、优先级排序与营收预测','sub.reminders':'到期、合同与信息变更提醒','sub.orders':'先付、后付、号码移动等业务记录','sub.reports':'营收、利润与客户结构报表','sub.templates':'运营商申请表自动填写与打印','sub.io':'Excel 导入与数据备份',
-    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并',
-    'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回',
+    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并',
+    'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回','btn.undoCancel':'撤销取消',
     'btn.recharge':'充值续约','btn.changeToPrepaid':'转为先付卡','btn.confirmRecharge':'确认充值',
     'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布',
     'dash.quickSearch':'🔍 快速搜索客户姓名、号码或证件号...','dash.noMatches':'没有找到匹配的客户','dash.dupeBanner':'发现 {groups} 组重复客户（共 {n} 位），建议检查并合并','dash.dupeBannerBtn':'立即查看','dash.renewals.title':'合约即将到期（30天内）','dash.renewals.desc':'后付卡合约即将到期，建议提前联系续约','dash.renewals.emptyTitle':'近期没有合约到期 👍','dash.renewals.emptyDesc':'未来30天内没有后付卡合约到期','dash.winback.title':'流失客户 / 待挽回','dash.winback.desc':'已取消订阅、尚未重新开通的客户','dash.winback.emptyTitle':'暂无流失客户','dash.winback.emptyDesc':'所有曾经订阅过的客户目前都有有效订阅','dash.revenueTrend.title':'营收趋势（近6个月）','dash.cancelReasons.title':'取消原因分布','dash.noCancellations':'近6个月内没有取消记录 👍',
@@ -82,7 +82,7 @@ const I18N = {
     'lock.title':'365Himobile 客户管理系统','lock.desc':'请输入服务器地址与密钥以载入客户数据','lock.passwordLabel':'密钥 / 密码','lock.unlock':'解锁并载入数据','lock.skip':'跳过 — 仅在本机使用（空白，不含任何客户数据）','lock.logout':'🔒 退出登录 Log out',
     'io.issues.title':'数据完整性检查','io.issues.desc':'缺失联系方式、有效期、证件信息或付款信息的客户','io.issues.none':'没有发现数据问题，档案很完整 👍',
     'issue.noContact':'缺少联系电话','issue.noIdExpiry':'缺少证件有效期','issue.noIdNumber':'缺少证件号码','issue.noActiveService':'没有任何业务记录','issue.unpaid':'存在未结清欠款',
-    'toast.customerSaved':'客户已保存','toast.orderSaved':'业务已保存','toast.reminderDone':'已标记完成','toast.reminderFollowup':'已设为再次跟进','toast.imported':'导入完成','toast.exported':'已导出','toast.deleted':'已删除','toast.langChanged':'语言已切换为中文',
+    'toast.customerSaved':'客户已保存','toast.orderSaved':'业务已保存','toast.reminderDone':'已标记完成','toast.reminderFollowup':'已设为再次跟进','toast.imported':'导入完成','toast.exported':'已导出','toast.deleted':'已删除','toast.langChanged':'语言已切换为中文','toast.cancellationUndone':'已撤销取消，订阅已恢复',
     'age.years':'岁','years.suffix':'年',
     'detail.contract':'合同 / 有效期','detail.remaining':'剩余','detail.days':'天','detail.usedOf':'已使用 / 总时长','detail.noServices':'该客户暂无业务记录','detail.services':'业务与号码记录','detail.profile':'客户资料',
     'detail.activeSubscription':'当前订阅','detail.noActiveSubscription':'暂无有效订阅','detail.planHistory':'套餐历史记录','detail.noHistory':'暂无历史记录','detail.otherRecords':'其他业务记录（携号转网 / 过户 / 充值等）','detail.currentPlan':'当前套餐',
@@ -119,8 +119,8 @@ const I18N = {
     'sub.sheet':'Edit customer & plan info directly, like a spreadsheet',
     'sheet.hint':'💡 Click a colored tag to pick a new value; click text/numbers/dates to edit directly — press Enter or click away to save',
     'sub.dashboard':'Store operations overview','sub.customers':'Customer profiles & plan management','sub.ai':'Opportunity detection, priority ranking & revenue forecasts','sub.reminders':'Expiry, contract & info-change reminders','sub.orders':'Prepaid, postpaid, porting and other service records','sub.reports':'Revenue, profit and customer breakdowns','sub.templates':'Auto-fill and print carrier application forms','sub.io':'Excel import and data backup',
-    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge',
-    'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back',
+    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge',
+    'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back','btn.undoCancel':'Undo Cancellation',
     'btn.recharge':'Recharge','btn.changeToPrepaid':'Change to Prepaid','btn.confirmRecharge':'Confirm Recharge',
     'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source',
     'dash.quickSearch':'🔍 Quick search by name, phone, or ID...','dash.noMatches':'No matching customers found','dash.dupeBanner':'Found {groups} duplicate groups ({n} customers total) — worth reviewing and merging','dash.dupeBannerBtn':'Review now','dash.renewals.title':'Contracts ending soon (30 days)','dash.renewals.desc':'Postpaid contracts nearing renewal — reach out ahead of time','dash.renewals.emptyTitle':'No contracts ending soon 👍','dash.renewals.emptyDesc':'No postpaid contracts due for renewal in the next 30 days','dash.winback.title':'Cancelled / win-back opportunities','dash.winback.desc':'Customers who cancelled and haven\'t restarted','dash.winback.emptyTitle':'No lapsed customers','dash.winback.emptyDesc':'Everyone who ever subscribed currently has an active plan','dash.revenueTrend.title':'Revenue trend (last 6 months)','dash.cancelReasons.title':'Cancellation reasons','dash.noCancellations':'No cancellations in the last 6 months 👍',
@@ -173,7 +173,7 @@ const I18N = {
     'lock.title':'365Himobile Customer Management','lock.desc':'Enter the server address and password to load customer data','lock.passwordLabel':'Password / Key','lock.unlock':'Unlock & Load Data','lock.skip':'Skip — use this computer only (blank, no customer data)','lock.logout':'🔒 Log out',
     'io.issues.title':'Data health check','io.issues.desc':'Customers missing contact info, expiry dates, ID details or payment info','io.issues.none':'No data issues found — records look complete 👍',
     'issue.noContact':'Missing phone number','issue.noIdExpiry':'Missing ID expiry date','issue.noIdNumber':'Missing ID number','issue.noActiveService':'No service records','issue.unpaid':'Has outstanding balance',
-    'toast.customerSaved':'Customer saved','toast.orderSaved':'Order saved','toast.reminderDone':'Marked as completed','toast.reminderFollowup':'Set to follow up again','toast.imported':'Import complete','toast.exported':'Exported','toast.deleted':'Deleted','toast.langChanged':'Language switched to English',
+    'toast.customerSaved':'Customer saved','toast.orderSaved':'Order saved','toast.reminderDone':'Marked as completed','toast.reminderFollowup':'Set to follow up again','toast.imported':'Import complete','toast.exported':'Exported','toast.deleted':'Deleted','toast.langChanged':'Language switched to English','toast.cancellationUndone':'Cancellation undone — subscription restored',
     'age.years':'yrs','years.suffix':'yrs',
     'detail.contract':'Contract / validity','detail.remaining':'Remaining','detail.days':'days','detail.usedOf':'Used / total length','detail.noServices':'No service records yet','detail.services':'Services & numbers','detail.profile':'Profile',
     'detail.activeSubscription':'Active Subscription','detail.noActiveSubscription':'No active subscription','detail.planHistory':'Plan History','detail.noHistory':'No history yet','detail.otherRecords':'Other records (porting / ownership transfer / top-ups etc.)','detail.currentPlan':'Current plan',
@@ -523,6 +523,7 @@ function renderSheetPage(){
   const dupeGroupsForTabCount = dupeGroupsRaw.map(g=>[...g].sort((a,b)=> new Date(customerJoinDate(b)||0)-new Date(customerJoinDate(a)||0)))
     .sort((a,b)=> new Date(customerJoinDate(b[0])||0)-new Date(customerJoinDate(a[0])||0));
   const tabs = [
+    {key:'all', label:'custtab.all', n:DB.customers.length},
     {key:'prepaid', label:'custtab.prepaid', n:DB.customers.filter(c=>{const a=activeSubscriptionFor(c.id); return a && a.type==='prepaid';}).length},
     {key:'postpaid', label:'custtab.postpaid', n:DB.customers.filter(c=>{const a=activeSubscriptionFor(c.id); return a && a.type==='postpaid';}).length},
     {key:'inactive', label:'custtab.inactive', n:DB.customers.filter(c=>!activeSubscriptionFor(c.id)).length},
@@ -542,10 +543,11 @@ function renderSheetPage(){
   const search = (document.getElementById('sheetSearch').value||'').toLowerCase();
   const sortOrder = document.getElementById('sheetSortOrder').value;
 
-  // Inactive / Duplicate don't have a "current plan" to show in the editable-spreadsheet
-  // format the way Prepaid/Postpaid do — those two tabs render a simpler, read-only summary
-  // table instead of the editable financial columns, sharing the same filter values above.
-  if(sheetTypeTab==='inactive' || sheetTypeTab==='dupes'){
+  // Inactive / Duplicate / All don't have a single "current plan" to show in the
+  // editable-spreadsheet format the way Prepaid/Postpaid do — those tabs render a simpler,
+  // read-only summary table instead of the editable financial columns, sharing the same
+  // filter values above.
+  if(sheetTypeTab==='inactive' || sheetTypeTab==='dupes' || sheetTypeTab==='all'){
     renderSheetSimpleView(sheetTypeTab, dupeGroupsForTabCount, {natFilter, ratingFilter, recentFilter, search});
     return;
   }
@@ -639,12 +641,16 @@ function renderSheetPage(){
 function renderSheetSimpleView(tab, dupeGroups, filters){
   const {natFilter, ratingFilter, recentFilter, search} = filters;
   const isDupeView = tab==='dupes';
+  const isAllView = tab==='all';
   const groupIndexById = {};
   if(isDupeView) dupeGroups.forEach((g,i)=> g.forEach(c=> groupIndexById[c.id]=i));
 
   let list;
   if(isDupeView){
     list = dupeGroups.flat();
+  } else if(isAllView){
+    list = DB.customers; // every customer regardless of type or active/inactive status —
+    // exists specifically so search isn't scoped to whichever tab happens to be open
   } else {
     list = DB.customers.filter(c=>!activeSubscriptionFor(c.id));
   }
@@ -665,9 +671,10 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
     : `${list.length} ${LANG==='zh'?'位客户':'customers'}`;
 
   const head = `<th>${t('col.customer')}</th><th>${t('f.phone')}</th><th>${t('f.nationality')}</th><th>${t('f.idType')}</th>
-    <th>${isDupeView ? t('col.dupeReason') : t('col.contractStatus')}</th><th>${t('col.recentActivity')}</th><th>${t('col.dateAdded')}</th><th>${t('col.rating')}</th><th></th>`;
+    <th>${isDupeView ? t('col.dupeReason') : (isAllView ? t('col.status') : t('col.contractStatus'))}</th><th>${t('col.recentActivity')}</th><th>${t('col.dateAdded')}</th><th>${t('col.rating')}</th><th></th>`;
   const rowsHtml = list.length ? list.map(c=>{
     const svcs = customerServices(c.id);
+    const active = activeSubscriptionFor(c.id);
     const recent = [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0))[0];
     const groupBand = isDupeView ? (groupIndexById[c.id]%2===0 ? 'dupe-band-a' : 'dupe-band-b') : '';
     let statusCell;
@@ -679,6 +686,11 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
       const reasons = [sameName?t('dupe.reasonName'):null, samePhone?t('dupe.reasonPhone'):null].filter(Boolean).join(' + ');
       statusCell = `<td><span class="pill pill-red">${reasons||t('dupe.reasonName')}</span></td>`;
       var mergeBtn = isNewestInGroup ? `<button class="btn btn-sm btn-primary" data-merge-group="${groupIndexById[c.id]}" title="${LANG==='zh'?'将本组其他重复客户合并到这条最新记录中':'Merge the other duplicates in this group into this newest record'}">🔀 ${t('btn.merge')}</button> ` : '';
+    } else if(isAllView){
+      statusCell = active
+        ? `<td><span class="pill ${active.type==='prepaid'?'pill-orange':'pill-blue'}">${t('opt.'+active.type+'Short')}</span></td>`
+        : `<td><span class="pill pill-gray">${t('custtab.inactive')}</span></td>`;
+      var mergeBtn = '';
     } else {
       const reasonTxt = recent && recent.changeReason==='cancelled' ? t('reason.cancelled') : (LANG==='zh'?'未续约':'Not renewed');
       const endedOn = recent && (recent.endedAt || recent.expiryDate);
@@ -1140,6 +1152,30 @@ function endActiveSubscription(customerId, reason){
   const actives = DB.services.filter(s=>s.customerId===customerId && s.isActive);
   actives.forEach(s=>{ s.isActive=false; s.endedAt=todayISO(); s.endedSeq=Date.now(); s.changeReason=reason||'cancelled'; });
   return actives;
+}
+/* Reverses a cancellation that turns out to have been a mistake — restores the most
+   recently cancelled service back to active, exactly as it was, rather than making
+   someone recreate it from scratch and lose whatever pricing/notes it had. Only offered
+   for cancellations specifically (not a plan naturally expiring), since those two have
+   different real-world meanings — "undo" only makes sense for the first one. */
+function undoCancellation(customerId){
+  const cust = getCustomer(customerId);
+  if(!cust) return;
+  const mostRecent = [...customerServices(customerId)].filter(s=>isSubscriptionType(s.type)).sort((a,b)=> (b.endedSeq||0)-(a.endedSeq||0))[0];
+  if(!mostRecent || mostRecent.changeReason!=='cancelled') return;
+  // any OTHER service that's currently (incorrectly) marked active gets closed first, so
+  // restoring this one can't ever leave the customer with two active plans at once
+  DB.services.filter(s=>s.customerId===customerId && s.isActive && s.id!==mostRecent.id).forEach(s=>{ s.isActive=false; });
+  mostRecent.isActive = true;
+  mostRecent.endedAt = null;
+  mostRecent.endedSeq = null;
+  mostRecent.changeReason = 'new';
+  if(isSubscriptionType(mostRecent.type)) cust.subType = mostRecent.type;
+  saveDB(DB);
+  toast(t('toast.cancellationUndone'));
+  openCustomerDetail(customerId);
+  renderPage(currentPage);
+  renderNav();
 }
 /* Migration/self-heal pass for data saved before isActive existed, or any inconsistent state
    (e.g. more than one active record for a customer, however that happened) — guarantees the
@@ -2714,7 +2750,12 @@ function openCustomerDetail(id){
       <button class="btn btn-ghost" id="btnChangeToPrepaid">📶 ${t('btn.changeToPrepaid')}</button>
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else {
-    actionButtons = `<button class="btn btn-primary" id="btnStartNewSub">＋ ${t('btn.startNewSubscription')}</button>`;
+    // if the reason they have no active plan is that someone cancelled it (as opposed to
+    // it simply running out naturally), offer a quick way to reverse that specific mistake
+    const mostRecent = [...customerServices(id)].filter(s=>isSubscriptionType(s.type)).sort((a,b)=> (b.endedSeq||0)-(a.endedSeq||0))[0];
+    const canUndo = mostRecent && mostRecent.changeReason==='cancelled';
+    actionButtons = `<button class="btn btn-primary" id="btnStartNewSub">＋ ${t('btn.startNewSubscription')}</button>`
+      + (canUndo ? ` <button class="btn btn-ghost" id="btnUndoCancel">↩️ ${t('btn.undoCancel')}</button>` : '');
   }
 
   // surface duplicate-detection right on the profile too, not just the Duplicates tab —
@@ -2825,6 +2866,8 @@ function openCustomerDetail(id){
   if(btnCancelSub) btnCancelSub.addEventListener('click', ()=> openCancelSubModal(id));
   const btnStartNew = document.getElementById('btnStartNewSub');
   if(btnStartNew) btnStartNew.addEventListener('click', ()=>{ closeAllModals(); openOrderModal(null, id); });
+  const btnUndoCancel = document.getElementById('btnUndoCancel');
+  if(btnUndoCancel) btnUndoCancel.addEventListener('click', ()=> undoCancellation(id));
   const btnMergeFromProfile = document.getElementById('btnMergeFromProfile');
   if(btnMergeFromProfile) btnMergeFromProfile.addEventListener('click', ()=>{
     const group = getDuplicateGroups().find(g=>g.some(x=>x.id===id));
@@ -3743,6 +3786,38 @@ function exportAll(){
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(prepaidRows), 'Prepaid');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(postpaidRows), 'Postpaid');
   XLSX.writeFile(wb, `Himobile_Export_${todayISO()}.xlsx`);
+  toast(t('toast.exported'));
+}
+/* The Reports page's own export — same Prepaid/Postpaid structure and full pricing detail
+   as exportAll() above (Sheet View's exact columns), but scoped to whichever month is
+   currently selected there, since a monthly report is usually what someone actually wants
+   to hand off or file away, not the entire history every time. "All time" exports
+   everything, same as the general export. */
+function exportReportForMonth(){
+  const isAllTime = repSelectedMonth==='all' || !repSelectedMonth;
+  const prepaidRows = [PREPAID_EXPORT_HEADERS];
+  const postpaidRows = [POSTPAID_EXPORT_HEADERS];
+  DB.customers.forEach(c=>{
+    customerServices(c.id).forEach(s=>{
+      if(!isAllTime && (!s.activationDate || s.activationDate.slice(0,7)!==repSelectedMonth)) return;
+      if(s.type==='prepaid') prepaidRows.push(prepaidExportRow(c, s));
+      else if(s.type==='postpaid') postpaidRows.push(postpaidExportRow(c, s));
+    });
+  });
+  if(prepaidRows.length===1 && postpaidRows.length===1){
+    toast(LANG==='zh'?'该月份没有可导出的记录':'No records to export for this month');
+    return;
+  }
+  [['Prepaid', PREPAID_EXPORT_HEADERS, prepaidRows], ['Postpaid', POSTPAID_EXPORT_HEADERS, postpaidRows]].forEach(([label, headers, rows])=>{
+    rows.slice(1).forEach((row,i)=>{
+      if(row.length !== headers.length) console.error(`Export column mismatch on ${label} row ${i+1}: expected ${headers.length} columns, got ${row.length}`);
+    });
+  });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(prepaidRows), 'Prepaid');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(postpaidRows), 'Postpaid');
+  const label = isAllTime ? 'AllTime' : repSelectedMonth;
+  XLSX.writeFile(wb, `Himobile_Report_${label}.xlsx`);
   toast(t('toast.exported'));
 }
 /* Recognizes this app's own export by its distinctive header combination (real carrier
@@ -4700,7 +4775,7 @@ document.getElementById('btnFormatData').addEventListener('click', async ()=>{
   renderPage(currentPage);
   renderNav();
 });
-document.getElementById('btnExportReport').addEventListener('click', exportAll);
+document.getElementById('btnExportReport').addEventListener('click', exportReportForMonth);
 
 const dz = document.getElementById('dropzone');
 dz.addEventListener('click', ()=> document.getElementById('fileInput').click());
