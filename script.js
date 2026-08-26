@@ -30,6 +30,7 @@ const I18N = {
     'sub.dashboard':'门店运营总览','sub.customers':'客户资料与套餐管理','sub.ai':'商机识别、优先级排序与营收预测','sub.reminders':'到期、合同与信息变更提醒','sub.orders':'先付、后付、号码移动等业务记录','sub.reports':'营收、利润与客户结构报表','sub.templates':'运营商申请表自动填写与打印','sub.io':'Excel 导入与数据备份',
     'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并',
     'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回',
+    'btn.recharge':'充值续约','btn.changeToPrepaid':'转为先付卡','btn.confirmRecharge':'确认充值',
     'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布',
     'dash.quickSearch':'🔍 快速搜索客户姓名、号码或证件号...','dash.noMatches':'没有找到匹配的客户','dash.dupeBanner':'发现 {groups} 组重复客户（共 {n} 位），建议检查并合并','dash.dupeBannerBtn':'立即查看','dash.renewals.title':'合约即将到期（30天内）','dash.renewals.desc':'后付卡合约即将到期，建议提前联系续约','dash.renewals.emptyTitle':'近期没有合约到期 👍','dash.renewals.emptyDesc':'未来30天内没有后付卡合约到期','dash.winback.title':'流失客户 / 待挽回','dash.winback.desc':'已取消订阅、尚未重新开通的客户','dash.winback.emptyTitle':'暂无流失客户','dash.winback.emptyDesc':'所有曾经订阅过的客户目前都有有效订阅','dash.revenueTrend.title':'营收趋势（近6个月）','dash.cancelReasons.title':'取消原因分布','dash.noCancellations':'近6个月内没有取消记录 👍',
     'stat.totalCustomers':'客户总数','stat.newThisMonth':'本月新开通','stat.followup7':'7天内需跟进','stat.revenueMonth':'本月实收','stat.fromRecords':'来自现有先付 / 后付记录','stat.vsLastMonth':'较上月','stat.includesExpiry':'包含到期与首月入账','stat.expiringSoon':'即将到期客户','stat.infoChangeNeeded':'需信息变更客户',
@@ -49,7 +50,7 @@ const I18N = {
     'f.contactHandle':'联系账号 / ID','f.workType':'业务向','f.handlerName':'办理人','f.referralFriend':'介绍人（朋友姓名）',
     'f.profitSection':'公司价格与折扣','f.expectedProfit':'公司价格','f.actualProfit':'公司实际结算价','f.usimFee':'USIM 费用','f.discountPerMonth':'每月折扣','f.discountMonths':'折扣月数','f.netExpectedProfit':'预期收入','f.expectedIncome':'预期收入','f.actualIncome':'实际收入','f.discountTotal':'折扣总额','f.actualProfitHint':'💡「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在保存客户后于「表格视图」中随时补填。',
     'f.name':'客户姓名','f.phone':'联系电话','f.nationality':'国籍','f.nationalityPh':'例如：CHINA / VIETNAM','f.dob':'出生日期','f.kakao':'KakaoTalk ID','f.wechat':'微信 WeChat','f.idType':'证件类型','f.idNumber':'证件号码','f.idExpiry':'证件有效期至','f.occupation':'职业','f.workplace':'工作单位','f.years':'在韩年数','f.referral':'客户来源','f.carrierType':'通信网','f.planType':'业务类型','f.branchOffice':'接收处管理编码','f.subType':'开通方式','f.address':'地址','f.addressPh':'韩国地址（用于打印申请表）','f.rating':'客户评分','f.notes':'备注','f.notesPh':'职业、客户来源等',
-    'opt.prepaid':'先付卡（3个月充值）','opt.postpaid':'后付卡','opt.prepaidShort':'先付卡','opt.postpaidShort':'后付卡','prepaid3m.hint':'先付卡按充值月数计算，选择3个月时会自动套用프리티电信申请表；1/2个月请另外选择对应模板','postpaid.hint':'后付卡为按月合约，保存时会用下方选择的模板生成申请表（请先在「打印模板」页面上传后付卡运营商表格）',
+    'opt.prepaid':'先付卡（3个月充值）','opt.postpaid':'后付卡','opt.prepaidShort':'先付卡','opt.postpaidShort':'后付卡','prepaid3m.hint':'先付卡按充值月数计算，选择3个月时会自动套用프리티电信申请表；1/2个月请另外选择对应模板','prepaid3m.editHint':'修改该客户当前套餐的完整信息（不会新增历史记录，仅更正当前记录）','postpaidEdit.hint':'编辑该客户当前后付套餐的完整信息','postpaid.hint':'后付卡为按月合约，保存时会用下方选择的模板生成申请表（请先在「打印模板」页面上传后付卡运营商表格）',
     'plantype.new':'신규가입 新申请','plantype.mnp':'번호이동 携号转网','plantype.transfer':'명의변경 过户/名义变更','plantype.extend':'기간연장 有效期延长','plantype.convert':'선불전환 转为先付',
     'f.customer':'客户','f.serviceInfo':'业务信息','f.serviceType':'业务类型','f.planDuration':'套餐期限（月）','f.contractLength':'合约期限','f.carrier':'通信社 / MVNO','f.plan':'套餐名称','f.number':'电话号码','f.simType':'SIM 类型','f.activationDate':'开通日期','f.durationDays':'合同时长（天）','f.expiryDate':'到期日期','f.status':'办理状态','f.feeInfo':'费用信息','f.monthlyFee':'月租费','f.discount':'折扣','f.firstMonthPayment':'首月费用','f.activationFee':'开通费','f.simFee':'SIM 卡费','f.paymentInfo':'收款与利润','f.sellingPrice':'销售价','f.cost':'成本','f.received':'已收金额','f.paymentMethod':'付款方式','f.commission':'返点 / 提成',
     'f.prepaidPlan':'充值套餐','f.price':'价格','f.discount':'折扣','f.finalPrice':'最终价格','f.usimNumber':'USIM 일련번호',
@@ -86,7 +87,7 @@ const I18N = {
     'detail.contract':'合同 / 有效期','detail.remaining':'剩余','detail.days':'天','detail.usedOf':'已使用 / 总时长','detail.noServices':'该客户暂无业务记录','detail.services':'业务与号码记录','detail.profile':'客户资料',
     'detail.activeSubscription':'当前订阅','detail.noActiveSubscription':'暂无有效订阅','detail.planHistory':'套餐历史记录','detail.noHistory':'暂无历史记录','detail.otherRecords':'其他业务记录（携号转网 / 过户 / 充值等）','detail.currentPlan':'当前套餐',
     'f.cancelReason':'取消原因',
-    'reason.new':'新开通','reason.upgraded_to_postpaid':'升级为后付卡','reason.plan_change':'变更套餐','reason.cancelled':'客户不再续约','reason.switched_carrier':'转换其他通信社','reason.expired_natural':'自然到期','reason.other':'其他','reason.merged':'重复客户已合并',
+    'reason.new':'新开通','reason.upgraded_to_postpaid':'升级为后付卡','reason.plan_change':'变更套餐','reason.cancelled':'客户不再续约','reason.switched_carrier':'转换其他通信社','reason.expired_natural':'自然到期','reason.other':'其他','reason.merged':'重复客户已合并','reason.recharge':'充值续约','reason.downgraded_to_prepaid':'转为先付卡',
     'ai.elig.noDob':'缺少出生日期，无法判断资格','ai.elig.ageOk':'已年满 {age} 岁，符合后付卡开通资格','ai.elig.turningAge':'{days} 天后年满19岁，即将符合资格','ai.elig.tooYoung':'目前 {age} 岁，未满19岁','ai.elig.alreadyPostpaid':'目前已是后付卡客户',
     'ai.elig.contractCompleted':'合约已到期 {days} 天，尚未处理','ai.elig.contractApproaching':'合约将在 {days} 天后到期','ai.elig.contractMid':'合约进行中，{days} 天后到期',
     'ai.elig.needsArc':'需持外国人登录证（ARC）才符合资格','ai.elig.missingIdNumber':'缺少证件号码，需核实','ai.elig.missingIdExpiry':'缺少证件有效期，需核实','ai.elig.idExpired':'证件已过期，需更新','ai.elig.idComplete':'证件信息完整有效',
@@ -120,6 +121,7 @@ const I18N = {
     'sub.dashboard':'Store operations overview','sub.customers':'Customer profiles & plan management','sub.ai':'Opportunity detection, priority ranking & revenue forecasts','sub.reminders':'Expiry, contract & info-change reminders','sub.orders':'Prepaid, postpaid, porting and other service records','sub.reports':'Revenue, profit and customer breakdowns','sub.templates':'Auto-fill and print carrier application forms','sub.io':'Excel import and data backup',
     'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge',
     'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back',
+    'btn.recharge':'Recharge','btn.changeToPrepaid':'Change to Prepaid','btn.confirmRecharge':'Confirm Recharge',
     'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source',
     'dash.quickSearch':'🔍 Quick search by name, phone, or ID...','dash.noMatches':'No matching customers found','dash.dupeBanner':'Found {groups} duplicate groups ({n} customers total) — worth reviewing and merging','dash.dupeBannerBtn':'Review now','dash.renewals.title':'Contracts ending soon (30 days)','dash.renewals.desc':'Postpaid contracts nearing renewal — reach out ahead of time','dash.renewals.emptyTitle':'No contracts ending soon 👍','dash.renewals.emptyDesc':'No postpaid contracts due for renewal in the next 30 days','dash.winback.title':'Cancelled / win-back opportunities','dash.winback.desc':'Customers who cancelled and haven\'t restarted','dash.winback.emptyTitle':'No lapsed customers','dash.winback.emptyDesc':'Everyone who ever subscribed currently has an active plan','dash.revenueTrend.title':'Revenue trend (last 6 months)','dash.cancelReasons.title':'Cancellation reasons','dash.noCancellations':'No cancellations in the last 6 months 👍',
     'stat.totalCustomers':'Total customers','stat.newThisMonth':'New this month','stat.followup7':'Due within 7 days','stat.revenueMonth':'Revenue this month','stat.fromRecords':'From existing prepaid / postpaid records','stat.vsLastMonth':'vs last month','stat.includesExpiry':'Includes expiries & first-month payments','stat.expiringSoon':'Expiring soon','stat.infoChangeNeeded':'Need info change',
@@ -139,7 +141,7 @@ const I18N = {
     'f.contactHandle':'Contact account / ID','f.workType':'Work type','f.handlerName':'Handled by','f.referralFriend':'Referred by (friend\'s name)',
     'f.profitSection':'Company price & discount','f.expectedProfit':'Company price','f.actualProfit':'Real company price','f.usimFee':'USIM fee','f.discountPerMonth':'Discount / month','f.discountMonths':'Discount months','f.netExpectedProfit':'Expected income','f.expectedIncome':'Expected income','f.actualIncome':'Actual income','f.discountTotal':'Total discount','f.actualProfitHint':'💡 "Real company price" gets filled in later once the carrier settles at month-end, used to calculate actual income and compare it against your estimate — you can fill it in anytime from Sheet View after saving.',
     'f.name':'Customer name','f.phone':'Phone number','f.nationality':'Nationality / Country','f.nationalityPh':'e.g. CHINA / VIETNAM','f.dob':'Date of birth','f.kakao':'KakaoTalk ID','f.wechat':'WeChat ID','f.idType':'ID type','f.idNumber':'ID number (ARC/Passport)','f.idExpiry':'ID expiry date','f.occupation':'Occupation','f.workplace':'Workplace','f.years':'Years in Korea','f.referral':'Referral source','f.carrierType':'Carrier network','f.planType':'Plan type','f.branchOffice':'Branch office code','f.subType':'Subscription type','f.address':'Address','f.addressPh':'Korean address (used for printing application forms)','f.rating':'Customer rating','f.notes':'Notes','f.notesPh':'Occupation, referral source, etc.',
-    'opt.prepaid':'Prepaid (3-month recharge, fixed)','opt.postpaid':'Postpaid','opt.prepaidShort':'Prepaid','opt.postpaidShort':'Postpaid','prepaid3m.hint':'Prepaid is billed by recharge months — choosing 3 months auto-applies the Preeti Telecom form; 1/2-month plans use whichever other template you select','postpaid.hint':'Postpaid is a monthly contract — saving will generate the application form using the template selected below (upload your postpaid carrier form in Print Templates first)',
+    'opt.prepaid':'Prepaid (3-month recharge, fixed)','opt.postpaid':'Postpaid','opt.prepaidShort':'Prepaid','opt.postpaidShort':'Postpaid','prepaid3m.hint':'Prepaid is billed by recharge months — choosing 3 months auto-applies the Preeti Telecom form; 1/2-month plans use whichever other template you select','prepaid3m.editHint':'Editing this customer\'s current plan in full (this corrects the existing record — it does not add a new history entry)','postpaidEdit.hint':'Editing this customer\'s current postpaid plan in full','postpaid.hint':'Postpaid is a monthly contract — saving will generate the application form using the template selected below (upload your postpaid carrier form in Print Templates first)',
     'plantype.new':'신규가입 New sign-up','plantype.mnp':'번호이동 Number port (MNP)','plantype.transfer':'명의변경 Ownership/name change','plantype.extend':'기간연장 Period extension','plantype.convert':'선불전환 Convert to prepaid',
     'f.customer':'Customer','f.serviceInfo':'Service details','f.serviceType':'Service type','f.planDuration':'Plan duration (months)','f.contractLength':'Contract length','f.carrier':'Carrier / MVNO','f.plan':'Plan name','f.number':'Phone number','f.simType':'SIM type','f.activationDate':'Activation date','f.durationDays':'Contract length (days)','f.expiryDate':'Expiry date','f.status':'Status','f.feeInfo':'Fee details','f.monthlyFee':'Monthly fee','f.discount':'Discount','f.firstMonthPayment':'First month payment','f.activationFee':'Activation fee','f.simFee':'SIM card fee','f.paymentInfo':'Payment & profit','f.sellingPrice':'Selling price','f.cost':'Cost','f.received':'Amount received','f.paymentMethod':'Payment method','f.commission':'Commission / rebate',
     'f.prepaidPlan':'Plan','f.price':'Price','f.discount':'Discount','f.finalPrice':'Final price','f.usimNumber':'USIM serial number',
@@ -176,7 +178,7 @@ const I18N = {
     'detail.contract':'Contract / validity','detail.remaining':'Remaining','detail.days':'days','detail.usedOf':'Used / total length','detail.noServices':'No service records yet','detail.services':'Services & numbers','detail.profile':'Profile',
     'detail.activeSubscription':'Active Subscription','detail.noActiveSubscription':'No active subscription','detail.planHistory':'Plan History','detail.noHistory':'No history yet','detail.otherRecords':'Other records (porting / ownership transfer / top-ups etc.)','detail.currentPlan':'Current plan',
     'f.cancelReason':'Cancellation reason',
-    'reason.new':'New subscription','reason.upgraded_to_postpaid':'Upgraded to postpaid','reason.plan_change':'Plan change','reason.cancelled':'Customer discontinued (not renewing)','reason.switched_carrier':'Switched carrier','reason.expired_natural':'Expired naturally','reason.other':'Other','reason.merged':'Merged duplicate record',
+    'reason.new':'New subscription','reason.upgraded_to_postpaid':'Upgraded to postpaid','reason.plan_change':'Plan change','reason.cancelled':'Customer discontinued (not renewing)','reason.switched_carrier':'Switched carrier','reason.expired_natural':'Expired naturally','reason.other':'Other','reason.merged':'Merged duplicate record','reason.recharge':'Recharged','reason.downgraded_to_prepaid':'Changed to prepaid',
     'ai.elig.noDob':'Missing date of birth — can\'t determine eligibility','ai.elig.ageOk':'Already {age} years old — meets postpaid eligibility','ai.elig.turningAge':'Turns 19 in {days} days — approaching eligibility','ai.elig.tooYoung':'Currently {age} years old — under 19','ai.elig.alreadyPostpaid':'Already a postpaid customer',
     'ai.elig.contractCompleted':'Contract ended {days} days ago, not yet actioned','ai.elig.contractApproaching':'Contract ends in {days} days','ai.elig.contractMid':'Contract active, {days} days remaining',
     'ai.elig.needsArc':'Requires an Alien Registration Card (ARC) to be eligible','ai.elig.missingIdNumber':'Missing ID number — needs verification','ai.elig.missingIdExpiry':'Missing ID expiry date — needs verification','ai.elig.idExpired':'ID has expired — needs updating','ai.elig.idComplete':'ID information complete and valid',
@@ -299,8 +301,8 @@ function renderTileRadioGroup(containerId, options, currentVal){
 }
 /* Same tile-radio pattern but for the prepaid catalog specifically — the visible label
    ("15 Days · ₩20,000") is friendlier than the stored value (just the day count). */
-function renderPrepaidPlanTiles(currentVal){
-  const el = document.getElementById('p3_prepaidPlan_group');
+function renderPrepaidPlanTiles(currentVal, elId){
+  const el = document.getElementById(elId||'p3_prepaidPlan_group');
   if(!el) return;
   el.dataset.selected = currentVal || '';
   const values = PREPAID_PLANS.map(p=>String(p.days));
@@ -406,6 +408,12 @@ function sheetCommitEdit(recordType, recordId, field, value){
     const finalPrice = Math.max(0, (Number(rec.price)||0) - (Number(rec.discount)||0));
     rec.sellingPrice = finalPrice;
     rec.received = finalPrice;
+  }
+  // "Carrier" and "Carrier Type" were merged into a single visible column (Carrier Type) —
+  // keep the older internal "carrier" field matching it, since a few other places (print
+  // templates, older history entries) may still read that field directly
+  if(recordType==='service' && field==='svcCarrierType'){
+    rec.carrier = value;
   }
   saveDB(DB);
   renderNav();
@@ -532,7 +540,7 @@ function renderSheetPage(){
 
   const commonHead = `
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
-    <th>${t('f.planType')}</th><th>${t('f.carrier')}</th><th>${t('f.svcCarrierType')}</th>`;
+    <th>${t('f.planType')}</th><th>${t('f.svcCarrierType')}</th>`;
   const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
   const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
@@ -543,7 +551,6 @@ function renderSheetPage(){
         <td>${sheetTextCell('service',svc.id,'activationDate',svc.activationDate,'date')}</td>
         <td>${sheetTextCell('service',svc.id,'expiryDate',svc.expiryDate,'date')}</td>
         <td>${sheetPillCell('customer',c.id,'planType',c.planType,['신규가입','번호이동','명의변경','기간연장','선불전환'], t('f.planType'))}</td>
-        <td>${sheetTextCell('service',svc.id,'carrier',svc.carrier,'text')}</td>
         <td>${sheetPillCell('service',svc.id,'svcCarrierType',svc.svcCarrierType,POSTPAID_CARRIER_TYPES, t('f.svcCarrierType'))}</td>`;
       if(sheetTypeTab==='prepaid'){
         const finalPrice = Math.max(0, (Number(svc.price)||0) - (Number(svc.discount)||0));
@@ -586,7 +593,7 @@ function renderSheetPage(){
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="25">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="24">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -879,8 +886,16 @@ async function testServerConnection(url){
 
 // Pushes the current in-memory dataset to the server. Debounced so rapid consecutive saves
 // (e.g. typing in Sheet View) batch into one request instead of one per keystroke.
+// Blocks any automatic push while the app is loading and about to reconcile with the server
+// for the first time this session. Without this, a repair function firing during loadDB()
+// (using the LOCAL, possibly stale cache) could push that stale data to the server before
+// the corrective initial pull ever gets a chance to run — this is exactly what silently
+// undid a "Format Data" wipe from another computer once: the wiped computer's server state
+// was correct for a moment, then a second computer's stale local cache got auto-repaired,
+// auto-pushed, and the old data came right back.
+let suppressAutoPush = false;
 function scheduleServerSync(){
-  if(!isSyncEnabled()) return;
+  if(!isSyncEnabled() || suppressAutoPush) return;
   clearTimeout(syncTimer);
   // 400ms — short enough that changes reach the server almost immediately, while still
   // batching truly rapid-fire edits (e.g. typing in Sheet View) into one request instead
@@ -1502,11 +1517,16 @@ function renderDashboard(){
   const reminders = buildReminders().filter(r=>r.uiStatus==='pending');
   const due7 = reminders.filter(r=>r.daysLeft<=7);
 
-  // real new-customers-this-month vs last-month, based on actual join date
-  // (falls back to earliest service activation for imported customers without a createdAt)
-  const joinMonth = c => { const jd = customerJoinDate(c); return jd ? jd.slice(0,7) : null; };
-  const newThisMonth = custs.filter(c=> joinMonth(c)===monthStr).length;
-  const newLastMonth = custs.filter(c=> joinMonth(c)===lastMonthStr).length;
+  // "New this month" — counts customers with ANY service activated this month, not just
+  // customers whose record was first created this month. A recharge or a plan-type change
+  // (prepaid<->postpaid) creates a genuinely new service that day just as much as a brand
+  // new signup does, and should count as "new business today/this month" the same way.
+  const custsActivatedInMonth = (monthStr, type) => {
+    const ids = new Set(svcs.filter(s=> s.activationDate && s.activationDate.slice(0,7)===monthStr && (!type || s.type===type)).map(s=>s.customerId));
+    return custs.filter(c=> ids.has(c.id)).length;
+  };
+  const newThisMonth = custsActivatedInMonth(monthStr);
+  const newLastMonth = custsActivatedInMonth(lastMonthStr);
   const newDelta = computeDelta(newThisMonth, newLastMonth);
 
   // real revenue this month vs last month
@@ -1521,8 +1541,8 @@ function renderDashboard(){
   // total + new-this-month are clickable — show a prepaid/postpaid breakdown popover
   const totalPrepaid = custs.filter(c=>(c.subType||'prepaid')==='prepaid').length;
   const totalPostpaid = custs.filter(c=>c.subType==='postpaid').length;
-  const newThisMonthPrepaid = custs.filter(c=> joinMonth(c)===monthStr && (c.subType||'prepaid')==='prepaid').length;
-  const newThisMonthPostpaid = custs.filter(c=> joinMonth(c)===monthStr && c.subType==='postpaid').length;
+  const newThisMonthPrepaid = custsActivatedInMonth(monthStr, 'prepaid');
+  const newThisMonthPostpaid = custsActivatedInMonth(monthStr, 'postpaid');
   const stats = [
     {label:t('stat.totalCustomers'), value:custs.length, sub:t('stat.fromRecords'), deltaHtml:null, breakdown:{prepaid:totalPrepaid, postpaid:totalPostpaid}},
     {label:t('stat.newThisMonth'), value:newThisMonth, deltaHtml:deltaHtml(newDelta), breakdown:{prepaid:newThisMonthPrepaid, postpaid:newThisMonthPostpaid}},
@@ -2313,13 +2333,50 @@ function openCustomerModal(customer){
   document.getElementById('p3_discount').value = '0';
   renderPrepaidPlanTiles('90');
   updatePrepaidPriceFromPlan();
-  // this modal is now prepaid-only for NEW customers; when editing an EXISTING postpaid
-  // customer via "Edit profile" elsewhere, hide the prepaid quick-print box entirely rather
-  // than showing prepaid-only fields for a postpaid record — and never let saving here
-  // silently flip their subType back to prepaid
+  // "Edit profile" should give full access to the customer's current plan too, not just
+  // their basic identity fields — matching what creating a new customer already shows.
+  // Editing updates their CURRENT service in place (no new history entry); this is
+  // deliberately different from "Recharge" / "Change Plan", which create a fresh entry
+  // because those represent an actual new transaction, not a correction.
   const isEditingPostpaid = !!(editingCustomerId && customer?.subType === 'postpaid');
+  const isEditingPrepaid = !!(editingCustomerId && customer?.subType !== 'postpaid');
+  const currentSvc = editingCustomerId ? activeSubscriptionFor(editingCustomerId) : null;
   document.getElementById('prepaid3mFields').style.display = isEditingPostpaid ? 'none' : '';
-  document.getElementById('savePrintCustomerBtn').style.display = isEditingPostpaid ? 'none' : '';
+  document.getElementById('postpaidEditFields').style.display = isEditingPostpaid ? '' : 'none';
+  document.getElementById('savePrintCustomerBtn').style.display = (isEditingPostpaid || editingCustomerId) ? 'none' : '';
+  // when editing, "Save customer" alone (no print requirement) handles everything —
+  // printing an application form doesn't make sense for a correction to an existing record
+  if(isEditingPrepaid && currentSvc){
+    renderPrepaidPlanTiles(String(currentSvc.durationDays||90), 'p3_prepaidPlan_group');
+    document.getElementById('p3_price').value = currentSvc.price ?? '';
+    document.getElementById('p3_discount').value = currentSvc.discount ?? 0;
+    document.getElementById('p3_usimNumber').value = currentSvc.usimNumber || '';
+    document.getElementById('p3_activationDate').value = currentSvc.activationDate || todayISO();
+    updateP3FinalPricePreview();
+    const {companies, carriers} = prepaidCompanyCarrierOptionsFor(currentSvc.durationDays||90);
+    renderTileRadioGroup('p3_company_group', companies, companies.includes(currentSvc.company) ? currentSvc.company : '');
+    renderTileRadioGroup('p3_svcCarrierType_group', carriers, carriers.includes(currentSvc.svcCarrierType) ? currentSvc.svcCarrierType : '');
+    document.getElementById('prepaid3mHint').textContent = t('prepaid3m.editHint');
+  } else if(!editingCustomerId){
+    document.getElementById('prepaid3mHint').textContent = t('prepaid3m.hint');
+  }
+  if(isEditingPostpaid && currentSvc){
+    renderTileRadioGroup('pe_workType_group', POSTPAID_WORK_TYPES, currentSvc.workType || customer.workType || '');
+    document.getElementById('pe_plan').value = currentSvc.plan || '';
+    renderTileRadioGroup('pe_contractLength_group', POSTPAID_CONTRACT_DAYS.map(String), String(currentSvc.durationDays||POSTPAID_CONTRACT_DAYS[0]));
+    renderTileRadioGroup('pe_company_group', POSTPAID_COMPANIES, currentSvc.company || '');
+    renderTileRadioGroup('pe_partnerCompany_group', POSTPAID_PARTNER_COMPANIES, currentSvc.partnerCompany || '');
+    renderTileRadioGroup('pe_svcCarrierType_group', POSTPAID_CARRIER_TYPES, currentSvc.svcCarrierType || '');
+    document.getElementById('pe_number').value = currentSvc.number || customer.phone || '';
+    document.getElementById('pe_activationDate').value = currentSvc.activationDate || todayISO();
+    document.getElementById('pe_monthlyFee').value = currentSvc.monthlyFee ?? '';
+    document.getElementById('pe_expectedProfit').value = currentSvc.expectedProfit ?? '';
+    document.getElementById('pe_actualProfit').value = currentSvc.actualProfit ?? '';
+    document.getElementById('pe_usimFee').value = currentSvc.usimFee ?? '';
+    document.getElementById('pe_discountPerMonth').value = currentSvc.discountPerMonth ?? '';
+    document.getElementById('pe_discountMonths').value = currentSvc.discountMonths ?? '';
+    updatePeNetExpectedPreview();
+  }
   if(!isEditingPostpaid) refreshP3TemplateOptions();
   document.getElementById('deleteCustomerBtn').style.display = customer ? '' : 'none';
   document.getElementById('customerModalOverlay').classList.add('show');
@@ -2373,6 +2430,16 @@ function updateP3FinalPricePreview(){
 ['p3_price','p3_discount'].forEach(id=>{
   document.getElementById(id).addEventListener('input', updateP3FinalPricePreview);
 });
+function updatePeNetExpectedPreview(){
+  const expected = Number(document.getElementById('pe_expectedProfit').value)||0;
+  const usimFee = Number(document.getElementById('pe_usimFee').value)||0;
+  const perMonth = Number(document.getElementById('pe_discountPerMonth').value)||0;
+  const months = Number(document.getElementById('pe_discountMonths').value)||0;
+  document.getElementById('pe_netExpectedPreview').value = fmtWon(Math.max(0, expected - (perMonth*months) - usimFee));
+}
+['pe_expectedProfit','pe_usimFee','pe_discountPerMonth','pe_discountMonths'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updatePeNetExpectedPreview);
+});
 function refreshP3TemplateOptions(){
   const days = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
   const p3tpl = document.getElementById('p3_template');
@@ -2418,6 +2485,53 @@ document.getElementById('f_rating').addEventListener('click', e=>{
 function saveCustomerFromForm(){
   const cust = buildAndSaveCustomer();
   if(!cust) return;
+  // "Edit profile" now also updates the customer's CURRENT plan in place — matching the
+  // full field access available when creating a new customer, without creating a new
+  // history entry (that's what Recharge / Change Plan are for; this is a correction)
+  if(editingCustomerId){
+    const currentSvc = activeSubscriptionFor(editingCustomerId);
+    if(currentSvc && cust.subType!=='postpaid'){
+      const durationDays = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||currentSvc.durationDays||90;
+      const price = Number(document.getElementById('p3_price').value)||0;
+      const discount = Number(document.getElementById('p3_discount').value)||0;
+      const finalPrice = Math.max(0, price-discount);
+      Object.assign(currentSvc, {
+        durationDays, price, discount, sellingPrice:finalPrice, received:finalPrice,
+        usimNumber: document.getElementById('p3_usimNumber').value.trim(),
+        activationDate: document.getElementById('p3_activationDate').value || currentSvc.activationDate,
+        company: document.getElementById('p3_company_group').dataset.selected || currentSvc.company,
+        svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || currentSvc.svcCarrierType,
+        carrier: document.getElementById('p3_svcCarrierType_group').dataset.selected || currentSvc.carrier,
+      });
+      if(currentSvc.activationDate && durationDays){
+        const d = new Date(currentSvc.activationDate); d.setDate(d.getDate()+durationDays);
+        currentSvc.expiryDate = d.toISOString().slice(0,10);
+      }
+    } else if(currentSvc && cust.subType==='postpaid'){
+      const durationDays = Number(document.getElementById('pe_contractLength_group').dataset.selected)||currentSvc.durationDays;
+      Object.assign(currentSvc, {
+        workType: document.getElementById('pe_workType_group').dataset.selected || currentSvc.workType,
+        plan: document.getElementById('pe_plan').value.trim(),
+        durationDays,
+        company: document.getElementById('pe_company_group').dataset.selected || currentSvc.company,
+        partnerCompany: document.getElementById('pe_partnerCompany_group').dataset.selected || currentSvc.partnerCompany,
+        svcCarrierType: document.getElementById('pe_svcCarrierType_group').dataset.selected || currentSvc.svcCarrierType,
+        carrier: document.getElementById('pe_svcCarrierType_group').dataset.selected || currentSvc.carrier,
+        number: document.getElementById('pe_number').value.trim(),
+        activationDate: document.getElementById('pe_activationDate').value || currentSvc.activationDate,
+        monthlyFee: Number(document.getElementById('pe_monthlyFee').value)||0,
+        expectedProfit: Number(document.getElementById('pe_expectedProfit').value)||0,
+        actualProfit: Number(document.getElementById('pe_actualProfit').value)||0,
+        usimFee: Number(document.getElementById('pe_usimFee').value)||0,
+        discountPerMonth: Number(document.getElementById('pe_discountPerMonth').value)||0,
+        discountMonths: Number(document.getElementById('pe_discountMonths').value)||0,
+      });
+      if(currentSvc.activationDate && durationDays){
+        const d = new Date(currentSvc.activationDate); d.setDate(d.getDate()+durationDays);
+        currentSvc.expiryDate = d.toISOString().slice(0,10);
+      }
+    }
+  }
   saveDB(DB);
   closeAllModals();
   toast(t('toast.customerSaved'));
@@ -2556,11 +2670,13 @@ function openCustomerDetail(id){
   let actionButtons = '';
   if(active && active.type==='prepaid'){
     actionButtons = `
-      <button class="btn btn-primary" id="btnChangeToPostpaid">🔁 ${t('btn.changeToPostpaid')}</button>
+      <button class="btn btn-primary" id="btnRecharge">🔋 ${t('btn.recharge')}</button>
+      <button class="btn btn-ghost" id="btnChangeToPostpaid">🔁 ${t('btn.changeToPostpaid')}</button>
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else if(active && active.type==='postpaid'){
     actionButtons = `
       <button class="btn btn-primary" id="btnChangePlan">🔁 ${t('btn.changePlan')}</button>
+      <button class="btn btn-ghost" id="btnChangeToPrepaid">📶 ${t('btn.changeToPrepaid')}</button>
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else {
     actionButtons = `<button class="btn btn-primary" id="btnStartNewSub">＋ ${t('btn.startNewSubscription')}</button>`;
@@ -2666,6 +2782,10 @@ function openCustomerDetail(id){
   if(btnToPostpaid) btnToPostpaid.addEventListener('click', ()=> openChangeSubModal(id, 'to_postpaid'));
   const btnChangePlan = document.getElementById('btnChangePlan');
   if(btnChangePlan) btnChangePlan.addEventListener('click', ()=> openChangeSubModal(id, 'plan_change'));
+  const btnRecharge = document.getElementById('btnRecharge');
+  if(btnRecharge) btnRecharge.addEventListener('click', ()=> openPrepaidAssignModal(id, 'recharge'));
+  const btnToPrepaid = document.getElementById('btnChangeToPrepaid');
+  if(btnToPrepaid) btnToPrepaid.addEventListener('click', ()=> openPrepaidAssignModal(id, 'to_prepaid'));
   const btnCancelSub = document.getElementById('btnCancelSub');
   if(btnCancelSub) btnCancelSub.addEventListener('click', ()=> openCancelSubModal(id));
   const btnStartNew = document.getElementById('btnStartNewSub');
@@ -3073,6 +3193,86 @@ document.getElementById('saveChangeSubBtn').addEventListener('click', ()=>{
   closeAllModals();
   toast(t('toast.orderSaved'));
   openCustomerDetail(changeSubCustomerId);
+  renderPage(currentPage);
+  renderNav();
+});
+
+/* ---------------- RECHARGE / CHANGE TO PREPAID (shared modal) ---------------- */
+let prepaidAssignCustomerId = null;
+let prepaidAssignMode = null; // 'recharge' | 'to_prepaid'
+function openPrepaidAssignModal(customerId, mode){
+  const cust = getCustomer(customerId);
+  const current = activeSubscriptionFor(customerId);
+  if(!cust) return;
+  prepaidAssignCustomerId = customerId;
+  prepaidAssignMode = mode;
+  document.getElementById('prepaidAssignModalTitle').textContent = mode==='recharge' ? t('btn.recharge') : t('btn.changeToPrepaid');
+  document.getElementById('savePrepaidAssignBtn').textContent = mode==='recharge' ? t('btn.confirmRecharge') : t('btn.confirmChange');
+  document.getElementById('prepaidAssignCurrentPlan').innerHTML = current
+    ? `${t('detail.currentPlan')}: <b>${planLabel(current)}</b>`
+    : `<i>${t('detail.noActiveSubscription')}</i>`;
+
+  renderPrepaidPlanTiles('90', 'pa_prepaidPlan_group');
+  document.getElementById('pa_activationDate').value = todayISO();
+  // carries over the same physical SIM by default (recharging usually means "keep using
+  // what they have"), and the same company/carrier they were already on — staff can still
+  // change either if this is actually a new SIM or a different deal
+  document.getElementById('pa_usimNumber').value = current?.usimNumber || '';
+  document.getElementById('pa_discount').value = '0';
+  updatePrepaidAssignPriceFromPlan();
+  document.getElementById('pa_notes').value = '';
+  document.getElementById('prepaidAssignModalOverlay').classList.add('show');
+}
+function updatePrepaidAssignPriceFromPlan(){
+  const days = Number(document.getElementById('pa_prepaidPlan_group').dataset.selected)||90;
+  const plan = PREPAID_PLANS.find(p=>p.days===days);
+  document.getElementById('pa_price').value = plan ? plan.price : '';
+  const {companies, carriers} = prepaidCompanyCarrierOptionsFor(days);
+  const current = activeSubscriptionFor(prepaidAssignCustomerId);
+  const curCompany = document.getElementById('pa_company_group').dataset.selected || current?.company || '';
+  const curCarrier = document.getElementById('pa_svcCarrierType_group').dataset.selected || current?.svcCarrierType || '';
+  renderTileRadioGroup('pa_company_group', companies, companies.includes(curCompany) ? curCompany : '');
+  renderTileRadioGroup('pa_svcCarrierType_group', carriers, carriers.includes(curCarrier) ? curCarrier : '');
+  updatePrepaidAssignFinalPricePreview();
+}
+function updatePrepaidAssignFinalPricePreview(){
+  const price = Number(document.getElementById('pa_price').value)||0;
+  const discount = Number(document.getElementById('pa_discount').value)||0;
+  document.getElementById('pa_finalPricePreview').value = fmtWon(Math.max(0, price-discount));
+}
+document.getElementById('pa_prepaidPlan_group').addEventListener('click', ()=> setTimeout(updatePrepaidAssignPriceFromPlan, 0));
+['pa_price','pa_discount'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updatePrepaidAssignFinalPricePreview);
+});
+document.getElementById('savePrepaidAssignBtn').addEventListener('click', ()=>{
+  if(!prepaidAssignCustomerId) return;
+  const cust = getCustomer(prepaidAssignCustomerId);
+  const durationDays = Number(document.getElementById('pa_prepaidPlan_group').dataset.selected)||90;
+  const activationDate = document.getElementById('pa_activationDate').value || todayISO();
+  const price = Number(document.getElementById('pa_price').value)||0;
+  const discount = Number(document.getElementById('pa_discount').value)||0;
+  const finalPrice = Math.max(0, price-discount);
+  const planInfo = PREPAID_PLANS.find(p=>p.days===durationDays);
+  const d = new Date(activationDate); d.setDate(d.getDate()+durationDays);
+  const svcData = {
+    customerId: prepaidAssignCustomerId, type:'prepaid',
+    carrier: document.getElementById('pa_svcCarrierType_group').dataset.selected || cust.carrierType,
+    plan: durationDays===90 ? PREETI_FIXED_PLAN : (planInfo ? `${planInfo.days}일` : `${durationDays}일`),
+    number: cust.phone, usimNumber: document.getElementById('pa_usimNumber').value.trim(),
+    simType:'physical', activationDate, durationDays,
+    expiryDate: d.toISOString().slice(0,10), status:'active',
+    price, discount, sellingPrice:finalPrice, received:finalPrice, cost:0,
+    monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0, paymentMethod:'cash', commission:0,
+    notes:document.getElementById('pa_notes').value.trim(),
+    company: document.getElementById('pa_company_group').dataset.selected || '',
+    svcCarrierType: document.getElementById('pa_svcCarrierType_group').dataset.selected || '',
+  };
+  const reason = prepaidAssignMode==='recharge' ? 'recharge' : 'downgraded_to_prepaid';
+  setActiveSubscription(prepaidAssignCustomerId, svcData, reason);
+  saveDB(DB);
+  closeAllModals();
+  toast(t('toast.orderSaved'));
+  openCustomerDetail(prepaidAssignCustomerId);
   renderPage(currentPage);
   renderNav();
 });
@@ -4538,14 +4738,18 @@ if(isStayUnlocked()){
   // picks up wherever this browser left off: the real synced data if it was unlocked via
   // the server, or the blank local session if it was "skip" — either way, exactly what was
   // last showing before the refresh, with no password prompt in between
+  const willSync = isSyncEnabled();
+  if(willSync) suppressAutoPush = true; // see scheduleServerSync's comment — blocks a stale
+  // local repair-triggered save from pushing before the corrective pull below has run
   DB = loadDB();
   unlockApp();
   // then silently refresh from the server in the background, using the already-saved
   // credentials — this is what makes "refresh to get the other computer's changes" work
   // without re-entering the password each time. Falls back to the local data above if the
   // server can't be reached, exactly like every other sync attempt in this app.
-  if(isSyncEnabled()){
+  if(willSync){
     pullFromServer().then(result=>{
+      suppressAutoPush = false; // safe to push again — we've now reconciled with the server
       if(result.ok){ renderPage(currentPage); renderNav(); }
     });
   }
@@ -4575,7 +4779,14 @@ if(isStayUnlocked()){
       localStorage.setItem(UNLOCKED_KEY, '1');
       unlockApp();
     } else {
-      setSyncEnabled(false); // revert — the credentials didn't actually work
+      // Only actually disable sync if the credentials themselves are confirmed wrong (a 401
+      // from the server) — not for a generic connection failure. A failed unlock attempt
+      // used to permanently turn sync off for this browser regardless of the reason, which
+      // meant a temporary network hiccup (or, as happened once, a firewall issue that was
+      // later fixed) could silently disable all future auto-sync indefinitely, with nothing
+      // to signal that had happened beyond this one error message scrolling past.
+      const isBadCredentials = /API key|密钥不正确/.test(result.error||'');
+      if(isBadCredentials) setSyncEnabled(false);
       errEl.textContent = (LANG==='zh'?'连接或密钥错误：':'Connection or password error: ')+(result.error||'');
       errEl.style.display = 'block';
     }
