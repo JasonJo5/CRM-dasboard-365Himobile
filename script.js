@@ -218,6 +218,11 @@ const POSTPAID_CONTRACT_DAYS = [185, 245, 365];
 const POSTPAID_COMPANIES = ['청춘','SK-SMS','모빙','Media'];
 const POSTPAID_PARTNER_COMPANIES = ['LG本社','SK本社','KTM','KTSKY','LGM','SK7','MobingLG','MobingKT','MobingSK'];
 const POSTPAID_CARRIER_TYPES = ['KT알뜰폰','LGU알뜰폰','SKT알뜰폰','KT','SKT','LGU'];
+const POSTPAID_PLAN_OPTIONS = [
+  {name:'PLAN A', fee:13900}, {name:'PLAN B', fee:17900}, {name:'PLAN C', fee:26400}, {name:'PLAN D', fee:34000},
+  {name:'5G PLAN A', fee:22000}, {name:'5G PLAN B', fee:36250}, {name:'5G PLAN C', fee:30500},
+  {name:'5G PLAN D', fee:34250}, {name:'5G PLAN E', fee:38750},
+];
 const CONTACT_METHODS = ['Wechat','Kakaotalk','INS','Phone','Other'];
 /* postpaid "업무향" (work type) — from the store's real Tencent Docs single-select field */
 const POSTPAID_WORK_TYPES = ['번호이동','신규가입','유심/이심변경','기타변경','일시정지','번호해지'];
@@ -313,6 +318,35 @@ function renderPrepaidPlanTiles(currentVal, elId){
     return `<div class="tile-radio ${selected?'selected':''}" data-val="${val}" style="background:${c.bg};color:${c.fg};">${p.days} ${LANG==='zh'?'天':'Days'} · ${fmtWon(p.price)}</div>`;
   }).join('');
 }
+/* Renders the 9 fixed postpaid plan names as a tile-radio group, each tile showing its
+   name and monthly fee. Used by New Postpaid, Change to Postpaid, and Edit Profile
+   (postpaid) — all three read this same fixed price list rather than each hand-typing a
+   plan name, so pricing stays consistent no matter which flow someone uses. */
+function renderPostpaidPlanTiles(elId, currentVal){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.dataset.selected = currentVal || '';
+  const values = POSTPAID_PLAN_OPTIONS.map(p=>p.name);
+  el.innerHTML = POSTPAID_PLAN_OPTIONS.map(p=>{
+    const c = sheetColorFor(values, p.name);
+    const selected = p.name===currentVal;
+    return `<div class="tile-radio ${selected?'selected':''}" data-val="${escapeHtml(p.name)}" data-fee="${p.fee}" style="background:${c.bg};color:${c.fg};">${escapeHtml(p.name)} · ${fmtWon(p.fee)}</div>`;
+  }).join('');
+}
+// which Monthly Fee input each plan-name tile-radio group should auto-fill when clicked —
+// selecting a named plan is meant to save re-typing the fee that plan already implies,
+// while still leaving the field editable afterward for a manual adjustment
+const PLAN_TILES_FEE_TARGET = {pc_plan_group:'pc_monthlyFee', cs_plan_group:'cs_monthlyFee', pe_plan_group:'pe_monthlyFee'};
+document.addEventListener('click', e=>{
+  const tile = e.target.closest('.tile-radio[data-fee]');
+  if(!tile) return;
+  const group = tile.closest('.tile-radio-group');
+  const feeInputId = group && PLAN_TILES_FEE_TARGET[group.id];
+  if(feeInputId){
+    const feeInput = document.getElementById(feeInputId);
+    if(feeInput) feeInput.value = tile.dataset.fee;
+  }
+});
 /* Compact alternative to a full tile-radio-group: a single button showing the current
    choice, click it and every option shows up in a popover (same interaction as Sheet
    View's tag cells) — keeps a form with many option fields from sprawling down the page.
@@ -2219,6 +2253,7 @@ function openNewPostpaidModal(){
   renderCompactOptionField('pc_company_group', POSTPAID_COMPANIES, '', t('f.company'));
   renderCompactOptionField('pc_partnerCompany_group', POSTPAID_PARTNER_COMPANIES, '', t('f.partnerCompany'));
   renderCompactOptionField('pc_svcCarrierType_group', POSTPAID_CARRIER_TYPES, '', t('f.svcCarrierType'));
+  renderPostpaidPlanTiles('pc_plan_group', '');
   document.getElementById('pc_number').value = '';
   document.getElementById('pc_activationDate').value = todayISO();
   document.getElementById('pc_monthlyFee').value = '';
@@ -2276,7 +2311,7 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
   const d = new Date(activationDate); d.setDate(d.getDate()+contractLength);
   const svcData = {
     customerId: cust.id, type:'postpaid',
-    carrier: svcCarrierType, plan:'',
+    carrier: svcCarrierType, plan: document.getElementById('pc_plan_group').dataset.selected || '',
     number: document.getElementById('pc_number').value.trim(),
     simType:'physical', activationDate, durationDays: contractLength,
     expiryDate: d.toISOString().slice(0,10), status:'active',
@@ -2362,7 +2397,7 @@ function openCustomerModal(customer){
   }
   if(isEditingPostpaid && currentSvc){
     renderTileRadioGroup('pe_workType_group', POSTPAID_WORK_TYPES, currentSvc.workType || customer.workType || '');
-    document.getElementById('pe_plan').value = currentSvc.plan || '';
+    renderPostpaidPlanTiles('pe_plan_group', currentSvc.plan || '');
     renderTileRadioGroup('pe_contractLength_group', POSTPAID_CONTRACT_DAYS.map(String), String(currentSvc.durationDays||POSTPAID_CONTRACT_DAYS[0]));
     renderTileRadioGroup('pe_company_group', POSTPAID_COMPANIES, currentSvc.company || '');
     renderTileRadioGroup('pe_partnerCompany_group', POSTPAID_PARTNER_COMPANIES, currentSvc.partnerCompany || '');
@@ -2511,7 +2546,7 @@ function saveCustomerFromForm(){
       const durationDays = Number(document.getElementById('pe_contractLength_group').dataset.selected)||currentSvc.durationDays;
       Object.assign(currentSvc, {
         workType: document.getElementById('pe_workType_group').dataset.selected || currentSvc.workType,
-        plan: document.getElementById('pe_plan').value.trim(),
+        plan: document.getElementById('pe_plan_group').dataset.selected || '',
         durationDays,
         company: document.getElementById('pe_company_group').dataset.selected || currentSvc.company,
         partnerCompany: document.getElementById('pe_partnerCompany_group').dataset.selected || currentSvc.partnerCompany,
@@ -2932,7 +2967,6 @@ function openOrderModal(service, presetCustomerId){
   custSel.innerHTML = DB.customers.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
   custSel.value = service ? service.customerId : (presetCustomerId || (DB.customers[0]?DB.customers[0].id:''));
   document.getElementById('o_type').value = service?.type || 'prepaid';
-  document.getElementById('o_carrier').value = service?.carrier || '';
   document.getElementById('o_plan').value = service?.plan || '';
   document.getElementById('o_number').value = service?.number || '';
   document.getElementById('o_simType').value = service?.simType || 'physical';
@@ -2961,7 +2995,9 @@ function openOrderModal(service, presetCustomerId){
   populatePostpaidOptionSelects('o_');
   document.getElementById('o_company').value = service?.company || '';
   document.getElementById('o_partnerCompany').value = service?.partnerCompany || '';
-  document.getElementById('o_svcCarrierType').value = service?.svcCarrierType || '';
+  // "Carrier" and "Carrier Type" were merged into a single tile-radio field, used for both
+  // prepaid and postpaid — matching the same 6-option set used everywhere else in the app
+  renderTileRadioGroup('o_carrierType_group', POSTPAID_CARRIER_TYPES, service?.svcCarrierType || service?.carrier || '');
   // postpaid contract-length quick picker — guess the closest real option from existing duration
   const rawDays = service?.durationDays || POSTPAID_CONTRACT_DAYS[0];
   const guessedDays = POSTPAID_CONTRACT_DAYS.reduce((best,v)=> Math.abs(v-rawDays)<Math.abs(best-rawDays)?v:best, POSTPAID_CONTRACT_DAYS[0]);
@@ -2985,7 +3021,6 @@ function updateOrderTypeUI(){
   document.getElementById('o_planDurationField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_companyField').style.display = isPostpaid ? '' : 'none';
   document.getElementById('o_partnerCompanyField').style.display = isPostpaid ? '' : 'none';
-  document.getElementById('o_svcCarrierTypeField').style.display = isPostpaid ? '' : 'none';
   if(isPostpaid){ populatePostpaidOptionSelects('o_'); applyPlanDurationToDays(); }
 
   // prepaid is a flat one-time payment (just a price); postpaid now tracks expected/actual
@@ -3028,7 +3063,7 @@ function saveOrderFromForm(){
   const data = {
     customerId,
     type,
-    carrier:document.getElementById('o_carrier').value.trim(),
+    carrier:document.getElementById('o_carrierType_group').dataset.selected || '',
     plan:document.getElementById('o_plan').value.trim(),
     number:document.getElementById('o_number').value.trim(),
     simType:document.getElementById('o_simType').value,
@@ -3050,7 +3085,7 @@ function saveOrderFromForm(){
     notes:document.getElementById('o_notes').value.trim(),
     company: type==='postpaid' ? document.getElementById('o_company').value : '',
     partnerCompany: type==='postpaid' ? document.getElementById('o_partnerCompany').value : '',
-    svcCarrierType: type==='postpaid' ? document.getElementById('o_svcCarrierType').value : '',
+    svcCarrierType: document.getElementById('o_carrierType_group').dataset.selected || '',
     expectedProfit: type==='postpaid' ? Number(document.getElementById('o_expectedProfit').value)||0 : 0,
     actualProfit: type==='postpaid' ? Number(document.getElementById('o_actualProfit').value)||0 : 0,
     usimFee: type==='postpaid' ? Number(document.getElementById('o_usimFee').value)||0 : 0,
@@ -3125,7 +3160,7 @@ function openChangeSubModal(customerId, mode){
   renderCompactOptionField('cs_svcCarrierType_group', POSTPAID_CARRIER_TYPES, current?.svcCarrierType || '', t('f.svcCarrierType'));
 
   // genuinely new information for this signup — left blank for staff to fill in
-  document.getElementById('cs_plan').value = '';
+  renderPostpaidPlanTiles('cs_plan_group', '');
   document.getElementById('cs_activationDate').value = todayISO();
   document.getElementById('cs_monthlyFee').value = '';
   renderTileRadioGroup('cs_handlerName_group', STAFF_MEMBERS, getActiveStaff());
@@ -3171,7 +3206,7 @@ document.getElementById('saveChangeSubBtn').addEventListener('click', ()=>{
   const svcData = {
     customerId: changeSubCustomerId, type:'postpaid',
     carrier: svcCarrierType,
-    plan: document.getElementById('cs_plan').value.trim(),
+    plan: document.getElementById('cs_plan_group').dataset.selected || '',
     number: document.getElementById('cs_number').value.trim(),
     simType:'physical', activationDate, durationDays: contractLength,
     expiryDate: d.toISOString().slice(0,10), status:'active',
@@ -4729,7 +4764,22 @@ function startBackgroundSyncPolling(){
     const result = await pullFromServer();
     if(result.ok){
       const after = JSON.stringify(DB.customers)+JSON.stringify(DB.services);
-      if(before !== after){ renderPage(currentPage); renderNav(); }
+      if(before !== after){
+        // The underlying data is always kept fresh — that part is safe. But forcing a
+        // visual re-render here was disrupting active work: Sheet View re-sorts and
+        // rebuilds its whole table on every render, which visibly shifts rows around even
+        // when the change had nothing to do with what someone was looking at, and if
+        // someone had a cell mid-edit, replacing the table's HTML wiped out their unsaved
+        // keystrokes entirely. Sheet View is where people spend the most time actively
+        // typing, so it's deliberately skipped here — the fresh data is already in memory
+        // and will show correctly the next time they switch tabs or reload, without ever
+        // interrupting them mid-edit. A focused input/textarea/select anywhere else in the
+        // app (e.g. a modal) is treated the same way, for the same reason.
+        const activeTag = document.activeElement?.tagName;
+        const isEditingSomething = activeTag==='INPUT' || activeTag==='TEXTAREA' || activeTag==='SELECT';
+        if(currentPage!=='sheet' && !isEditingSomething){ renderPage(currentPage); }
+        renderNav(); // safe everywhere — just badge counts, nothing a person is mid-editing
+      }
     }
   }, 15000);
 }
