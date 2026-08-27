@@ -18,8 +18,6 @@ const UNLOCKED_KEY = 'himobile_unlocked'; // persists "stay unlocked" across ref
 // opening the GitHub Pages link for the first time, on the store's WiFi) starts syncing
 // immediately with zero setup. Overridable (or turn-off-able) via Import/Export settings.
 let syncTimer = null; // debounce handle for scheduleServerSync() — declared early for the same reason as above
-let pushPending = false; // a push is scheduled (timer running) but hasn't been sent yet
-let pushInFlight = false; // a push request is actually in progress right now
 const LANG_KEY = 'himobile_crm_lang';
 
 /* ---------------- i18n ---------------- */
@@ -667,18 +665,7 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
   list = list.filter(c=>{
     if(natFilter && c.nationality!==natFilter) return false;
     if(ratingFilter && String(c.rating)!==ratingFilter) return false;
-    // check the customer's most recent service activation date (whether or not it's still
-    // active), not their overall record-creation date — same fix already applied to the
-    // Prepaid/Postpaid tabs. A customer's record can be created long before a specific
-    // service on it (e.g. converting from prepaid to postpaid today), so those two dates
-    // genuinely differ and "Added: today" needs to mean "something happened today", not
-    // "this customer record itself is new".
-    if(recentFilter){
-      const svcs = customerServices(c.id);
-      const mostRecentDate = svcs.length ? [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0))[0].activationDate : null;
-      const relevantDate = mostRecentDate || customerJoinDate(c);
-      if(!relevantDate || daysBetween(relevantDate, todayISO())>Number(recentFilter)) return false;
-    }
+    if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
       if(!hay.includes(search)) return false;
@@ -964,23 +951,11 @@ let suppressAutoPush = false;
 function scheduleServerSync(){
   if(!isSyncEnabled() || suppressAutoPush) return;
   clearTimeout(syncTimer);
-  // marks a push as "owed" the moment something changes, not just while the request is
-  // actually in flight — see hasPendingOrInFlightPush()'s comment for why this matters
-  pushPending = true;
   // 400ms — short enough that changes reach the server almost immediately, while still
   // batching truly rapid-fire edits (e.g. typing in Sheet View) into one request instead
   // of one per keystroke. Previously 1000ms, which was part of why sync felt sluggish.
   syncTimer = setTimeout(pushToServer, 400);
 }
-/* Whether a push is scheduled-but-not-yet-sent, OR actually in flight right now. The
-   background poll (every 15s) checks this before pulling — a pull fully replaces
-   DB.customers/DB.services with whatever the server currently has, so if it runs while a
-   recent local edit hasn't reached the server yet, that edit gets silently overwritten by
-   the server's still-stale copy of the data. This is exactly what was happening: someone
-   would edit one cell (scheduling a push 400ms later), immediately edit a second cell, and
-   if the 15s poll happened to land in that narrow window, the first edit would vanish —
-   revealed only when the second cell's own re-render displayed the now-reverted data. */
-function hasPendingOrInFlightPush(){ return pushPending || pushInFlight; }
 // Persistent "not connected" banner — only shown when sync is actually turned ON but a
 // recent attempt failed (an unexpected disconnection), never for someone who deliberately
 // chose to work locally (Skip / sync off), since that's an intentional, not broken, state.
@@ -1022,9 +997,7 @@ async function checkServerSchema(){
 }
 async function pushToServer(){
   const base = getServerUrl();
-  if(!base){ pushPending = false; return {ok:false, error:'no server configured'}; }
-  pushPending = false; // no longer just "scheduled" — the request is starting now
-  pushInFlight = true;
+  if(!base) return {ok:false, error:'no server configured'};
   try{
     const res = await fetch(base+'/api/sync', {
       method:'POST',
@@ -1051,8 +1024,6 @@ async function pushToServer(){
     updateSyncStatusUI(err.message);
     setOfflineBanner(true, err.message);
     return {ok:false, error: err.message};
-  }finally{
-    pushInFlight = false;
   }
 }
 // Pulls the server's current dataset and replaces the in-memory DB with it — used once at
@@ -4905,9 +4876,6 @@ function startBackgroundSyncPolling(){
   backgroundSyncInterval = setInterval(async ()=>{
     if(!isSyncEnabled()) return;
     if(document.hidden) return; // don't burn requests on a tab nobody's looking at
-    if(hasPendingOrInFlightPush()) return; // don't let a pull race ahead of a not-yet-sent
-    // local edit and silently overwrite it with the server's still-stale copy — try again
-    // next cycle, by which point the push should have landed
     const before = JSON.stringify(DB.customers)+JSON.stringify(DB.services);
     const result = await pullFromServer();
     if(result.ok){
