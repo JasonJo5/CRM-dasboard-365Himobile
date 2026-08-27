@@ -665,7 +665,18 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
   list = list.filter(c=>{
     if(natFilter && c.nationality!==natFilter) return false;
     if(ratingFilter && String(c.rating)!==ratingFilter) return false;
-    if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
+    // check the customer's most recent service activation date (whether or not it's still
+    // active), not their overall record-creation date — same fix already applied to the
+    // Prepaid/Postpaid tabs. A customer's record can be created long before a specific
+    // service on it (e.g. converting from prepaid to postpaid today), so those two dates
+    // genuinely differ and "Added: today" needs to mean "something happened today", not
+    // "this customer record itself is new".
+    if(recentFilter){
+      const svcs = customerServices(c.id);
+      const mostRecentDate = svcs.length ? [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0))[0].activationDate : null;
+      const relevantDate = mostRecentDate || customerJoinDate(c);
+      if(!relevantDate || daysBetween(relevantDate, todayISO())>Number(recentFilter)) return false;
+    }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
       if(!hay.includes(search)) return false;
