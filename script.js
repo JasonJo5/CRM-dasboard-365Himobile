@@ -55,6 +55,7 @@ const I18N = {
     'f.customer':'客户','f.serviceInfo':'业务信息','f.serviceType':'业务类型','f.planDuration':'套餐期限（月）','f.contractLength':'合约期限','f.carrier':'通信社 / MVNO','f.plan':'套餐名称','f.number':'电话号码','f.simType':'SIM 类型','f.activationDate':'开通日期','f.durationDays':'合同时长（天）','f.expiryDate':'到期日期','f.status':'办理状态','f.feeInfo':'费用信息','f.monthlyFee':'月租费','f.discount':'折扣','f.firstMonthPayment':'首月费用','f.activationFee':'开通费','f.simFee':'SIM 卡费','f.paymentInfo':'收款与利润','f.sellingPrice':'销售价','f.cost':'成本','f.received':'已收金额','f.paymentMethod':'付款方式','f.commission':'返点 / 提成',
     'f.prepaidPlan':'充值套餐','f.price':'价格','f.discount':'折扣','f.finalPrice':'最终价格','f.usimNumber':'USIM 일련번호',
     'f.company':'가입회사 Company','f.partnerCompany':'파트너사 Partner company','f.svcCarrierType':'통신사 Carrier type','f.usedDays':'已使用天数 Used days','f.contactMethod':'联系方式','f.planOptions':'套餐选项',
+    'f.monthlyPayment':'客户每月缴费 Monthly payment','f.monthlyPaymentHint':'客户支付给运营商的金额 · 仅作记录，不计入本店收入','detail.planInfo':'套餐信息','detail.storeIncome':'本店收入',
     'opt.physical':'实体卡',
     'lang.zh':'中文','lang.en':'英文','lang.ko':'韩文',
     'idtype.ARC':'ARC','idtype.Passport':'护照',
@@ -146,6 +147,7 @@ const I18N = {
     'f.customer':'Customer','f.serviceInfo':'Service details','f.serviceType':'Service type','f.planDuration':'Plan duration (months)','f.contractLength':'Contract length','f.carrier':'Carrier / MVNO','f.plan':'Plan name','f.number':'Phone number','f.simType':'SIM type','f.activationDate':'Activation date','f.durationDays':'Contract length (days)','f.expiryDate':'Expiry date','f.status':'Status','f.feeInfo':'Fee details','f.monthlyFee':'Monthly fee','f.discount':'Discount','f.firstMonthPayment':'First month payment','f.activationFee':'Activation fee','f.simFee':'SIM card fee','f.paymentInfo':'Payment & profit','f.sellingPrice':'Selling price','f.cost':'Cost','f.received':'Amount received','f.paymentMethod':'Payment method','f.commission':'Commission / rebate',
     'f.prepaidPlan':'Plan','f.price':'Price','f.discount':'Discount','f.finalPrice':'Final price','f.usimNumber':'USIM serial number',
     'f.company':'Company','f.partnerCompany':'Partner company','f.svcCarrierType':'Carrier type','f.usedDays':'Used days','f.contactMethod':'Contact method','f.planOptions':'Plan options',
+    'f.monthlyPayment':'Monthly payment','f.monthlyPaymentHint':'What the customer pays the carrier · display only, not counted as store income','detail.planInfo':'Plan info','detail.storeIncome':'Store income',
     'opt.physical':'Physical SIM',
     'lang.zh':'Chinese','lang.en':'English','lang.ko':'Korean',
     'idtype.ARC':'ARC','idtype.Passport':'Passport',
@@ -2938,35 +2940,53 @@ function serviceCardHtml(s, customer){
     progressPct = Math.min(100, Math.max(0, (used/total)*100));
   }
   const usedDays = usedDaysFor(s);
-  // plain-language framing of where this subscription stands relative to its contract,
-  // instead of just a bare day count
   const contractStatusText = contractStatusTextFor(s, false);
-  // one comprehensive info grid covering phone, plan type, subscription type, company/
-  // carrier, how long the plan's been used, and how long the customer's been in Korea —
-  // shown for BOTH prepaid and postpaid (previously some of this was postpaid-only)
-  const infoGrid = `<div class="kv-grid" style="margin-top:10px;">
-      <div><div class="k">${t('f.number')}</div><div class="v">${s.number||'—'}</div></div>
-      <div><div class="k">${t('col.subType')}</div><div class="v">${s.type==='postpaid'?t('opt.postpaidShort'):t('opt.prepaidShort')}</div></div>
-      ${customer?.planType?`<div><div class="k">${t('f.planType')}</div><div class="v">${escapeHtml(customer.planType)}</div></div>`:''}
-      ${s.company?`<div><div class="k">${t('f.company')}</div><div class="v">${escapeHtml(s.company)}</div></div>`:''}
-      ${s.partnerCompany?`<div><div class="k">${t('f.partnerCompany')}</div><div class="v">${escapeHtml(s.partnerCompany)}</div></div>`:''}
-      ${s.svcCarrierType?`<div><div class="k">${t('f.svcCarrierType')}</div><div class="v">${escapeHtml(s.svcCarrierType)}</div></div>`:''}
-      ${usedDays!==null?`<div><div class="k">${t('f.usedDays')}</div><div class="v">${usedDays} ${LANG==='zh'?'天':'days'}</div></div>`:''}
-      ${customer && customer.years!=null?`<div><div class="k">${t('f.years')}</div><div class="v">${customer.years} ${t('years.suffix')}</div></div>`:''}
+  // "Who this is" — identity + plan basics, grouped in a neutral card since this is
+  // reference info, not something that needs a color signal
+  const identityCard = `<div class="profile-subcard">
+      <div class="profile-subcard-title">${t('detail.planInfo')}</div>
+      <div class="kv-grid">
+        <div><div class="k">${t('f.number')}</div><div class="v">${s.number||'—'}</div></div>
+        <div><div class="k">${t('f.dob')}</div><div class="v">${customer?.dob?fmtDate(customer.dob):'—'}</div></div>
+        <div><div class="k">${t('f.plan')}</div><div class="v">${escapeHtml(s.plan||'—')}</div></div>
+        <div><div class="k">${t('col.subType')}</div><div class="v">${s.type==='postpaid'?t('opt.postpaidShort'):t('opt.prepaidShort')}</div></div>
+        ${customer?.planType?`<div><div class="k">${t('f.planType')}</div><div class="v">${escapeHtml(customer.planType)}</div></div>`:''}
+        ${s.company?`<div><div class="k">${t('f.company')}</div><div class="v">${escapeHtml(s.company)}</div></div>`:''}
+        ${s.partnerCompany?`<div><div class="k">${t('f.partnerCompany')}</div><div class="v">${escapeHtml(s.partnerCompany)}</div></div>`:''}
+        ${s.svcCarrierType?`<div><div class="k">${t('f.svcCarrierType')}</div><div class="v">${escapeHtml(s.svcCarrierType)}</div></div>`:''}
+        ${usedDays!==null?`<div><div class="k">${t('f.usedDays')}</div><div class="v">${usedDays} ${LANG==='zh'?'天':'days'}</div></div>`:''}
+        ${customer && customer.years!=null?`<div><div class="k">${t('f.years')}</div><div class="v">${customer.years} ${t('years.suffix')}</div></div>`:''}
+      </div>
     </div>`;
-  // prepaid is one flat one-time payment — just show the price, none of the recurring/
-  // partial-payment fields that only make sense for postpaid's commission model
+  // "What the customer pays" (postpaid only) — deliberately its own card, visually
+  // separate from the store's income figures below, since it's a different concept
+  // entirely: what the carrier bills the customer, not what the store earns. Display and
+  // tracking only — never read by any income/revenue calculation in the app.
+  const monthlyPaymentCard = s.type==='postpaid' ? `<div class="profile-subcard" style="background:#FFF8E8;border-color:#F5DFA6;">
+      <div class="profile-subcard-title" style="color:#946200;">${t('f.monthlyPayment')}</div>
+      <div style="font-size:22px;font-weight:800;color:#946200;">${fmtWon(s.monthlyFee)}</div>
+      <div class="muted" style="font-size:11px;margin-top:2px;">${t('f.monthlyPaymentHint')}</div>
+    </div>` : '';
+  // "What the store earns" — kept as its own clearly-labeled card so it's never confused
+  // with the customer's own monthly bill above
   const feeSection = s.type==='prepaid'
-    ? `<div class="kv-grid" style="margin-top:10px;">
-        <div><div class="k">${t('f.price')}</div><div class="v" style="font-size:15px;">${fmtWon(s.sellingPrice)}</div></div>
+    ? `<div class="profile-subcard" style="background:#EAF7EF;border-color:#BEE6CC;">
+        <div class="profile-subcard-title" style="color:var(--green);">${t('rep.prepaidIncome')}</div>
+        <div style="font-size:22px;font-weight:800;color:var(--green);">${fmtWon(s.sellingPrice)}</div>
       </div>`
     : s.type==='postpaid'
-    ? `<div class="kv-grid" style="margin-top:10px;">
-        <div><div class="k">${t('f.expectedProfit')}</div><div class="v">${fmtWon(s.expectedProfit)}</div></div>
-        <div><div class="k">${t('f.actualProfit')}</div><div class="v">${s.actualProfit?fmtWon(s.actualProfit):`<span class="muted">${t('stat.notReconciled')}</span>`}</div></div>
-        <div><div class="k">${t('f.usimFee')}</div><div class="v">${fmtWon(s.usimFee)}</div></div>
-        <div><div class="k">${t('f.discountTotal')}</div><div class="v">${fmtWon(discountTotalFor(s))}</div></div>
-        <div><div class="k">${netIncomeLabelFor(s)}</div><div class="v" style="color:var(--green);font-weight:700;">${fmtWon(netProfitFor(s))}</div></div>
+    ? `<div class="profile-subcard" style="background:#EAF3FF;border-color:#BFDCFF;">
+        <div class="profile-subcard-title" style="color:var(--blue);">${t('detail.storeIncome')}</div>
+        <div class="kv-grid">
+          <div><div class="k">${t('f.expectedProfit')}</div><div class="v">${fmtWon(s.expectedProfit)}</div></div>
+          <div><div class="k">${t('f.actualProfit')}</div><div class="v">${s.actualProfit?fmtWon(s.actualProfit):`<span class="muted">${t('stat.notReconciled')}</span>`}</div></div>
+          <div><div class="k">${t('f.usimFee')}</div><div class="v">${fmtWon(s.usimFee)}</div></div>
+          <div><div class="k">${t('f.discountTotal')}</div><div class="v">${fmtWon(discountTotalFor(s))}</div></div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #BFDCFF;">
+          <div class="k">${netIncomeLabelFor(s)}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--blue);">${fmtWon(netProfitFor(s))}</div>
+        </div>
       </div>`
     : `<div class="kv-grid" style="margin-top:10px;">
         <div><div class="k">${t('f.sellingPrice')}</div><div class="v">${fmtWon(s.sellingPrice)}</div></div>
@@ -2990,8 +3010,11 @@ function serviceCardHtml(s, customer){
     </div>
     ${s.expiryDate?`<div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
     <div class="muted" style="font-size:11.5px;margin-top:6px;">${fmtDate(s.activationDate)} → ${fmtDate(s.expiryDate)} · ${contractStatusText}</div>`:''}
-    ${infoGrid}
-    ${feeSection}
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+      ${identityCard}
+      ${monthlyPaymentCard}
+      ${feeSection}
+    </div>
   </div>`;
 }
 /* compact read-only row for a subscription that has been superseded or cancelled */
