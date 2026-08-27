@@ -18,6 +18,8 @@ const UNLOCKED_KEY = 'himobile_unlocked'; // persists "stay unlocked" across ref
 // opening the GitHub Pages link for the first time, on the store's WiFi) starts syncing
 // immediately with zero setup. Overridable (or turn-off-able) via Import/Export settings.
 let syncTimer = null; // debounce handle for scheduleServerSync() — declared early for the same reason as above
+let pushPending = false; // a push is scheduled (timer running) but hasn't been sent yet
+let pushInFlight = false; // a push request is actually in progress right now
 const LANG_KEY = 'himobile_crm_lang';
 
 /* ---------------- i18n ---------------- */
@@ -42,7 +44,7 @@ const I18N = {
     'ph.search':'搜索姓名、号码、国籍或证件号',
     'filter.allNationalities':'全部国籍','filter.allRatings':'全部评分','filter.allTypes':'全部业务类型','filter.allStatus':'全部状态',
     'filter.allDurations':'开通时长：不限','filter.duration6':'已开通 6 个月以上','filter.duration8':'已开通 8 个月以上','filter.duration12':'已开通 1 年以上','col.activeFor':'开通时长',
-    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.last30':'最近30天','col.dateAdded':'添加日期',
+    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.thisMonth':'本月','filter.last30':'最近30天','col.dateAdded':'添加日期',
     'sort.newest':'排序：最新优先','sort.oldest':'排序：最旧优先','sort.nameAsc':'姓名 A → Z','sort.nameDesc':'姓名 Z → A','sort.ratingHigh':'评分：高到低','sort.ratingLow':'评分：低到高',
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
     'cs.autofillHint':'姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改','cs.idNumberArc':'证件号码 (ARC)',
@@ -134,7 +136,7 @@ const I18N = {
     'ph.search':'Search name, number, nationality or ID',
     'filter.allNationalities':'All nationalities','filter.allRatings':'All ratings','filter.allTypes':'All service types','filter.allStatus':'All statuses',
     'filter.allDurations':'Active for: any length','filter.duration6':'Active 6+ months','filter.duration8':'Active 8+ months','filter.duration12':'Active 1+ year','col.activeFor':'Active for',
-    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.last30':'Last 30 days','col.dateAdded':'Date added',
+    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.thisMonth':'This month','filter.last30':'Last 30 days','col.dateAdded':'Date added',
     'sort.newest':'Sort: Newest first','sort.oldest':'Sort: Oldest first','sort.nameAsc':'Name A → Z','sort.nameDesc':'Name Z → A','sort.ratingHigh':'Rating: High to low','sort.ratingLow':'Rating: Low to high',
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
     'cs.autofillHint':'Name / phone / nationality / occupation / ID number are auto-filled from the existing customer record — edit directly if needed','cs.idNumberArc':'ID number (ARC)',
@@ -567,7 +569,7 @@ function renderSheetPage(){
     // check THIS ROW'S service activation date, not the customer's overall join date —
     // a customer's record can be created at a very different time than a specific service
     // shown here (e.g. imported historical data), so those two dates can genuinely differ
-    if(recentFilter){ if(!svc.activationDate || daysBetween(svc.activationDate, todayISO())>Number(recentFilter)) return false; }
+    if(recentFilter){ if(!matchesRecentFilter(svc.activationDate, recentFilter)) return false; }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
       if(!hay.includes(search)) return false;
@@ -577,8 +579,12 @@ function renderSheetPage(){
   .sort((a,b)=>{
     if(sortOrder==='az') return a.c.name.localeCompare(b.c.name);
     if(sortOrder==='za') return b.c.name.localeCompare(a.c.name);
-    // default: newest signups first, same as the Customers page
-    return new Date(customerJoinDate(b.c)||0)-new Date(customerJoinDate(a.c)||0);
+    // default: newest ACTIVATION DATE first — matches what's actually shown in the
+    // Activation Date column. Previously sorted by the customer's overall record date
+    // instead, which is a different thing (e.g. a customer whose record is from months
+    // ago but who recharged today) — the table's default order looked wrong because it
+    // didn't match the column people were actually looking at.
+    return new Date(b.svc.activationDate||0)-new Date(a.svc.activationDate||0);
   });
   document.getElementById('sheetCount').textContent = `${rows.length} ${LANG==='zh'?'位客户':'customers'}`;
 
@@ -665,7 +671,18 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
   list = list.filter(c=>{
     if(natFilter && c.nationality!==natFilter) return false;
     if(ratingFilter && String(c.rating)!==ratingFilter) return false;
-    if(recentFilter){ const jd=customerJoinDate(c); if(!jd || daysBetween(jd, todayISO())>Number(recentFilter)) return false; }
+    // check the customer's most recent service activation date (whether or not it's still
+    // active), not their overall record-creation date — same fix already applied to the
+    // Prepaid/Postpaid tabs. A customer's record can be created long before a specific
+    // service on it (e.g. converting from prepaid to postpaid today), so those two dates
+    // genuinely differ and "Added: today" needs to mean "something happened today", not
+    // "this customer record itself is new".
+    if(recentFilter){
+      const svcs = customerServices(c.id);
+      const mostRecentDate = svcs.length ? [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0))[0].activationDate : null;
+      const relevantDate = mostRecentDate || customerJoinDate(c);
+      if(!matchesRecentFilter(relevantDate, recentFilter)) return false;
+    }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
       if(!hay.includes(search)) return false;
@@ -744,6 +761,17 @@ const CHANGE_REASONS = ['new','upgraded_to_postpaid','plan_change','cancelled','
 function uid(prefix){ return prefix+'_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+/* "This month" means the current calendar month specifically (e.g. all of August), not a
+   rolling 30-day window — those are genuinely different things: on August 27th, "last 30
+   days" reaches back into late July, which isn't what "this month" means to someone
+   reading it. The other options (today/7 days/30 days) stay as rolling windows, since
+   those are correctly understood as rolling. */
+function matchesRecentFilter(dateStr, recentFilter){
+  if(!recentFilter) return true;
+  if(!dateStr) return false;
+  if(recentFilter==='thisMonth') return dateStr.slice(0,7)===todayISO().slice(0,7);
+  return daysBetween(dateStr, todayISO())<=Number(recentFilter);
+}
 /* Whole calendar months elapsed since a date, used for "customer has passed 6/8/12 months" filters. */
 function monthsSince(dateStr){
   if(!dateStr || !isIsoDate(dateStr)) return null;
@@ -951,11 +979,23 @@ let suppressAutoPush = false;
 function scheduleServerSync(){
   if(!isSyncEnabled() || suppressAutoPush) return;
   clearTimeout(syncTimer);
+  // marks a push as "owed" the moment something changes, not just while the request is
+  // actually in flight — see hasPendingOrInFlightPush()'s comment for why this matters
+  pushPending = true;
   // 400ms — short enough that changes reach the server almost immediately, while still
   // batching truly rapid-fire edits (e.g. typing in Sheet View) into one request instead
   // of one per keystroke. Previously 1000ms, which was part of why sync felt sluggish.
   syncTimer = setTimeout(pushToServer, 400);
 }
+/* Whether a push is scheduled-but-not-yet-sent, OR actually in flight right now. The
+   background poll (every 15s) checks this before pulling — a pull fully replaces
+   DB.customers/DB.services with whatever the server currently has, so if it runs while a
+   recent local edit hasn't reached the server yet, that edit gets silently overwritten by
+   the server's still-stale copy of the data. This is exactly what was happening: someone
+   would edit one cell (scheduling a push 400ms later), immediately edit a second cell, and
+   if the 15s poll happened to land in that narrow window, the first edit would vanish —
+   revealed only when the second cell's own re-render displayed the now-reverted data. */
+function hasPendingOrInFlightPush(){ return pushPending || pushInFlight; }
 // Persistent "not connected" banner — only shown when sync is actually turned ON but a
 // recent attempt failed (an unexpected disconnection), never for someone who deliberately
 // chose to work locally (Skip / sync off), since that's an intentional, not broken, state.
@@ -997,7 +1037,9 @@ async function checkServerSchema(){
 }
 async function pushToServer(){
   const base = getServerUrl();
-  if(!base) return {ok:false, error:'no server configured'};
+  if(!base){ pushPending = false; return {ok:false, error:'no server configured'}; }
+  pushPending = false; // no longer just "scheduled" — the request is starting now
+  pushInFlight = true;
   try{
     const res = await fetch(base+'/api/sync', {
       method:'POST',
@@ -1024,6 +1066,8 @@ async function pushToServer(){
     updateSyncStatusUI(err.message);
     setOfflineBanner(true, err.message);
     return {ok:false, error: err.message};
+  }finally{
+    pushInFlight = false;
   }
 }
 // Pulls the server's current dataset and replaces the in-memory DB with it — used once at
@@ -1626,8 +1670,15 @@ function renderDashboard(){
   // total + new-this-month are clickable — show a prepaid/postpaid breakdown popover
   const totalPrepaid = custs.filter(c=>(c.subType||'prepaid')==='prepaid').length;
   const totalPostpaid = custs.filter(c=>c.subType==='postpaid').length;
-  const newThisMonthPrepaid = custsActivatedInMonth(monthStr, 'prepaid');
-  const newThisMonthPostpaid = custsActivatedInMonth(monthStr, 'postpaid');
+  const newThisMonthCustomerIds = new Set(svcs.filter(s=> s.activationDate && s.activationDate.slice(0,7)===monthStr).map(s=>s.customerId));
+  // Partition by each customer's CURRENT type, not "did they have any service of this type
+  // activated this month" — a customer who both recharged prepaid and converted to postpaid
+  // in the same month would otherwise get counted in both categories, making the breakdown
+  // sum to more than the actual total shown above it (found via a real report: a customer
+  // with both a prepaid and postpaid transaction the same month showed as 87 + 15 = 102 in
+  // the breakdown while the total correctly read 101 unique customers).
+  const newThisMonthPrepaid = custs.filter(c=> newThisMonthCustomerIds.has(c.id) && (c.subType||'prepaid')==='prepaid').length;
+  const newThisMonthPostpaid = custs.filter(c=> newThisMonthCustomerIds.has(c.id) && c.subType==='postpaid').length;
   const stats = [
     {label:t('stat.totalCustomers'), value:custs.length, sub:t('stat.fromRecords'), deltaHtml:null, breakdown:{prepaid:totalPrepaid, postpaid:totalPostpaid}},
     {label:t('stat.newThisMonth'), value:newThisMonth, deltaHtml:deltaHtml(newDelta), breakdown:{prepaid:newThisMonthPrepaid, postpaid:newThisMonthPostpaid}},
@@ -3566,9 +3617,16 @@ function renderMonthlyReport(){
     </div>`).join('');
 
   const newCustomerIds = new Set(svcs.map(s=>s.customerId));
+  // partition by each customer's CURRENT type (not service count) so this sub-label always
+  // sums exactly to the total above it — same fix as Dashboard's "New this month" breakdown:
+  // a customer with both a prepaid and postpaid transaction in the same month would
+  // otherwise get counted in both halves, making "2 Prepaid · 1 Postpaid" add up to 3 when
+  // the actual total was 2 unique customers
+  const newThisMonthPrepaidCount = DB.customers.filter(c=> newCustomerIds.has(c.id) && (c.subType||'prepaid')==='prepaid').length;
+  const newThisMonthPostpaidCount = DB.customers.filter(c=> newCustomerIds.has(c.id) && c.subType==='postpaid').length;
   const pendingReminders = buildReminders().filter(r=>r.uiStatus==='pending').length;
   document.getElementById('repSecondaryStats').innerHTML = [
-    {label:t('stat.newThisMonth'), value:newCustomerIds.size, sub:`${prepaidSvcs.length} ${t('opt.prepaidShort')} · ${postpaidSvcs.length} ${t('opt.postpaidShort')}`},
+    {label:t('stat.newThisMonth'), value:newCustomerIds.size, sub:`${newThisMonthPrepaidCount} ${t('opt.prepaidShort')} · ${newThisMonthPostpaidCount} ${t('opt.postpaidShort')}`},
     {label:t('stat.pendingReminders'), value:pendingReminders},
   ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div>${s.sub?`<div class="stat-delta">${s.sub}</div>`:''}</div>`).join('');
 
@@ -4876,6 +4934,9 @@ function startBackgroundSyncPolling(){
   backgroundSyncInterval = setInterval(async ()=>{
     if(!isSyncEnabled()) return;
     if(document.hidden) return; // don't burn requests on a tab nobody's looking at
+    if(hasPendingOrInFlightPush()) return; // don't let a pull race ahead of a not-yet-sent
+    // local edit and silently overwrite it with the server's still-stale copy — try again
+    // next cycle, by which point the push should have landed
     const before = JSON.stringify(DB.customers)+JSON.stringify(DB.services);
     const result = await pullFromServer();
     if(result.ok){
