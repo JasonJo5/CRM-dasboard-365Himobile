@@ -241,6 +241,7 @@
               <option value="" data-i18n="filter.allTime">添加时间：不限</option>
               <option value="0" data-i18n="filter.today">今天新增</option>
               <option value="7" data-i18n="filter.last7">最近7天</option>
+              <option value="thisMonth" data-i18n="filter.thisMonth">本月</option>
               <option value="30" data-i18n="filter.last30">最近30天</option>
             </select>
             <select class="select-input" id="sheetSortOrder">
@@ -585,6 +586,7 @@
         <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income（公司价格 − 折扣 − USIM费用）</label><input id="pc_netExpectedPreview" disabled></div>
 
         <div class="form-field full"><label data-i18n="f.referralFriend">介绍人 Referred by (朋友姓名，如有)</label><input id="pc_referralFriend" placeholder="朋友姓名"></div>
+        <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="pc_paymentMethod_group" data-field="paymentMethod"></div></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pc_notes"></textarea></div>
       </div>
       <div class="section-desc" style="margin-top:6px;" data-i18n="f.actualProfitHint">💡 「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在「保存客户」后于表格视图中随时补填。</div>
@@ -636,6 +638,7 @@
             <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="p3_number" placeholder="010-0000-0000"></div>
             <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="p3_activationDate" type="date"></div>
             <div class="form-field full"><label data-i18n="print.template">打印模板</label><select id="p3_template"></select></div>
+            <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="p3_paymentMethod_group" data-field="paymentMethod"></div></div>
           </div>
         </div>
 
@@ -660,6 +663,7 @@
             <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="pe_discountPerMonth" type="number" min="0"></div>
             <div class="form-field"><label data-i18n="f.discountMonths">折扣月数</label><input id="pe_discountMonths" type="number" min="0"></div>
             <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入</label><input id="pe_netExpectedPreview" disabled></div>
+            <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="pe_paymentMethod_group" data-field="paymentMethod"></div></div>
           </div>
         </div>
       </div>
@@ -790,6 +794,7 @@
         <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income</label><input id="cs_netExpectedPreview" disabled></div>
 
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="cs_notes"></textarea></div>
+        <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="cs_paymentMethod_group" data-field="paymentMethod"></div></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -821,6 +826,7 @@
         <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pa_company_group" data-field="company"></div></div>
         <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pa_svcCarrierType_group" data-field="svcCarrierType"></div></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pa_notes"></textarea></div>
+        <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="pa_paymentMethod_group" data-field="paymentMethod"></div></div>
       </div>
     </div>
     <div class="modal-foot">
