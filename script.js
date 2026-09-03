@@ -44,7 +44,7 @@ const I18N = {
     'ph.search':'搜索姓名、号码、国籍或证件号',
     'filter.allNationalities':'全部国籍','filter.allRatings':'全部评分','filter.allTypes':'全部业务类型','filter.allStatus':'全部状态',
     'filter.allDurations':'开通时长：不限','filter.duration6':'已开通 6 个月以上','filter.duration8':'已开通 8 个月以上','filter.duration12':'已开通 1 年以上','col.activeFor':'开通时长',
-    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.thisMonth':'本月','filter.last30':'最近30天','col.dateAdded':'添加日期',
+    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.thisMonth':'本月','filter.last30':'最近30天','col.dateAdded':'添加日期','filter.activationDateRange':'开通日期范围','filter.clearDates':'清除日期',
     'sort.newest':'排序：最新优先','sort.oldest':'排序：最旧优先','sort.nameAsc':'姓名 A → Z','sort.nameDesc':'姓名 Z → A','sort.ratingHigh':'评分：高到低','sort.ratingLow':'评分：低到高',
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
     'cs.autofillHint':'姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改','cs.idNumberArc':'证件号码 (ARC)',
@@ -136,7 +136,7 @@ const I18N = {
     'ph.search':'Search name, number, nationality or ID',
     'filter.allNationalities':'All nationalities','filter.allRatings':'All ratings','filter.allTypes':'All service types','filter.allStatus':'All statuses',
     'filter.allDurations':'Active for: any length','filter.duration6':'Active 6+ months','filter.duration8':'Active 8+ months','filter.duration12':'Active 1+ year','col.activeFor':'Active for',
-    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.thisMonth':'This month','filter.last30':'Last 30 days','col.dateAdded':'Date added',
+    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.thisMonth':'This month','filter.last30':'Last 30 days','col.dateAdded':'Date added','filter.activationDateRange':'Activation date range','filter.clearDates':'Clear dates',
     'sort.newest':'Sort: Newest first','sort.oldest':'Sort: Oldest first','sort.nameAsc':'Name A → Z','sort.nameDesc':'Name Z → A','sort.ratingHigh':'Rating: High to low','sort.ratingLow':'Rating: Low to high',
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
     'cs.autofillHint':'Name / phone / nationality / occupation / ID number are auto-filled from the existing customer record — edit directly if needed','cs.idNumberArc':'ID number (ARC)',
@@ -527,6 +527,13 @@ document.getElementById('sheetNationalityFilter').addEventListener('change', ren
 document.getElementById('sheetRatingFilter').addEventListener('change', renderSheetPage);
 document.getElementById('sheetRecentFilter').addEventListener('change', renderSheetPage);
 document.getElementById('sheetSortOrder').addEventListener('change', renderSheetPage);
+document.getElementById('sheetDateFrom').addEventListener('change', renderSheetPage);
+document.getElementById('sheetDateTo').addEventListener('change', renderSheetPage);
+document.getElementById('sheetDateRangeClear').addEventListener('click', ()=>{
+  document.getElementById('sheetDateFrom').value = '';
+  document.getElementById('sheetDateTo').value = '';
+  renderSheetPage();
+});
 
 let sheetTypeTab = 'prepaid';
 function renderSheetPage(){
@@ -553,13 +560,15 @@ function renderSheetPage(){
   const recentFilter = document.getElementById('sheetRecentFilter').value;
   const search = (document.getElementById('sheetSearch').value||'').toLowerCase();
   const sortOrder = document.getElementById('sheetSortOrder').value;
+  const dateFrom = document.getElementById('sheetDateFrom').value;
+  const dateTo = document.getElementById('sheetDateTo').value;
 
   // Inactive / Duplicate / All don't have a single "current plan" to show in the
   // editable-spreadsheet format the way Prepaid/Postpaid do — those tabs render a simpler,
   // read-only summary table instead of the editable financial columns, sharing the same
   // filter values above.
   if(sheetTypeTab==='inactive' || sheetTypeTab==='dupes' || sheetTypeTab==='all'){
-    renderSheetSimpleView(sheetTypeTab, dupeGroupsForTabCount, {natFilter, ratingFilter, recentFilter, search});
+    renderSheetSimpleView(sheetTypeTab, dupeGroupsForTabCount, {natFilter, ratingFilter, recentFilter, search, dateFrom, dateTo});
     return;
   }
 
@@ -570,7 +579,8 @@ function renderSheetPage(){
     // check THIS ROW'S service activation date, not the customer's overall join date —
     // a customer's record can be created at a very different time than a specific service
     // shown here (e.g. imported historical data), so those two dates can genuinely differ
-    if(recentFilter){ if(!matchesRecentFilter(svc.activationDate, recentFilter)) return false; }
+    if(dateFrom || dateTo){ if(!matchesDateRange(svc.activationDate, dateFrom, dateTo)) return false; }
+    else if(recentFilter){ if(!matchesRecentFilter(svc.activationDate, recentFilter)) return false; }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
       if(!hay.includes(search)) return false;
@@ -656,7 +666,7 @@ function renderSheetPage(){
    customer has no active plan or which records look duplicated, not editable financial
    columns, so they don't fit the same shape as the Prepaid/Postpaid sheet. */
 function renderSheetSimpleView(tab, dupeGroups, filters){
-  const {natFilter, ratingFilter, recentFilter, search} = filters;
+  const {natFilter, ratingFilter, recentFilter, search, dateFrom, dateTo} = filters;
   const isDupeView = tab==='dupes';
   const isAllView = tab==='all';
   const groupIndexById = {};
@@ -680,11 +690,12 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
     // service on it (e.g. converting from prepaid to postpaid today), so those two dates
     // genuinely differ and "Added: today" needs to mean "something happened today", not
     // "this customer record itself is new".
-    if(recentFilter){
+    if(dateFrom || dateTo || recentFilter){
       const svcs = customerServices(c.id);
       const mostRecentDate = svcs.length ? [...svcs].sort((a,b)=> new Date(b.activationDate||0)-new Date(a.activationDate||0))[0].activationDate : null;
       const relevantDate = mostRecentDate || customerJoinDate(c);
-      if(!matchesRecentFilter(relevantDate, recentFilter)) return false;
+      if(dateFrom || dateTo){ if(!matchesDateRange(relevantDate, dateFrom, dateTo)) return false; }
+      else if(!matchesRecentFilter(relevantDate, recentFilter)) return false;
     }
     if(search){
       const hay = [c.name,c.phone,c.nationality,c.idNumber].join(' ').toLowerCase();
@@ -774,6 +785,18 @@ function matchesRecentFilter(dateStr, recentFilter){
   if(!dateStr) return false;
   if(recentFilter==='thisMonth') return dateStr.slice(0,7)===todayISO().slice(0,7);
   return daysBetween(dateStr, todayISO())<=Number(recentFilter);
+}
+/* Custom activation-date range filter — a separate, more precise alternative to the preset
+   "Added: today/7 days/etc." dropdown above. When either end of the range is set, it takes
+   over from the preset entirely (rather than both applying together, which could silently
+   over-restrict results if someone forgot a preset was still selected — the exact kind of
+   confusion that's come up here before). Either end can be left blank for an open range. */
+function matchesDateRange(dateStr, dateFrom, dateTo){
+  if(!dateFrom && !dateTo) return true;
+  if(!dateStr) return false;
+  if(dateFrom && dateStr<dateFrom) return false;
+  if(dateTo && dateStr>dateTo) return false;
+  return true;
 }
 /* Whole calendar months elapsed since a date, used for "customer has passed 6/8/12 months" filters. */
 function monthsSince(dateStr){
