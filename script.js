@@ -73,7 +73,7 @@ const I18N = {
     'rep.daily.title':'每日报表','rep.daily.desc':'按日期查看先付 / 后付客户数与收入','rep.daily.recent':'近期每日记录','rep.daily.prepaidCustomers':'先付客户数','rep.daily.postpaidCustomers':'后付客户数',
     'col.prepaidCustomers':'先付客户数','col.postpaidCustomers':'后付客户数','col.prepaidIncome':'先付收入','col.postpaidExpected':'后付预期收入','col.postpaidActual':'后付实际收入','col.monthTotal':'合计','col.date':'日期','col.accumulated':'累计总收入',
     'rep.daily.prepaidListTitle':'先付客户明细（本日）','rep.daily.postpaidListTitle':'后付客户明细（本日）',
-    'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入',
+    'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入','rep.transactionCount':'笔交易记录','rep.nowPrepaid':'位客户目前为先付卡','rep.nowPostpaid':'位客户目前为后付卡',
     'stat.weekProfit':'本周收入','stat.monthExpected':'本月预期收入','stat.monthActual':'本月实际收入','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
     'io.import.modeTitle':'导入方式','io.import.modeMerge':'与现有客户合并','io.import.modeMergeDesc':'保留现有客户档案，仅新增导入文件中不重复的客户','io.import.modeReplace':'清空现有客户，改用此文件的数据','io.import.modeReplaceDesc':'导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件','io.import.skipDupes':'自动跳过重复客户（按姓名或电话匹配）',
@@ -165,7 +165,7 @@ const I18N = {
     'rep.daily.title':'Daily Report','rep.daily.desc':'View prepaid / postpaid customer counts and income by date','rep.daily.recent':'Recent daily records','rep.daily.prepaidCustomers':'Prepaid customers','rep.daily.postpaidCustomers':'Postpaid customers',
     'col.prepaidCustomers':'Prepaid customers','col.postpaidCustomers':'Postpaid customers','col.prepaidIncome':'Prepaid income','col.postpaidExpected':'Postpaid expected','col.postpaidActual':'Postpaid actual','col.monthTotal':'Total','col.date':'Date','col.accumulated':'Accumulated total',
     'rep.daily.prepaidListTitle':'Prepaid customers (today)','rep.daily.postpaidListTitle':'Postpaid customers (today)',
-    'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income',
+    'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income','rep.transactionCount':'transactions','rep.nowPrepaid':'now prepaid','rep.nowPostpaid':'now postpaid',
     'stat.weekProfit':'Income this week','stat.monthExpected':'Expected income this month','stat.monthActual':'Actual income this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
     'io.import.modeTitle':'Import mode','io.import.modeMerge':'Merge with existing customers','io.import.modeMergeDesc':'Keeps existing customer records; only adds new customers that aren\'t already in the list','io.import.modeReplace':'Clear existing customers and use this file instead','io.import.modeReplaceDesc':'Automatically exports a backup of current customer data (Excel) first, then clears and loads the new file','io.import.skipDupes':'Automatically skip duplicate customers (matched by name or phone)',
@@ -232,6 +232,7 @@ const CONTACT_METHODS = ['Wechat','Kakaotalk','INS','Phone','Other'];
 const POSTPAID_WORK_TYPES = ['번호이동','신규가입','유심/이심변경','기타변경','일시정지','번호해지'];
 /* prepaid-specific option sets */
 const PREPAID_COMPANIES = ['스마텔SMS','프리티Free T','모빙Mobing','아시아Asia','벨류컨Vcnk'];
+const PAYMENT_METHODS = ['card','cash','alipay','bank transfer'];
 const OCCUPATION_OPTIONS = ['Student','Worker','Professor','Other'];
 /* real prepaid catalog tiers — a one-time payment, no recurring fees. 90 days is the store's
    "3-month recharge" plan and is the only one currently paired with the Preeti print template. */
@@ -591,8 +592,8 @@ function renderSheetPage(){
   const commonHead = `
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.svcCarrierType')}</th>`;
-  const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
+  const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.paymentMethod')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.paymentMethod')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -620,6 +621,7 @@ function renderSheetPage(){
           <td>${sheetTextCell('customer',c.id,'years',c.years,'number')}</td>
           <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
           <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
+          <td>${sheetPillCell('service',svc.id,'paymentMethod',svc.paymentMethod,PAYMENT_METHODS, t('f.paymentMethod'))}</td>
         </tr>`;
       }
       return `<tr>${commonCells}
@@ -642,8 +644,9 @@ function renderSheetPage(){
         <td>${sheetTextCell('customer',c.id,'years',c.years,'number')}</td>
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
+        <td>${sheetPillCell('service',svc.id,'paymentMethod',svc.paymentMethod,PAYMENT_METHODS, t('f.paymentMethod'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="24">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="25">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -2367,6 +2370,7 @@ function openNewPostpaidModal(){
   document.getElementById('pc_netExpectedPreview').value = '';
   document.getElementById('pc_referralFriend').value = '';
   document.getElementById('pc_notes').value = '';
+  renderTileRadioGroup('pc_paymentMethod_group', PAYMENT_METHODS, 'cash');
   document.getElementById('newPostpaidModalOverlay').classList.add('show');
 }
 function updatePcNetExpectedPreview(){
@@ -2429,7 +2433,7 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
     discountPerMonth: Number(document.getElementById('pc_discountPerMonth').value)||0,
     discountMonths: Number(document.getElementById('pc_discountMonths').value)||0,
     firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:0, cost:0, received:0, paymentMethod:'cash', commission:0, notes:'',
+    sellingPrice:0, cost:0, received:0, paymentMethod: document.getElementById('pc_paymentMethod_group').dataset.selected || 'cash', commission:0, notes:document.getElementById('pc_notes').value.trim(),
     company, partnerCompany, svcCarrierType,
   };
   setActiveSubscription(cust.id, svcData, 'new');
@@ -2470,6 +2474,7 @@ function openCustomerModal(customer){
   document.getElementById('p3_discount').value = '0';
   renderPrepaidPlanTiles('90');
   updatePrepaidPriceFromPlan();
+  renderTileRadioGroup('p3_paymentMethod_group', PAYMENT_METHODS, 'cash');
   // "Edit profile" should give full access to the customer's current plan too, not just
   // their basic identity fields — matching what creating a new customer already shows.
   // Editing updates their CURRENT service in place (no new history entry); this is
@@ -2493,6 +2498,7 @@ function openCustomerModal(customer){
     const {companies, carriers} = prepaidCompanyCarrierOptionsFor(currentSvc.durationDays||90);
     renderTileRadioGroup('p3_company_group', companies, companies.includes(currentSvc.company) ? currentSvc.company : '');
     renderTileRadioGroup('p3_svcCarrierType_group', carriers, carriers.includes(currentSvc.svcCarrierType) ? currentSvc.svcCarrierType : '');
+    renderTileRadioGroup('p3_paymentMethod_group', PAYMENT_METHODS, PAYMENT_METHODS.includes(currentSvc.paymentMethod) ? currentSvc.paymentMethod : 'cash');
     document.getElementById('prepaid3mHint').textContent = t('prepaid3m.editHint');
   } else if(!editingCustomerId){
     document.getElementById('prepaid3mHint').textContent = t('prepaid3m.hint');
@@ -2512,6 +2518,7 @@ function openCustomerModal(customer){
     document.getElementById('pe_usimFee').value = currentSvc.usimFee ?? '';
     document.getElementById('pe_discountPerMonth').value = currentSvc.discountPerMonth ?? '';
     document.getElementById('pe_discountMonths').value = currentSvc.discountMonths ?? '';
+    renderTileRadioGroup('pe_paymentMethod_group', PAYMENT_METHODS, PAYMENT_METHODS.includes(currentSvc.paymentMethod) ? currentSvc.paymentMethod : 'cash');
     updatePeNetExpectedPreview();
   }
   if(!isEditingPostpaid) refreshP3TemplateOptions();
@@ -2641,6 +2648,7 @@ function saveCustomerFromForm(){
         company: document.getElementById('p3_company_group').dataset.selected || currentSvc.company,
         svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || currentSvc.svcCarrierType,
         carrier: document.getElementById('p3_svcCarrierType_group').dataset.selected || currentSvc.carrier,
+        paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || currentSvc.paymentMethod,
       });
       if(currentSvc.activationDate && durationDays){
         const d = new Date(currentSvc.activationDate); d.setDate(d.getDate()+durationDays);
@@ -2664,6 +2672,7 @@ function saveCustomerFromForm(){
         usimFee: Number(document.getElementById('pe_usimFee').value)||0,
         discountPerMonth: Number(document.getElementById('pe_discountPerMonth').value)||0,
         discountMonths: Number(document.getElementById('pe_discountMonths').value)||0,
+        paymentMethod: document.getElementById('pe_paymentMethod_group').dataset.selected || currentSvc.paymentMethod,
       });
       if(currentSvc.activationDate && durationDays){
         const d = new Date(currentSvc.activationDate); d.setDate(d.getDate()+durationDays);
@@ -2753,7 +2762,7 @@ function saveCustomerAndPrint(){
     // before: price is the catalog price before discount, sellingPrice/received are the
     // FINAL price after it — both stored explicitly so Sheet View can show and edit either
     monthlyFee:0, price, discount, firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod:'cash', commission:0, notes:'',
+    sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || 'cash', commission:0, notes:'',
     company: document.getElementById('p3_company_group').dataset.selected || '',
     svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
   };
@@ -3303,6 +3312,7 @@ function openChangeSubModal(customerId, mode){
   document.getElementById('cs_discountMonths').value = '';
   document.getElementById('cs_netExpectedPreview').value = '';
   document.getElementById('cs_notes').value = '';
+  renderTileRadioGroup('cs_paymentMethod_group', PAYMENT_METHODS, 'cash');
   document.getElementById('changeSubModalOverlay').classList.add('show');
 }
 function updateCsNetExpectedPreview(){
@@ -3351,7 +3361,7 @@ document.getElementById('saveChangeSubBtn').addEventListener('click', ()=>{
     discountPerMonth: Number(document.getElementById('cs_discountPerMonth').value)||0,
     discountMonths: Number(document.getElementById('cs_discountMonths').value)||0,
     firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:0, cost:0, received:0, paymentMethod:'cash', commission:0,
+    sellingPrice:0, cost:0, received:0, paymentMethod: document.getElementById('cs_paymentMethod_group').dataset.selected || 'cash', commission:0,
     notes:document.getElementById('cs_notes').value.trim(),
     company, partnerCompany, svcCarrierType,
   };
@@ -3390,6 +3400,7 @@ function openPrepaidAssignModal(customerId, mode){
   document.getElementById('pa_discount').value = '0';
   updatePrepaidAssignPriceFromPlan();
   document.getElementById('pa_notes').value = '';
+  renderTileRadioGroup('pa_paymentMethod_group', PAYMENT_METHODS, PAYMENT_METHODS.includes(current?.paymentMethod) ? current.paymentMethod : 'cash');
   document.getElementById('prepaidAssignModalOverlay').classList.add('show');
 }
 function updatePrepaidAssignPriceFromPlan(){
@@ -3432,7 +3443,7 @@ document.getElementById('savePrepaidAssignBtn').addEventListener('click', ()=>{
     simType:'physical', activationDate, durationDays,
     expiryDate: d.toISOString().slice(0,10), status:'active',
     price, discount, sellingPrice:finalPrice, received:finalPrice, cost:0,
-    monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0, paymentMethod:'cash', commission:0,
+    monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0, paymentMethod: document.getElementById('pa_paymentMethod_group').dataset.selected || 'cash', commission:0,
     notes:document.getElementById('pa_notes').value.trim(),
     company: document.getElementById('pa_company_group').dataset.selected || '',
     svcCarrierType: document.getElementById('pa_svcCarrierType_group').dataset.selected || '',
@@ -3606,8 +3617,8 @@ function renderMonthlyReport(){
   const postpaidActual = reconciled.reduce((a,s)=>a+netProfitFor(s),0);
   const accumulated = prepaidIncome + postpaidSvcs.reduce((a,s)=>a+netProfitFor(s),0);
   document.getElementById('repIncomeCards').innerHTML = [
-    {label:t('rep.prepaidIncome'), value:fmtWon(prepaidIncome), sub:`${prepaidSvcs.length} ${t('opt.prepaidShort')}`},
-    {label:t('rep.postpaidExpected'), value:fmtWon(postpaidExpected), sub:`${postpaidSvcs.length} ${t('opt.postpaidShort')}`},
+    {label:t('rep.prepaidIncome'), value:fmtWon(prepaidIncome), sub:`${prepaidSvcs.length} ${t('rep.transactionCount')}`},
+    {label:t('rep.postpaidExpected'), value:fmtWon(postpaidExpected), sub:`${postpaidSvcs.length} ${t('rep.transactionCount')}`},
     {label:t('rep.postpaidActual'), value:reconciled.length?fmtWon(postpaidActual):t('stat.notReconciled'), sub:`${reconciled.length}/${postpaidSvcs.length} ${t('stat.reconciledCount')}`},
     {label:t('rep.accumulated'), value:fmtWon(accumulated), sub:isAllTime?t('rep.allTime'):fmtMonthLabel(repSelectedMonth), highlight:true},
   ].map(s=>`<div class="card stat-card" ${s.highlight?'style="background:linear-gradient(135deg,#0F1B3D,#1E3A6E);"':''}>
@@ -3626,7 +3637,7 @@ function renderMonthlyReport(){
   const newThisMonthPostpaidCount = DB.customers.filter(c=> newCustomerIds.has(c.id) && c.subType==='postpaid').length;
   const pendingReminders = buildReminders().filter(r=>r.uiStatus==='pending').length;
   document.getElementById('repSecondaryStats').innerHTML = [
-    {label:t('stat.newThisMonth'), value:newCustomerIds.size, sub:`${newThisMonthPrepaidCount} ${t('opt.prepaidShort')} · ${newThisMonthPostpaidCount} ${t('opt.postpaidShort')}`},
+    {label:t('stat.newThisMonth'), value:newCustomerIds.size, sub:`${newThisMonthPrepaidCount} ${t('rep.nowPrepaid')} · ${newThisMonthPostpaidCount} ${t('rep.nowPostpaid')}`},
     {label:t('stat.pendingReminders'), value:pendingReminders},
   ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div>${s.sub?`<div class="stat-delta">${s.sub}</div>`:''}</div>`).join('');
 
@@ -3846,23 +3857,23 @@ function downloadXlsx(rows, filename, sheetName){
 // headers and field meanings are the same as this app already understands natively.
 const PREPAID_EXPORT_HEADERS = ['CUSTOMER','NATIONALITY','PHONE','DATE OF BIRTH','ID TYPE','ID NUMBER',
   'OCCUPATION','YEARS IN KOREA','HANDLED BY','PLAN TYPE','CARRIER TYPE','COMPANY',
-  'ACTIVATION DATE','EXPIRY DATE','CONTRACT LENGTH (DAYS)','PRICE','DISCOUNT','FINAL PRICE','NOTES'];
+  'ACTIVATION DATE','EXPIRY DATE','CONTRACT LENGTH (DAYS)','PRICE','DISCOUNT','FINAL PRICE','PAYMENT METHOD','NOTES'];
 const POSTPAID_EXPORT_HEADERS = ['CUSTOMER','NATIONALITY','PHONE','DATE OF BIRTH','ID TYPE','ID NUMBER',
   'OCCUPATION','YEARS IN KOREA','HANDLED BY','PLAN TYPE','CARRIER TYPE','COMPANY','PARTNER COMPANY',
   'ACTIVATION DATE','EXPIRY DATE','CONTRACT LENGTH (DAYS)','MONTHLY FEE','COMPANY PRICE','REAL COMPANY PRICE',
-  'USIM FEE','DISCOUNT / MONTH','DISCOUNT MONTHS','EXPECTED INCOME','NOTES'];
+  'USIM FEE','DISCOUNT / MONTH','DISCOUNT MONTHS','EXPECTED INCOME','PAYMENT METHOD','NOTES'];
 function prepaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
     c.handlerName||'', c.planType||'', s.svcCarrierType||'', s.company||'',
     s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.price)||0, Number(s.discount)||0,
-    Math.max(0,(Number(s.price)||0)-(Number(s.discount)||0)), s.notes||''];
+    Math.max(0,(Number(s.price)||0)-(Number(s.discount)||0)), s.paymentMethod||'cash', s.notes||''];
 }
 function postpaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
     c.handlerName||'', c.workType||c.planType||'', s.svcCarrierType||'', s.company||'', s.partnerCompany||'',
     s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.monthlyFee)||0, Number(s.expectedProfit)||0,
     Number(s.actualProfit)||0, Number(s.usimFee)||0, Number(s.discountPerMonth)||0, Number(s.discountMonths)||0,
-    expectedIncomeFor(s), s.notes||''];
+    expectedIncomeFor(s), s.paymentMethod||'cash', s.notes||''];
 }
 function exportAll(){
   const prepaidRows = [PREPAID_EXPORT_HEADERS];
@@ -3968,18 +3979,25 @@ function restoreOwnExportSheet(sheetName, rows){
     const svcData = isPrepaid ? {
       ...base, price: Number(row['PRICE'])||0, discount: Number(row['DISCOUNT'])||0,
       sellingPrice: Number(row['FINAL PRICE'])||0, received: Number(row['FINAL PRICE'])||0,
-      cost:0, commission:0, paymentMethod:'cash', monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0,
+      cost:0, commission:0, paymentMethod: normPaymentMethod(row['PAYMENT METHOD']), monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0,
     } : {
       ...base, partnerCompany: row['PARTNER COMPANY']||'', monthlyFee: Number(row['MONTHLY FEE'])||0,
       expectedProfit: Number(row['COMPANY PRICE'])||0, actualProfit: Number(row['REAL COMPANY PRICE'])||0,
       usimFee: Number(row['USIM FEE'])||0, discountPerMonth: Number(row['DISCOUNT / MONTH'])||0,
       discountMonths: Number(row['DISCOUNT MONTHS'])||0, sellingPrice:0, cost:0, received:0,
-      commission:0, paymentMethod:'cash', firstMonthPayment:0, activationFee:0, simFee:0, discount:0,
+      commission:0, paymentMethod: normPaymentMethod(row['PAYMENT METHOD']), firstMonthPayment:0, activationFee:0, simFee:0, discount:0,
     };
     setActiveSubscription(cust.id, svcData, 'new');
     added++;
   });
   return added;
+}
+// Matches whatever's in the Excel cell against the known payment method values, case- and
+// whitespace-insensitively — falls back to 'cash' for anything blank or unrecognized (e.g.
+// a manually-typed variant), same as every other default in this import path.
+function normPaymentMethod(v){
+  const norm = String(v||'').trim().toLowerCase();
+  return PAYMENT_METHODS.includes(norm) ? norm : 'cash';
 }
 function normDateForImport(v){
   if(v==null || v==='') return '';
