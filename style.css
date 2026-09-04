@@ -151,6 +151,9 @@ tr.row-click:hover{background:var(--blue-light);cursor:pointer;}
 .search-input{flex:1;min-width:200px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);font-size:13px;background:#fff;transition:border-color .15s var(--ease),box-shadow .15s var(--ease);}
 .search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,237,.12);outline:none;}
 select.select-input{padding:10px 12px;border-radius:10px;border:1px solid var(--border);font-size:13px;background:#fff;transition:border-color .15s var(--ease);}
+.currency-input-wrap{position:relative;display:flex;align-items:center;}
+.currency-badge{position:absolute;left:12px;font-size:13px;font-weight:700;color:var(--text-soft);pointer-events:none;}
+.currency-input-wrap input{padding-left:30px !important;}
 .date-range-pill{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#fff;transition:border-color .15s var(--ease),background .15s var(--ease);}
 .date-range-pill:focus-within{border-color:var(--blue);}
 .date-range-pill.active{border-color:var(--blue);background:#F3F7FF;}
