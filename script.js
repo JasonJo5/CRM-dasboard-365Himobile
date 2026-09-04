@@ -4029,7 +4029,11 @@ function restoreOwnExportSheet(sheetName, rows){
         handlerName: row['HANDLED BY']||'', planType: row['PLAN TYPE']||'신규가입',
         workType: !isPrepaid ? (row['PLAN TYPE']||'신규가입') : undefined,
         subType: isPrepaid?'prepaid':'postpaid', referral:'other', carrierType:'SKT',
-        address:'', notes: row['NOTES']||'', rating:5, createdAt: normDateForImport(row['ACTIVATION DATE'])||todayISO(),
+        // the export's "NOTES" column is the service/plan-level notes field, not this
+        // customer-level one (a separate field, e.g. set via Edit Profile) — those aren't
+        // part of this export format at all, so this stays blank for a newly-created
+        // customer rather than incorrectly pulling in the service-level note instead
+        address:'', notes:'', rating:5, createdAt: normDateForImport(row['ACTIVATION DATE'])||todayISO(),
       };
       DB.customers.push(cust);
     }
@@ -4043,7 +4047,7 @@ function restoreOwnExportSheet(sheetName, rows){
       customerId: cust.id, type: isPrepaid?'prepaid':'postpaid', carrier: carrierType,
       svcCarrierType: carrierType, company: row['COMPANY']||'',
       number: cust.phone, simType:'physical', activationDate, expiryDate,
-      durationDays: Number(row['CONTRACT LENGTH (DAYS)'])||null, status:'active', notes:'',
+      durationDays: Number(row['CONTRACT LENGTH (DAYS)'])||null, status:'active', notes: row['NOTES']||'',
     };
     const svcData = isPrepaid ? {
       ...base, price: Number(row['PRICE'])||0, discount: Number(row['DISCOUNT'])||0,
