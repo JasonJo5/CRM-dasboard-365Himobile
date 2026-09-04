@@ -244,18 +244,18 @@
               <option value="thisMonth" data-i18n="filter.thisMonth">本月</option>
               <option value="30" data-i18n="filter.last30">最近30天</option>
             </select>
+            <div class="date-range-pill" id="sheetDateRangePill">
+              <svg class="date-range-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+              <input type="date" id="sheetDateFrom" data-i18n-title="filter.activationDateFrom" title="开通日期起">
+              <span class="date-range-sep">–</span>
+              <input type="date" id="sheetDateTo" data-i18n-title="filter.activationDateTo" title="开通日期止">
+              <button class="date-range-clear" id="sheetDateRangeClear" data-i18n-title="filter.clearDates" title="清除日期">✕</button>
+            </div>
             <select class="select-input" id="sheetSortOrder">
               <option value="" data-i18n="sort.newest">排序：最新优先</option>
               <option value="az" data-i18n="sort.nameAsc">姓名 A → Z</option>
               <option value="za" data-i18n="sort.nameDesc">姓名 Z → A</option>
             </select>
-          </div>
-          <div class="filter-bar" style="margin-top:10px;align-items:center;">
-            <label style="font-size:12px;color:var(--text-soft);font-weight:600;" data-i18n="filter.activationDateRange">开通日期范围</label>
-            <input type="date" class="select-input" id="sheetDateFrom" style="max-width:160px;">
-            <span style="color:var(--text-soft);">–</span>
-            <input type="date" class="select-input" id="sheetDateTo" style="max-width:160px;">
-            <button class="btn btn-ghost btn-sm" id="sheetDateRangeClear" data-i18n="filter.clearDates">清除日期</button>
           </div>
           <div class="section-desc" style="margin:10px 0;" id="sheetCount"></div>
           <div class="tbl-wrap sheet-tbl-wrap">
