@@ -514,6 +514,10 @@
           <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.bulkClearPayment.desc">用于一次性清空某个月份所有客户的付款方式，方便之后逐一核实填写</div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <input type="month" class="select-input" id="bulkClearPaymentMonth" style="max-width:160px;">
+            <select class="select-input" id="bulkClearPaymentDateField">
+              <option value="activationDate" data-i18n="io.bulkClearPayment.byActivation">按开通日期匹配</option>
+              <option value="createdAt" data-i18n="io.bulkClearPayment.byAdded">按添加日期匹配</option>
+            </select>
             <button class="btn btn-danger" id="btnBulkClearPayment" data-i18n="io.bulkClearPayment.btn">清空该月份付款方式</button>
           </div>
         </div>
@@ -601,7 +605,6 @@
         <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income（公司价格 − 折扣 − USIM费用）</label><input id="pc_netExpectedPreview" disabled></div>
 
         <div class="form-field full"><label data-i18n="f.referralFriend">介绍人 Referred by (朋友姓名，如有)</label><input id="pc_referralFriend" placeholder="朋友姓名"></div>
-        <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="pc_paymentMethod_group" data-field="paymentMethod"></div></div>
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pc_notes"></textarea></div>
       </div>
       <div class="section-desc" style="margin-top:6px;" data-i18n="f.actualProfitHint">💡 「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在「保存客户」后于表格视图中随时补填。</div>
@@ -628,7 +631,7 @@
         <div class="form-field"><label data-i18n="f.dob">出生日期（6位数字 YYMMDD）</label><input id="f_dob" placeholder="예: 040728" maxlength="6" inputmode="numeric"></div>
         <div class="form-field full"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="f_idType_group" data-field="idType"></div></div>
         <div class="form-field"><label data-i18n="f.idNumber">证件号码 (ARC/Passport)</label><input id="f_idNumber" class="uppercase-input"></div>
-        <div class="form-field"><label data-i18n="f.idExpiry">证件有效期至</label><input id="f_idExpiry" type="date"></div>
+        <div class="form-field" id="f_idExpiryField"><label data-i18n="f.idExpiry">证件有效期至</label><input id="f_idExpiry" type="date"></div>
         <div class="form-field full"><label data-i18n="f.occupation">职业</label><div class="tile-radio-group" id="f_occupation_group" data-field="occupation"></div></div>
         <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="f_years" type="number" min="0" step="0.5"></div>
         <div class="form-field"><label data-i18n="f.referral">客户来源</label><select id="f_referral"></select></div>
@@ -655,7 +658,7 @@
             <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="p3_number" placeholder="010-0000-0000"></div>
             <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="p3_activationDate" type="date"></div>
             <div class="form-field full"><label data-i18n="print.template">打印模板</label><select id="p3_template"></select></div>
-            <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="p3_paymentMethod_group" data-field="paymentMethod"></div></div>
+            <div class="form-field full" id="p3_paymentMethodField"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="p3_paymentMethod_group" data-field="paymentMethod"></div></div>
           </div>
         </div>
 
@@ -680,7 +683,6 @@
             <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="pe_discountPerMonth" type="number" min="0"></div>
             <div class="form-field"><label data-i18n="f.discountMonths">折扣月数</label><input id="pe_discountMonths" type="number" min="0"></div>
             <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入</label><input id="pe_netExpectedPreview" disabled></div>
-            <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="pe_paymentMethod_group" data-field="paymentMethod"></div></div>
           </div>
         </div>
       </div>
@@ -811,7 +813,6 @@
         <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income</label><input id="cs_netExpectedPreview" disabled></div>
 
         <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="cs_notes"></textarea></div>
-        <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="cs_paymentMethod_group" data-field="paymentMethod"></div></div>
       </div>
     </div>
     <div class="modal-foot">
