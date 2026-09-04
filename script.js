@@ -44,7 +44,7 @@ const I18N = {
     'ph.search':'搜索姓名、号码、国籍或证件号',
     'filter.allNationalities':'全部国籍','filter.allRatings':'全部评分','filter.allTypes':'全部业务类型','filter.allStatus':'全部状态',
     'filter.allDurations':'开通时长：不限','filter.duration6':'已开通 6 个月以上','filter.duration8':'已开通 8 个月以上','filter.duration12':'已开通 1 年以上','col.activeFor':'开通时长',
-    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.thisMonth':'本月','filter.last30':'最近30天','col.dateAdded':'添加日期','filter.activationDateRange':'开通日期范围','filter.clearDates':'清除日期',
+    'filter.allTime':'添加时间：不限','filter.today':'今天新增','filter.last7':'最近7天','filter.thisMonth':'本月','filter.last30':'最近30天','col.dateAdded':'添加日期','filter.activationDateRange':'开通日期范围','filter.clearDates':'清除日期','filter.activationDateFrom':'开通日期起','filter.activationDateTo':'开通日期止',
     'sort.newest':'排序：最新优先','sort.oldest':'排序：最旧优先','sort.nameAsc':'姓名 A → Z','sort.nameDesc':'姓名 Z → A','sort.ratingHigh':'评分：高到低','sort.ratingLow':'评分：低到高',
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
     'cs.autofillHint':'姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改','cs.idNumberArc':'证件号码 (ARC)',
@@ -136,7 +136,7 @@ const I18N = {
     'ph.search':'Search name, number, nationality or ID',
     'filter.allNationalities':'All nationalities','filter.allRatings':'All ratings','filter.allTypes':'All service types','filter.allStatus':'All statuses',
     'filter.allDurations':'Active for: any length','filter.duration6':'Active 6+ months','filter.duration8':'Active 8+ months','filter.duration12':'Active 1+ year','col.activeFor':'Active for',
-    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.thisMonth':'This month','filter.last30':'Last 30 days','col.dateAdded':'Date added','filter.activationDateRange':'Activation date range','filter.clearDates':'Clear dates',
+    'filter.allTime':'Added: any time','filter.today':'Added today','filter.last7':'Last 7 days','filter.thisMonth':'This month','filter.last30':'Last 30 days','col.dateAdded':'Date added','filter.activationDateRange':'Activation date range','filter.clearDates':'Clear dates','filter.activationDateFrom':'Activation date from','filter.activationDateTo':'Activation date to',
     'sort.newest':'Sort: Newest first','sort.oldest':'Sort: Oldest first','sort.nameAsc':'Name A → Z','sort.nameDesc':'Name Z → A','sort.ratingHigh':'Rating: High to low','sort.ratingLow':'Rating: Low to high',
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
     'cs.autofillHint':'Name / phone / nationality / occupation / ID number are auto-filled from the existing customer record — edit directly if needed','cs.idNumberArc':'ID number (ARC)',
@@ -562,6 +562,10 @@ function renderSheetPage(){
   const sortOrder = document.getElementById('sheetSortOrder').value;
   const dateFrom = document.getElementById('sheetDateFrom').value;
   const dateTo = document.getElementById('sheetDateTo').value;
+  // visibly highlights the date-range pill whenever it's actively filtering, so it's never
+  // silently left on and forgotten — the same kind of confusion that's happened before with
+  // other filters left set from an earlier search
+  document.getElementById('sheetDateRangePill').classList.toggle('active', !!(dateFrom || dateTo));
 
   // Inactive / Duplicate / All don't have a single "current plan" to show in the
   // editable-spreadsheet format the way Prepaid/Postpaid do — those tabs render a simpler,
@@ -833,7 +837,17 @@ function parseFlexibleDate(v){
   m = s.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})/);
   if(m) return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
   m = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
-  if(m) return `${m[3]}-${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`;
+  if(m){
+    // Ambiguous D/M/Y vs M/D/Y formats — this app is used in Korea, where dates are
+    // written day-first (or as YYYY-MM-DD), never in the US month-first style, so that's
+    // the default assumption here. But if one of the two numbers is over 12, it can only
+    // be a day regardless of position, so that case is resolved unambiguously either way —
+    // "05/03/2026" defaults to 5th of March, while something like "15/03/2026" or
+    // "03/15/2026" is read correctly regardless of which position the 15 is in.
+    let day = Number(m[1]), month = Number(m[2]);
+    if(month > 12 && day <= 12){ [day, month] = [month, day]; } // e.g. "03/15/2026" (US-style) — 15 can only be the day
+    return `${m[3]}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  }
   const d = new Date(s);
   if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
   return '';
@@ -1607,6 +1621,7 @@ function renderPage(page){
 function applyStaticI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{ el.setAttribute('title', t(el.getAttribute('data-i18n-title'))); });
   document.querySelectorAll('.lang-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===LANG));
   populateStaticSelects();
 }
@@ -2706,8 +2721,18 @@ function saveCustomerFromForm(){
   saveDB(DB);
   closeAllModals();
   toast(t('toast.customerSaved'));
-  goTo(currentPage==='dashboard'?'customers':currentPage);
+  // Editing an existing customer should return to THEIR (now updated) detail page —
+  // previously this always navigated to the general list page instead, leaving the detail
+  // view's content stale until the person happened to reopen it manually. This is exactly
+  // what made a successful name edit look like it had silently failed: the data was
+  // correct, but the screen kept showing the old name.
+  if(editingCustomerId){
+    openCustomerDetail(editingCustomerId);
+  } else {
+    goTo(currentPage==='dashboard'?'sheet':currentPage);
+  }
   renderPage(currentPage);
+  renderNav();
 }
 function buildAndSaveCustomer(){
   const name = document.getElementById('f_name').value.trim();
