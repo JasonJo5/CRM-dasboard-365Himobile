@@ -509,6 +509,14 @@
           </label>
           <div class="section-desc" id="syncStatusText" style="margin-top:8px;"></div>
         </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="section-title" data-i18n="io.bulkClearPayment.title">批量清空付款方式</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.bulkClearPayment.desc">用于一次性清空某个月份所有客户的付款方式，方便之后逐一核实填写</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input type="month" class="select-input" id="bulkClearPaymentMonth" style="max-width:160px;">
+            <button class="btn btn-danger" id="btnBulkClearPayment" data-i18n="io.bulkClearPayment.btn">清空该月份付款方式</button>
+          </div>
+        </div>
         <div class="card" style="margin-top:16px;" id="dataIssuesCard">
           <div class="section-title" data-i18n="io.issues.title">数据完整性检查</div>
           <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.issues.desc">缺失联系方式、有效期、证件信息或付款信息的客户</div>
@@ -636,7 +644,9 @@
           <div class="section-desc" id="prepaid3mHint" data-i18n="prepaid3m.hint">先付卡为一次性付款，价格根据所选天数自动带入（可修改）；选择90天套餐时会自动套用프리티电信（Preeti Telecom）申请表，其余天数请另外选择对应模板</div>
           <div class="prepaid3m-fields">
             <div class="form-field full"><label class="tile-radio-required" data-i18n="f.prepaidPlan">充值套餐 Plan</label><div class="tile-radio-group" id="p3_prepaidPlan_group" data-field="prepaidPlan"></div></div>
-            <div class="form-field"><label data-i18n="f.price">价格 Price（一次性付款 one-time payment）</label><input id="p3_price" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.price">价格 Price（一次性付款 one-time payment）</label>
+              <div class="currency-input-wrap"><span class="currency-badge" id="p3_currencyBadge">₩</span><input id="p3_price" type="number" min="0"></div>
+            </div>
             <div class="form-field"><label data-i18n="f.discount">折扣 Discount</label><input id="p3_discount" type="number" min="0" value="0"></div>
             <div class="form-field"><label data-i18n="f.finalPrice">最终价格 Final price</label><input id="p3_finalPricePreview" disabled></div>
             <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호 USIM number</label><input id="p3_usimNumber" placeholder="USIM Serial Number"></div>
@@ -825,7 +835,9 @@
       <div class="section-desc" id="prepaidAssignCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
       <div class="form-grid">
         <div class="form-field full"><label class="tile-radio-required" data-i18n="f.prepaidPlan">充值套餐 Plan</label><div class="tile-radio-group" id="pa_prepaidPlan_group" data-field="prepaidPlan"></div></div>
-        <div class="form-field"><label data-i18n="f.price">价格 Price</label><input id="pa_price" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.price">价格 Price</label>
+          <div class="currency-input-wrap"><span class="currency-badge" id="pa_currencyBadge">₩</span><input id="pa_price" type="number" min="0"></div>
+        </div>
         <div class="form-field"><label data-i18n="f.discount">折扣 Discount</label><input id="pa_discount" type="number" min="0" value="0"></div>
         <div class="form-field"><label data-i18n="f.finalPrice">最终价格 Final price</label><input id="pa_finalPricePreview" disabled></div>
         <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pa_activationDate" type="date"></div>
