@@ -83,7 +83,7 @@ const I18N = {
     'io.format.title':'清空数据，重新开始','io.format.desc':'清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。','io.format.btn':'🗑 格式化数据 Format Data',
     'sync.title':'服务器同步（多台电脑共享数据）','sync.desc':'连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。','sync.urlLabel':'服务器地址','sync.keyLabel':'密钥 API Key（在服务器 .env 文件中设置）','sync.test':'测试连接','sync.pushNow':'立即推送本机数据到服务器','sync.pullNow':'从服务器拉取最新数据','sync.enable':'启用自动同步（保存时自动推送，打开页面时自动拉取）',
     'lock.title':'365Himobile 客户管理系统','lock.desc':'请输入服务器地址与密钥以载入客户数据','lock.passwordLabel':'密钥 / 密码','lock.unlock':'解锁并载入数据','lock.skip':'跳过 — 仅在本机使用（空白，不含任何客户数据）','lock.logout':'🔒 退出登录 Log out',
-    'io.issues.title':'数据完整性检查','io.issues.desc':'缺失联系方式、有效期、证件信息或付款信息的客户','io.issues.none':'没有发现数据问题，档案很完整 👍','io.bulkClearPayment.title':'批量清空付款方式','io.bulkClearPayment.desc':'用于一次性清空某个月份所有客户的付款方式，方便之后逐一核实填写','io.bulkClearPayment.btn':'清空该月份付款方式',
+    'io.issues.title':'数据完整性检查','io.issues.desc':'缺失联系方式、有效期、证件信息或付款信息的客户','io.issues.none':'没有发现数据问题，档案很完整 👍','io.bulkClearPayment.title':'批量清空付款方式','io.bulkClearPayment.desc':'用于一次性清空某个月份所有客户的付款方式，方便之后逐一核实填写','io.bulkClearPayment.btn':'清空该月份付款方式','io.bulkClearPayment.byActivation':'按开通日期匹配','io.bulkClearPayment.byAdded':'按添加日期匹配',
     'issue.noContact':'缺少联系电话','issue.noIdExpiry':'缺少证件有效期','issue.noIdNumber':'缺少证件号码','issue.noActiveService':'没有任何业务记录','issue.unpaid':'存在未结清欠款',
     'toast.customerSaved':'客户已保存','toast.orderSaved':'业务已保存','toast.reminderDone':'已标记完成','toast.reminderFollowup':'已设为再次跟进','toast.imported':'导入完成','toast.exported':'已导出','toast.deleted':'已删除','toast.langChanged':'语言已切换为中文','toast.cancellationUndone':'客户已恢复为活跃状态',
     'age.years':'岁','years.suffix':'年',
@@ -175,7 +175,7 @@ const I18N = {
     'io.format.title':'Clear data and start fresh','io.format.desc':'Clears all customers and service records so you can import a brand new file. This cannot be undone — exporting a backup first is recommended.','io.format.btn':'🗑 Format Data',
     'sync.title':'Server sync (share data across computers)','sync.desc':'Once connected to your store\'s shared server, this computer and others can use the same customer data. Until connected, data stays on this computer only.','sync.urlLabel':'Server address','sync.keyLabel':'API Key (set in the server\'s .env file)','sync.test':'Test connection','sync.pushNow':'Push this computer\'s data to the server now','sync.pullNow':'Pull latest data from the server','sync.enable':'Enable automatic sync (push on save, pull on page load)',
     'lock.title':'365Himobile Customer Management','lock.desc':'Enter the server address and password to load customer data','lock.passwordLabel':'Password / Key','lock.unlock':'Unlock & Load Data','lock.skip':'Skip — use this computer only (blank, no customer data)','lock.logout':'🔒 Log out',
-    'io.issues.title':'Data health check','io.issues.desc':'Customers missing contact info, expiry dates, ID details or payment info','io.issues.none':'No data issues found — records look complete 👍','io.bulkClearPayment.title':'Bulk clear payment method','io.bulkClearPayment.desc':'Clears the payment method for every customer in a given month at once, so you can go back and fill each one in accurately','io.bulkClearPayment.btn':'Clear payment method for this month',
+    'io.issues.title':'Data health check','io.issues.desc':'Customers missing contact info, expiry dates, ID details or payment info','io.issues.none':'No data issues found — records look complete 👍','io.bulkClearPayment.title':'Bulk clear payment method','io.bulkClearPayment.desc':'Clears the payment method for every customer in a given month at once, so you can go back and fill each one in accurately','io.bulkClearPayment.btn':'Clear payment method for this month','io.bulkClearPayment.byActivation':'Match by activation date','io.bulkClearPayment.byAdded':'Match by date added',
     'issue.noContact':'Missing phone number','issue.noIdExpiry':'Missing ID expiry date','issue.noIdNumber':'Missing ID number','issue.noActiveService':'No service records','issue.unpaid':'Has outstanding balance',
     'toast.customerSaved':'Customer saved','toast.orderSaved':'Order saved','toast.reminderDone':'Marked as completed','toast.reminderFollowup':'Set to follow up again','toast.imported':'Import complete','toast.exported':'Exported','toast.deleted':'Deleted','toast.langChanged':'Language switched to English','toast.cancellationUndone':'Customer reactivated',
     'age.years':'yrs','years.suffix':'yrs',
@@ -626,7 +626,7 @@ function renderSheetPage(){
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.svcCarrierType')}</th>`;
   const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.paymentMethod')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.paymentMethod')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -677,9 +677,8 @@ function renderSheetPage(){
         <td>${sheetTextCell('customer',c.id,'years',c.years,'number')}</td>
         <td>${sheetTextCell('customer',c.id,'occupation',c.occupation,'text')}</td>
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
-        <td>${sheetPillCell('service',svc.id,'paymentMethod',svc.paymentMethod,PAYMENT_METHODS, t('f.paymentMethod'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="25">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="24">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -2427,7 +2426,6 @@ function openNewPostpaidModal(){
   document.getElementById('pc_netExpectedPreview').value = '';
   document.getElementById('pc_referralFriend').value = '';
   document.getElementById('pc_notes').value = '';
-  renderTileRadioGroup('pc_paymentMethod_group', PAYMENT_METHODS, '');
   document.getElementById('newPostpaidModalOverlay').classList.add('show');
 }
 function updatePcNetExpectedPreview(){
@@ -2490,7 +2488,7 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
     discountPerMonth: Number(document.getElementById('pc_discountPerMonth').value)||0,
     discountMonths: Number(document.getElementById('pc_discountMonths').value)||0,
     firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:0, cost:0, received:0, paymentMethod: document.getElementById('pc_paymentMethod_group').dataset.selected || '', commission:0, notes:document.getElementById('pc_notes').value.trim(),
+    sellingPrice:0, cost:0, received:0, paymentMethod: '', commission:0, notes:document.getElementById('pc_notes').value.trim(),
     company, partnerCompany, svcCarrierType,
   };
   setActiveSubscription(cust.id, svcData, 'new');
@@ -2513,6 +2511,10 @@ function openCustomerModal(customer){
   renderTileRadioGroup('f_idType_group', ['ARC','Passport'], customer?.idType || 'ARC');
   document.getElementById('f_idNumber').value = customer?.idNumber || '';
   document.getElementById('f_idExpiry').value = customer?.idExpiry || '';
+  // Not needed at initial signup time — it's still useful data (AI eligibility checks,
+  // data completeness), so it stays available on Edit Profile for filling in later, same
+  // reasoning as Payment Method.
+  document.getElementById('f_idExpiryField').style.display = editingCustomerId ? '' : 'none';
   // an existing customer's occupation might be old free-text that predates this option set —
   // only pre-select a tile if it actually matches one of the current choices
   renderTileRadioGroup('f_occupation_group', OCCUPATION_OPTIONS, OCCUPATION_OPTIONS.includes(customer?.occupation) ? customer.occupation : '');
@@ -2533,6 +2535,11 @@ function openCustomerModal(customer){
   updatePrepaidPriceFromPlan();
   renderTileRadioGroup('p3_paymentMethod_group', PAYMENT_METHODS, '');
   updateCurrencyBadgeFor('p3_paymentMethod_group');
+  // Payment method only makes sense once there's actually something to record — a brand
+  // new customer hasn't paid yet at the point their info is being entered, so asking for it
+  // here just gets skipped or guessed at. It stays available on Edit Profile (and Sheet
+  // View) for filling in later, once the payment has actually happened.
+  document.getElementById('p3_paymentMethodField').style.display = editingCustomerId ? '' : 'none';
   // "Edit profile" should give full access to the customer's current plan too, not just
   // their basic identity fields — matching what creating a new customer already shows.
   // Editing updates their CURRENT service in place (no new history entry); this is
@@ -2577,7 +2584,6 @@ function openCustomerModal(customer){
     document.getElementById('pe_usimFee').value = currentSvc.usimFee ?? '';
     document.getElementById('pe_discountPerMonth').value = currentSvc.discountPerMonth ?? '';
     document.getElementById('pe_discountMonths').value = currentSvc.discountMonths ?? '';
-    renderTileRadioGroup('pe_paymentMethod_group', PAYMENT_METHODS, PAYMENT_METHODS.includes(currentSvc.paymentMethod) ? currentSvc.paymentMethod : '');
     updatePeNetExpectedPreview();
   }
   if(!isEditingPostpaid) refreshP3TemplateOptions();
@@ -2688,12 +2694,27 @@ document.getElementById('f_rating').addEventListener('click', e=>{
 });
 
 function saveCustomerFromForm(){
+  // Company and Carrier Type are required for prepaid — checked here, before ANYTHING is
+  // saved, so a failed check never leaves a half-created customer record behind (with no
+  // service attached) if this ran after the customer record was already written.
+  const willBePrepaid = editingCustomerId ? getCustomer(editingCustomerId)?.subType!=='postpaid' : true;
+  if(willBePrepaid){
+    if(!document.getElementById('p3_company_group').dataset.selected){
+      toast(LANG==='zh'?'请选择加入的公司':'Please select a Company'); return;
+    }
+    if(!document.getElementById('p3_svcCarrierType_group').dataset.selected){
+      toast(LANG==='zh'?'请选择通信社类型':'Please select a Carrier Type'); return;
+    }
+  }
   const cust = buildAndSaveCustomer();
   if(!cust) return;
-  // "Edit profile" now also updates the customer's CURRENT plan in place — matching the
-  // full field access available when creating a new customer, without creating a new
-  // history entry (that's what Recharge / Change Plan are for; this is a correction)
-  if(editingCustomerId){
+  // "Edit profile" updates the customer's CURRENT plan in place (no new history entry —
+  // that's what Recharge / Change Plan are for). For a BRAND NEW prepaid customer, this
+  // button creates their first service directly.
+  if(!editingCustomerId && cust.subType!=='postpaid'){
+    const svcData = buildPrepaidServiceFromForm(cust);
+    setActiveSubscription(cust.id, svcData, 'new');
+  } else if(editingCustomerId){
     const currentSvc = activeSubscriptionFor(editingCustomerId);
     if(currentSvc && cust.subType!=='postpaid'){
       const durationDays = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||currentSvc.durationDays||90;
@@ -2731,7 +2752,6 @@ function saveCustomerFromForm(){
         usimFee: Number(document.getElementById('pe_usimFee').value)||0,
         discountPerMonth: Number(document.getElementById('pe_discountPerMonth').value)||0,
         discountMonths: Number(document.getElementById('pe_discountMonths').value)||0,
-        paymentMethod: document.getElementById('pe_paymentMethod_group').dataset.selected || currentSvc.paymentMethod,
       });
       if(currentSvc.activationDate && durationDays){
         const d = new Date(currentSvc.activationDate); d.setDate(d.getDate()+durationDays);
@@ -2800,9 +2820,42 @@ function saveCustomerCore(name){
 /* save customer + create the matching service record + open print preview.
    Prepaid is billed by catalog day-tiers (15/30/60/90) — 90 days auto-applies the fixed
    Preeti Telecom template; the other tiers use whatever other template the store has set up. */
+/* Builds the prepaid service record from the form's current values — shared by both
+   "Save & Print" (which additionally requires a template and opens the print preview) and
+   the plain "Save customer" button, so a new prepaid signup can be saved without being
+   forced through template selection. Company and Carrier Type are still required before
+   either save path runs — validated by the caller before this is ever called. */
+function buildPrepaidServiceFromForm(cust){
+  const activationDate = document.getElementById('p3_activationDate').value || todayISO();
+  const durationDays = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
+  const price = Number(document.getElementById('p3_price').value)||0;
+  const discount = Number(document.getElementById('p3_discount').value)||0;
+  const finalPrice = Math.max(0, price - discount);
+  const planInfo = PREPAID_PLANS.find(p=>p.days===durationDays);
+  const d = new Date(activationDate); d.setDate(d.getDate()+durationDays);
+  return {
+    customerId: cust.id, type:'prepaid',
+    carrier: cust.carrierType || document.getElementById('f_carrierType').value,
+    plan: durationDays===90 ? PREETI_FIXED_PLAN : (planInfo ? `${planInfo.days}일` : `${durationDays}일`),
+    number: document.getElementById('p3_number').value.trim(),
+    usimNumber: document.getElementById('p3_usimNumber').value.trim(),
+    simType:'physical', activationDate, durationDays,
+    expiryDate: d.toISOString().slice(0,10), status:'active',
+    monthlyFee:0, price, discount, firstMonthPayment:0, activationFee:0, simFee:0,
+    sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || '', commission:0, notes:'',
+    company: document.getElementById('p3_company_group').dataset.selected || '',
+    svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
+  };
+}
 function saveCustomerAndPrint(){
   const name = document.getElementById('f_name').value.trim();
   if(!name){ toast(LANG==='zh'?'请输入客户姓名':'Please enter a customer name'); return; }
+  if(!document.getElementById('p3_company_group').dataset.selected){
+    toast(LANG==='zh'?'请选择加入的公司':'Please select a Company'); return;
+  }
+  if(!document.getElementById('p3_svcCarrierType_group').dataset.selected){
+    toast(LANG==='zh'?'请选择通信社类型':'Please select a Carrier Type'); return;
+  }
   const templateId = document.getElementById('p3_template').value;
   if(!templateId || !getTemplate(templateId)){
     toast(LANG==='zh'?'请先在「打印模板」页面上传运营商表格':'Please upload a carrier form in Print Templates first');
@@ -2811,30 +2864,7 @@ function saveCustomerAndPrint(){
     return;
   }
   const cust = saveCustomerCore(name);
-  const activationDate = document.getElementById('p3_activationDate').value || todayISO();
-  const durationDays = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
-  const price = Number(document.getElementById('p3_price').value)||0;
-  const discount = Number(document.getElementById('p3_discount').value)||0;
-  const finalPrice = Math.max(0, price - discount);
-  const planInfo = PREPAID_PLANS.find(p=>p.days===durationDays);
-  const d = new Date(activationDate); d.setDate(d.getDate()+durationDays);
-  const svcData = {
-    customerId: cust.id, type:'prepaid',
-    carrier: cust.carrierType || document.getElementById('f_carrierType').value,
-    plan: durationDays===90 ? PREETI_FIXED_PLAN : (planInfo ? `${planInfo.days}일` : `${durationDays}일`),
-    number: document.getElementById('p3_number').value.trim(),
-    usimNumber: document.getElementById('p3_usimNumber').value.trim(),
-    simType:'physical', activationDate, durationDays,
-    expiryDate: d.toISOString().slice(0,10), status:'active',
-    // prepaid is a one-time payment, paid in full at signup — no recurring fee or cost
-    // tracking needed the way postpaid has, but it does have a one-time discount, unlike
-    // before: price is the catalog price before discount, sellingPrice/received are the
-    // FINAL price after it — both stored explicitly so Sheet View can show and edit either
-    monthlyFee:0, price, discount, firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || '', commission:0, notes:'',
-    company: document.getElementById('p3_company_group').dataset.selected || '',
-    svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
-  };
+  const svcData = buildPrepaidServiceFromForm(cust);
   // routes through the same enforcement path as every other subscription change, so saving
   // here for a customer who already has an active plan correctly ends the old one instead
   // of silently creating a second "active-looking" subscription
@@ -3380,7 +3410,6 @@ function openChangeSubModal(customerId, mode){
   document.getElementById('cs_discountMonths').value = '';
   document.getElementById('cs_netExpectedPreview').value = '';
   document.getElementById('cs_notes').value = '';
-  renderTileRadioGroup('cs_paymentMethod_group', PAYMENT_METHODS, '');
   document.getElementById('changeSubModalOverlay').classList.add('show');
 }
 function updateCsNetExpectedPreview(){
@@ -3429,7 +3458,7 @@ document.getElementById('saveChangeSubBtn').addEventListener('click', ()=>{
     discountPerMonth: Number(document.getElementById('cs_discountPerMonth').value)||0,
     discountMonths: Number(document.getElementById('cs_discountMonths').value)||0,
     firstMonthPayment:0, activationFee:0, simFee:0,
-    sellingPrice:0, cost:0, received:0, paymentMethod: document.getElementById('cs_paymentMethod_group').dataset.selected || '', commission:0,
+    sellingPrice:0, cost:0, received:0, paymentMethod: '', commission:0,
     notes:document.getElementById('cs_notes').value.trim(),
     company, partnerCompany, svcCarrierType,
   };
@@ -3930,7 +3959,7 @@ const PREPAID_EXPORT_HEADERS = ['CUSTOMER','NATIONALITY','PHONE','DATE OF BIRTH'
 const POSTPAID_EXPORT_HEADERS = ['CUSTOMER','NATIONALITY','PHONE','DATE OF BIRTH','ID TYPE','ID NUMBER',
   'OCCUPATION','YEARS IN KOREA','HANDLED BY','PLAN TYPE','CARRIER TYPE','COMPANY','PARTNER COMPANY',
   'ACTIVATION DATE','EXPIRY DATE','CONTRACT LENGTH (DAYS)','MONTHLY FEE','COMPANY PRICE','REAL COMPANY PRICE',
-  'USIM FEE','DISCOUNT / MONTH','DISCOUNT MONTHS','EXPECTED INCOME','PAYMENT METHOD','NOTES'];
+  'USIM FEE','DISCOUNT / MONTH','DISCOUNT MONTHS','EXPECTED INCOME','NOTES'];
 function prepaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
     c.handlerName||'', c.planType||'', s.svcCarrierType||'', s.company||'',
@@ -3942,7 +3971,7 @@ function postpaidExportRow(c, s){
     c.handlerName||'', c.workType||c.planType||'', s.svcCarrierType||'', s.company||'', s.partnerCompany||'',
     s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.monthlyFee)||0, Number(s.expectedProfit)||0,
     Number(s.actualProfit)||0, Number(s.usimFee)||0, Number(s.discountPerMonth)||0, Number(s.discountMonths)||0,
-    expectedIncomeFor(s), s.paymentMethod||'cash', s.notes||''];
+    expectedIncomeFor(s), s.notes||''];
 }
 function exportAll(){
   const prepaidRows = [PREPAID_EXPORT_HEADERS];
@@ -4058,7 +4087,7 @@ function restoreOwnExportSheet(sheetName, rows){
       expectedProfit: Number(row['COMPANY PRICE'])||0, actualProfit: Number(row['REAL COMPANY PRICE'])||0,
       usimFee: Number(row['USIM FEE'])||0, discountPerMonth: Number(row['DISCOUNT / MONTH'])||0,
       discountMonths: Number(row['DISCOUNT MONTHS'])||0, sellingPrice:0, cost:0, received:0,
-      commission:0, paymentMethod: normPaymentMethod(row['PAYMENT METHOD']), firstMonthPayment:0, activationFee:0, simFee:0, discount:0,
+      commission:0, paymentMethod:'', firstMonthPayment:0, activationFee:0, simFee:0, discount:0,
     };
     setActiveSubscription(cust.id, svcData, 'new');
     added++;
@@ -4914,15 +4943,24 @@ document.getElementById('btnPushSync').addEventListener('click', async ()=>{
 document.getElementById('btnBulkClearPayment').addEventListener('click', ()=>{
   const monthVal = document.getElementById('bulkClearPaymentMonth').value; // "YYYY-MM"
   if(!monthVal){ toast(LANG==='zh'?'请先选择月份':'Please select a month first'); return; }
-  const affected = DB.services.filter(s=> s.activationDate && s.activationDate.slice(0,7)===monthVal && s.paymentMethod);
+  // "Customers from August" can genuinely mean two different things — activated in August,
+  // or added to the system in August — and those aren't always the same set of records.
+  // Letting the person choose which one, rather than silently picking one, avoids a repeat
+  // of the exact confusion that came up when this only matched by activation date.
+  const dateField = document.getElementById('bulkClearPaymentDateField').value; // 'activationDate' | 'createdAt'
+  const affected = dateField==='activationDate'
+    ? DB.services.filter(s=> s.activationDate && s.activationDate.slice(0,7)===monthVal && s.paymentMethod)
+    : DB.services.filter(s=> s.paymentMethod && getCustomer(s.customerId)?.createdAt && String(getCustomer(s.customerId).createdAt).slice(0,7)===monthVal);
   if(!affected.length){
     toast(LANG==='zh'?'该月份没有已填写付款方式的记录':'No records with a payment method set for that month');
     return;
   }
   const monthLabel = new Date(monthVal+'-01').toLocaleDateString(LANG==='zh'?'zh-CN':'en-US', {year:'numeric', month:'long'});
+  const names = affected.map(s=> getCustomer(s.customerId)?.name || '?');
+  const namesPreview = names.length<=15 ? names.join(', ') : names.slice(0,15).join(', ')+(LANG==='zh'?` 等共${names.length}位`:` and ${names.length-15} more`);
   const confirmMsg = LANG==='zh'
-    ? `将清空 ${monthLabel} 共 ${affected.length} 条记录的付款方式，此操作不可撤销。\n\n请输入 ${affected.length} 以确认：`
-    : `This will clear the payment method on ${affected.length} record(s) from ${monthLabel}. This cannot be undone.\n\nType ${affected.length} to confirm:`;
+    ? `将清空 ${monthLabel} 共 ${affected.length} 条记录的付款方式，此操作不可撤销。\n\n受影响客户：${namesPreview}\n\n请输入 ${affected.length} 以确认：`
+    : `This will clear the payment method on ${affected.length} record(s) from ${monthLabel}. This cannot be undone.\n\nAffected customers: ${namesPreview}\n\nType ${affected.length} to confirm:`;
   const typed = prompt(confirmMsg);
   if(typed === null) return; // cancelled
   if(typed.trim() !== String(affected.length)){
