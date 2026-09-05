@@ -247,6 +247,7 @@ const POSTPAID_WORK_TYPES = ['번호이동','신규가입','유심/이심변경'
 /* prepaid-specific option sets */
 const PREPAID_COMPANIES = ['스마텔SMS','프리티Free T','모빙Mobing','아시아Asia','벨류컨Vcnk'];
 const PAYMENT_METHODS = ['card','cash','alipay','wechat','bank transfer'];
+const SIM_TYPES = ['physical','esim'];
 const OCCUPATION_OPTIONS = ['Student','Worker','Professor','Other'];
 /* real prepaid catalog tiers — a one-time payment, no recurring fees. 90 days is the store's
    "3-month recharge" plan and is the only one currently paired with the Preeti print template. */
@@ -356,6 +357,19 @@ function renderPostpaidPlanTiles(elId, currentVal){
     const c = sheetColorFor(values, p.name);
     const selected = p.name===currentVal;
     return `<div class="tile-radio ${selected?'selected':''}" data-val="${escapeHtml(p.name)}" data-fee="${p.fee}" style="background:${c.bg};color:${c.fg};">${escapeHtml(p.name)} · ${fmtWon(p.fee)}</div>`;
+  }).join('');
+}
+/* SIM_TYPES stores the raw 'physical'/'esim' values used everywhere else in the data model,
+   but shows a properly capitalized label on the tile itself rather than the raw value. */
+function renderSimTypeTiles(elId, currentVal){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.dataset.selected = currentVal || 'physical';
+  el.innerHTML = SIM_TYPES.map(val=>{
+    const c = sheetColorFor(SIM_TYPES, val);
+    const selected = val===(currentVal||'physical');
+    const label = val==='esim' ? 'eSIM' : t('opt.physical');
+    return `<div class="tile-radio ${selected?'selected':''}" data-val="${val}" style="background:${c.bg};color:${c.fg};">${label}</div>`;
   }).join('');
 }
 // which Monthly Fee input each plan-name tile-radio group should auto-fill when clicked —
@@ -2510,6 +2524,7 @@ function openNewPostpaidModal(){
   renderPostpaidPlanTiles('pc_plan_group', '');
   document.getElementById('pc_number').value = '';
   document.getElementById('pc_activationDate').value = todayISO();
+  renderSimTypeTiles('pc_simType_group', 'physical');
   document.getElementById('pc_monthlyFee').value = '';
   renderTileRadioGroup('pc_handlerName_group', STAFF_MEMBERS, getActiveStaff());
   document.getElementById('pc_expectedProfit').value = '';
@@ -2567,7 +2582,7 @@ document.getElementById('savePostpaidCustomerBtn').addEventListener('click', ()=
     customerId: cust.id, type:'postpaid',
     carrier: svcCarrierType, plan: document.getElementById('pc_plan_group').dataset.selected || '',
     number: document.getElementById('pc_number').value.trim(),
-    simType:'physical', activationDate, durationDays: contractLength,
+    simType: document.getElementById('pc_simType_group').dataset.selected || 'physical', activationDate, durationDays: contractLength,
     expiryDate: d.toISOString().slice(0,10), status:'active',
     monthlyFee: Number(document.getElementById('pc_monthlyFee').value)||0,
     discount:0,
@@ -2626,6 +2641,7 @@ function openCustomerModal(customer){
   document.getElementById('p3_discount').value = '0';
   renderPrepaidPlanTiles('90');
   updatePrepaidPriceFromPlan();
+  renderSimTypeTiles('p3_simType_group', 'physical');
   renderTileRadioGroup('p3_paymentMethod_group', PAYMENT_METHODS, '');
   updateCurrencyBadgeFor('p3_paymentMethod_group');
   // Payment method only makes sense once there's actually something to record — a brand
@@ -2652,6 +2668,7 @@ function openCustomerModal(customer){
     document.getElementById('p3_discount').value = currentSvc.discount ?? 0;
     document.getElementById('p3_usimNumber').value = currentSvc.usimNumber || '';
     document.getElementById('p3_activationDate').value = currentSvc.activationDate || todayISO();
+    renderSimTypeTiles('p3_simType_group', currentSvc.simType || 'physical');
     updateP3FinalPricePreview();
     const {companies, carriers} = prepaidCompanyCarrierOptionsFor(currentSvc.durationDays||90);
     renderTileRadioGroup('p3_company_group', companies, companies.includes(currentSvc.company) ? currentSvc.company : '');
@@ -2822,6 +2839,7 @@ function saveCustomerFromForm(){
         svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || currentSvc.svcCarrierType,
         carrier: document.getElementById('p3_svcCarrierType_group').dataset.selected || currentSvc.carrier,
         paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || currentSvc.paymentMethod,
+        simType: document.getElementById('p3_simType_group').dataset.selected || currentSvc.simType,
       });
       if(currentSvc.activationDate && durationDays){
         const d = new Date(currentSvc.activationDate); d.setDate(d.getDate()+durationDays);
@@ -2932,9 +2950,7 @@ function buildPrepaidServiceFromForm(cust){
     plan: durationDays===90 ? PREETI_FIXED_PLAN : (planInfo ? `${planInfo.days}일` : `${durationDays}일`),
     number: document.getElementById('p3_number').value.trim(),
     usimNumber: document.getElementById('p3_usimNumber').value.trim(),
-    simType:'physical', activationDate, durationDays,
-    expiryDate: d.toISOString().slice(0,10), status:'active',
-    monthlyFee:0, price, discount, firstMonthPayment:0, activationFee:0, simFee:0,
+    simType: document.getElementById('p3_simType_group').dataset.selected || 'physical', activationDate, durationDays,
     sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || '', commission:0, notes:'',
     company: document.getElementById('p3_company_group').dataset.selected || '',
     svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
