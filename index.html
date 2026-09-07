@@ -1,409 +1,1031 @@
-:root{
-  --navy:#0E1B3C;
-  --navy-2:#152655;
-  --navy-light:#1E2E5C;
-  --bg:#F4F6FA;
-  --card:#FFFFFF;
-  --blue:#2F6FED;
-  --blue-dark:#2358CC;
-  --blue-light:#EEF4FF;
-  --orange:#E8833A;
-  --orange-light:#FDF1E6;
-  --green:#1FA971;
-  --green-light:#E6F8F0;
-  --red:#E5484D;
-  --red-light:#FDECEC;
-  --gray:#8A93A6;
-  --gray-light:#EEF1F6;
-  --text:#1B2340;
-  --text-soft:#5B6478;
-  --border:#E7EAF2;
-  --radius:16px;
-  --radius-sm:10px;
-  --shadow:0 2px 8px rgba(20,30,70,0.05),0 1px 2px rgba(20,30,70,0.04);
-  --shadow-md:0 8px 24px rgba(20,30,70,0.09),0 2px 6px rgba(20,30,70,0.05);
-  --shadow-lg:0 24px 64px rgba(10,15,40,.28);
-  --ease:cubic-bezier(.4,0,.2,1);
-}
-*{box-sizing:border-box;}
-body{margin:0;}
-body,input,select,textarea,button{
-  font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-}
-body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
-a{text-decoration:none;color:inherit;}
-button{cursor:pointer;font-family:inherit;}
-::-webkit-scrollbar{width:9px;height:9px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#D3D8E4;border-radius:8px;border:2px solid transparent;background-clip:padding-box;}
-::-webkit-scrollbar-thumb:hover{background:#BFC5D6;background-clip:padding-box;}
-:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px;}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>365Himobile 客户管理系统</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* ---------- layout ---------- */
-.app{display:flex;min-height:100vh;}
-.sidebar{
-  width:236px;flex:0 0 236px;background:linear-gradient(165deg,var(--navy) 0%,var(--navy-2) 100%);
-  color:#fff;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;
-  box-shadow:2px 0 24px rgba(10,15,40,.12);
-}
-.brand{display:flex;align-items:center;gap:11px;padding:6px 10px 24px;}
-.brand-badge{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;box-shadow:0 4px 12px rgba(47,111,237,.35);}
-.brand-name{font-size:16px;font-weight:700;line-height:1.15;letter-spacing:-.01em;}
-.brand-sub{font-size:11px;color:#9CA8CE;margin-top:2px;}
-.nav{display:flex;flex-direction:column;gap:2px;flex:1;margin-top:8px;}
-.nav-item{
-  display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#B9C1E0;
-  font-size:14px;font-weight:500;position:relative;transition:background .16s var(--ease),color .16s var(--ease),transform .12s var(--ease);
-}
-.nav-item svg{width:18px;height:18px;flex:0 0 18px;opacity:.85;transition:opacity .16s var(--ease);}
-.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
-.nav-item:hover svg{opacity:1;}
-.nav-item.active{background:rgba(47,111,237,.24);color:#fff;}
-.nav-item.active svg{opacity:1;}
-.nav-item.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;background:var(--blue);border-radius:3px;}
-.nav-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:20px;padding:1px 7px;box-shadow:0 2px 6px rgba(232,131,58,.4);}
-.sidebar-foot{display:flex;align-items:center;gap:10px;padding:14px 10px 4px;border-top:1px solid rgba(255,255,255,.09);margin-top:10px;}
-.store-badge{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--orange),#D9691F);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
-.store-name{font-size:13px;font-weight:600;}
-.store-sub{font-size:11px;color:#9CA8CE;}
-#btnLogout{background:rgba(255,255,255,.06);color:#B9C2E0;border:1px solid rgba(255,255,255,.1);font-size:12px;font-weight:700;width:calc(100% - 28px);}
-#btnLogout:hover{background:rgba(255,255,255,.12);color:#fff;}
+<!-- LOCK SCREEN — shown on every single page load, before any customer data is touched.
+     Nothing behind it renders visibly until unlocked (with the server) or explicitly
+     skipped (local-only, empty session) — even data cached from a previous visit stays
+     hidden until one of those two choices is made, every time. -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-badge">365</div>
+    <div class="lock-title" data-i18n="lock.title">365Himobile 客户管理系统</div>
+    <div class="lock-desc" data-i18n="lock.desc">请输入服务器地址与密钥以载入客户数据</div>
+    <div class="form-field full" style="margin-top:18px;">
+      <label data-i18n="sync.urlLabel">服务器地址</label>
+      <input id="lockServerUrl" placeholder="http://192.168.219.45:4000">
+    </div>
+    <div class="form-field full" style="margin-top:10px;">
+      <label data-i18n="lock.passwordLabel">密钥 / 密码</label>
+      <input id="lockPassword" type="password" placeholder="••••">
+    </div>
+    <div class="lock-error" id="lockError" style="display:none;"></div>
+    <button class="btn btn-primary" id="lockUnlockBtn" style="width:100%;margin-top:16px;" data-i18n="lock.unlock">解锁并载入数据</button>
+    <button class="btn btn-ghost" id="lockSkipBtn" style="width:100%;margin-top:8px;" data-i18n="lock.skip">跳过 — 仅在本机使用（空白，不含任何客户数据）</button>
+  </div>
+</div>
 
-.main{flex:1;min-width:0;display:flex;flex-direction:column;}
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;padding:16px 28px;
-  background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(10px);
-  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;
-}
-.topbar-left{display:flex;flex-direction:column;gap:2px;}
-.page-title{font-size:19px;font-weight:800;letter-spacing:-.01em;}
-.page-sub{font-size:12.5px;color:var(--text-soft);}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.lang-switch{display:flex;background:var(--gray-light);border-radius:9px;padding:3px;}
-.lang-btn{border:none;background:transparent;padding:6px 12px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--text-soft);transition:background .15s var(--ease),color .15s var(--ease);}
-.lang-btn.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(20,30,70,.12);}
-.btn{border:none;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px;transition:background .15s var(--ease),box-shadow .15s var(--ease),transform .08s var(--ease);}
-.btn:active{transform:translateY(1px);}
-.btn-primary{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(47,111,237,.28);}
-.btn-primary:hover{background:var(--blue-dark);box-shadow:0 4px 14px rgba(47,111,237,.38);}
-.btn-ghost{background:var(--gray-light);color:var(--text);}
-.btn-ghost:hover{background:#E2E6F0;}
-.btn-danger{background:var(--red-light);color:var(--red);}
-.btn-danger:hover{background:#FADDDE;}
-.btn-sm{padding:6px 10px;font-size:12px;border-radius:8px;}
+<div class="app" id="appRoot" style="display:none;">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-badge">365</div>
+      <div>
+        <div class="brand-name">Himobile</div>
+        <div class="brand-sub" data-i18n="sidebar.sub">客户管理系统 · 고객 관리</div>
+      </div>
+    </div>
+    <nav class="nav" id="navMenu"></nav>
+    <div class="sidebar-foot" id="staffProfileFoot" style="cursor:pointer;">
+      <div class="store-badge" id="staffProfileBadge">J</div>
+      <div>
+        <div class="store-name" id="staffProfileName">Jason</div>
+        <div class="store-sub" data-i18n="sidebar.staffSub">点击切换办理人</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" id="btnLogout" style="margin:8px 14px 14px;" data-i18n="lock.logout">🔒 退出登录 Log out</button>
+  </aside>
 
-.content{padding:26px 28px 60px;flex:1;}
-.page{display:none;}
-.page.active{display:block;animation:pagein .2s var(--ease);}
-@keyframes pagein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left" style="flex-direction:row;align-items:center;gap:10px;">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <div class="page-title" id="pageTitle">—</div>
+          <div class="page-sub" id="pageSub">—</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中文</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+        <button class="btn btn-primary" id="btnNewCustomerTop">
+          <span>＋</span><span data-i18n="btn.newCustomer">新建客户</span>
+        </button>
+      </div>
+    </div>
 
-/* ---------- cards / grid ---------- */
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-.grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
-@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-2{grid-template-columns:1fr;}}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:22px;transition:box-shadow .18s var(--ease);}
-.stat-card .stat-label{font-size:12.5px;color:var(--text-soft);font-weight:600;}
-.stat-card .stat-value{font-size:29px;font-weight:800;margin:9px 0 4px;letter-spacing:-.01em;}
-.stat-card .stat-delta{font-size:12px;font-weight:600;}
-.up{color:var(--green);}
-.down{color:var(--red);}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.section-title{font-size:15px;font-weight:800;letter-spacing:-.005em;}
-.section-desc{font-size:12px;color:var(--text-soft);margin-top:2px;line-height:1.5;}
-.link{color:var(--blue);font-weight:700;font-size:12.5px;transition:color .15s var(--ease);}
-.link:hover{color:var(--blue-dark);}
+    <div class="offline-banner" id="offlineBanner" style="display:none;">
+      ⚠ <span id="offlineBannerText"></span>
+    </div>
 
-/* ---------- tables ---------- */
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th{text-align:left;color:var(--text-soft);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:11px 12px;border-bottom:1.5px solid var(--border);background:#FAFBFD;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-th:first-child{border-top-left-radius:10px;}
-th:last-child{border-top-right-radius:10px;}
-td{padding:13px 12px;border-bottom:1px solid var(--border);vertical-align:middle;height:52px;}
-tr:last-child td{border-bottom:none;}
-tr.row-click{transition:background .12s var(--ease);}
-tr.row-click:hover{background:var(--blue-light);cursor:pointer;}
-.avatar{width:30px;height:30px;border-radius:9px;background:var(--gray-light);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--navy);margin-right:8px;flex:0 0 30px;}
-.name-cell{display:flex;align-items:center;max-width:220px;}
-.cell-ellipsis{display:inline-block;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
-.name-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1;}
-.copy-name-btn{flex:0 0 auto;border:none;background:transparent;font-size:13px;padding:3px 5px;margin-left:2px;border-radius:6px;cursor:pointer;opacity:.45;transition:opacity .12s var(--ease),background .12s var(--ease);}
-.copy-name-btn:hover{opacity:1;background:var(--gray-light);}
-.copy-name-btn.copied{opacity:1;color:var(--green);}
-.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap;}
-.pill-green{background:var(--green-light);color:var(--green);}
-.pill-orange{background:var(--orange-light);color:var(--orange);}
-.pill-red{background:var(--red-light);color:var(--red);}
-.pill-gray{background:var(--gray-light);color:var(--text-soft);}
-.pill-blue{background:var(--blue-light);color:var(--blue);}
-.muted{color:var(--text-soft);}
-.tbl-wrap{overflow-x:auto;border-radius:10px;}
-/* keep the action buttons (View/Merge/etc) visible without needing to scroll all the way
-   right on wide tables — this is what was making the Merge button look "missing" on the
-   Duplicates tab, which has enough columns to push it off-screen. Sheet View is excluded
-   since its last column is just a normal editable data cell, not an action button. */
-.tbl-wrap:not(.sheet-tbl-wrap) table td:last-child, .tbl-wrap:not(.sheet-tbl-wrap) table th:last-child{position:sticky;right:0;background:var(--card);box-shadow:-6px 0 8px -6px rgba(20,30,70,.08);}
-.tbl-wrap:not(.sheet-tbl-wrap) table th:last-child{background:#FAFBFD;}
-.tbl-wrap:not(.sheet-tbl-wrap) table tr.dupe-band-a td:last-child{background:#FFFDF8;}
-.tbl-wrap:not(.sheet-tbl-wrap) table tr.dupe-band-b td:last-child{background:#FCFCFF;}
-.tbl-wrap:not(.sheet-tbl-wrap) table tr.row-click:hover td:last-child{background:var(--blue-light);}
-.empty-state{padding:48px 10px;text-align:center;color:var(--text-soft);font-size:13px;}
-.empty-state b{display:block;color:var(--text);font-size:14px;margin-bottom:4px;}
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="page" id="page-dashboard">
+        <div class="card" style="margin-bottom:16px;">
+          <input class="search-input" id="dashQuickSearch" data-i18n-ph="dash.quickSearch" placeholder="🔍 快速搜索客户姓名、号码或证件号..." style="width:100%;" autocomplete="off">
+          <div id="dashQuickSearchResults"></div>
+        </div>
+        <div id="dashDupeBanner" style="display:none;margin-bottom:16px;"></div>
+        <div class="grid-4" id="dashStats" style="margin-bottom:16px;"></div>
+        <div class="grid-4" id="dashStats2" style="margin-bottom:16px;"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.followup.title">今天要跟进</div>
+                <div class="section-desc" data-i18n="dash.followup.desc">优先联系即将到期的客户</div>
+              </div>
+              <a class="link" data-nav="reminders" data-i18n="dash.viewall">查看全部 →</a>
+            </div>
+            <div id="dashFollowups"></div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.overview.title">业务概览</div>
+                <div class="section-desc" data-i18n="dash.overview.desc">本月开通类型</div>
+              </div>
+            </div>
+            <div class="donut-wrap">
+              <svg class="donut" viewBox="0 0 42 42" id="donutSvg"></svg>
+              <div class="legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
 
-/* filters */
-.filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
-.search-input{flex:1;min-width:200px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);font-size:13px;background:#fff;transition:border-color .15s var(--ease),box-shadow .15s var(--ease);}
-.search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,237,.12);outline:none;}
-select.select-input{padding:10px 12px;border-radius:10px;border:1px solid var(--border);font-size:13px;background:#fff;transition:border-color .15s var(--ease);}
-.currency-input-wrap{position:relative;display:flex;align-items:center;}
-.currency-badge{position:absolute;left:12px;font-size:13px;font-weight:700;color:var(--text-soft);pointer-events:none;}
-.currency-input-wrap input{padding-left:30px !important;}
-.date-range-pill{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#fff;transition:border-color .15s var(--ease),background .15s var(--ease);}
-.date-range-pill:focus-within{border-color:var(--blue);}
-.date-range-pill.active{border-color:var(--blue);background:#F3F7FF;}
-.date-range-icon{width:15px;height:15px;color:var(--text-soft);flex-shrink:0;}
-.date-range-pill input[type="date"]{border:none;background:transparent;font-size:13px;padding:0;width:112px;color:inherit;font-family:inherit;}
-.date-range-pill input[type="date"]:focus{outline:none;}
-.date-range-sep{color:var(--text-soft);font-size:12px;}
-.date-range-clear{border:none;background:var(--gray-light);color:var(--text-soft);width:18px;height:18px;border-radius:50%;font-size:10px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s var(--ease),color .15s var(--ease);}
-.date-range-clear:hover{background:var(--red);color:#fff;}
-.date-range-pill.active .date-range-clear{display:flex;}
-select.select-input:focus{border-color:var(--blue);outline:none;}
-.chip-tabs{display:flex;gap:6px;flex-wrap:wrap;}
-.chip-tab{padding:7px 14px;border-radius:9px;background:var(--gray-light);font-size:12.5px;font-weight:700;color:var(--text-soft);border:none;display:flex;align-items:center;gap:6px;transition:background .15s var(--ease),color .15s var(--ease);}
-.chip-tab:hover{background:#E2E6F0;}
-.chip-tab.active{background:var(--navy);color:#fff;}
-.chip-tab.active:hover{background:var(--navy);}
-.chip-tab .n{background:rgba(0,0,0,.12);border-radius:20px;padding:0 6px;font-size:11px;}
-.chip-tab.active .n{background:rgba(255,255,255,.2);}
-.chip-tab-warn .n{background:var(--red);color:#fff;}
-.chip-tab-warn.active .n{background:rgba(255,255,255,.25);}
-.dupe-band-a{background:#FFFDF8;}
-.dupe-band-b{background:#FCFCFF;}
-.dupe-band-a:hover,.dupe-band-b:hover{background:var(--blue-light) !important;}
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.renewals.title">合约即将到期（30天内）</div>
+                <div class="section-desc" data-i18n="dash.renewals.desc">后付卡合约即将到期，建议提前联系续约</div>
+              </div>
+              <a class="link" data-nav="sheet" data-i18n="dash.customerlist">客户列表 →</a>
+            </div>
+            <div id="dashRenewals"></div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="dash.winback.title">流失客户 / 待挽回</div>
+                <div class="section-desc" data-i18n="dash.winback.desc">已取消订阅、尚未重新开通的客户</div>
+              </div>
+              <button class="link" id="dashWinbackViewAll" style="border:none;background:none;cursor:pointer;padding:0;" data-i18n="dash.viewall">查看全部 →</button>
+            </div>
+            <div id="dashWinback"></div>
+          </div>
+        </div>
 
-/* dashboard: quick search */
-.qsearch-results{margin-top:8px;display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;}
-.qsearch-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;transition:background .12s var(--ease);}
-.qsearch-item:hover{background:var(--blue-light);}
-.qsearch-empty{padding:10px;color:var(--text-soft);font-size:12.5px;}
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title" data-i18n="dash.revenueTrend.title">营收趋势（近6个月）</div>
+            <div id="dashRevenueTrend" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="dash.cancelReasons.title">取消原因分布</div>
+            <div id="dashCancelReasons" style="margin-top:14px;"></div>
+          </div>
+        </div>
 
-/* dashboard: alert banner (duplicates nudge) */
-.alert-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:var(--radius-sm);background:var(--red-light);border:1px solid #F6C6C8;}
-.alert-banner-text{font-size:13px;font-weight:700;color:#B33338;display:flex;align-items:center;gap:8px;}
-.alert-banner .btn{flex:none;}
+        <div class="card" style="margin-top:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="dash.recent.title">最近新增客户</div>
+              <div class="section-desc" data-i18n="dash.recent.desc">快速确认新开的号码与套餐</div>
+            </div>
+            <a class="link" data-nav="sheet" data-i18n="dash.customerlist">客户列表 →</a>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.number">号码</th><th data-i18n="col.service">业务</th>
+                <th data-i18n="col.carrier">通信社</th><th data-i18n="col.activated">开通日期</th><th data-i18n="col.status">状态</th>
+              </tr></thead>
+              <tbody id="dashRecentBody"></tbody>
+            </table>
+          </div>
+        </div>
 
-/* dashboard: compact list rows (renewals / winback) */
-.mini-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 4px;border-bottom:1px solid var(--border);}
-.mini-row:last-child{border-bottom:none;}
-.mini-row-name{font-weight:700;font-size:13px;}
-.mini-row-sub{font-size:11.5px;color:var(--text-soft);margin-top:2px;}
+        <div class="grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title" data-i18n="dash.nationality.title">客户国籍分布</div>
+            <div id="chartNationality" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="dash.referral.title">客户来源分布</div>
+            <div id="chartReferral" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </section>
 
-/* donut */
-.donut-wrap{display:flex;align-items:center;gap:22px;}
-.donut{width:150px;height:150px;flex:0 0 150px;}
-.legend{display:flex;flex-direction:column;gap:10px;font-size:12.5px;}
-.legend-item{display:flex;align-items:center;gap:8px;}
-.dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px;}
+      <!-- CUSTOMERS -->
+      <section class="page" id="page-customers">
+        <div class="card">
+          <div class="chip-tabs" id="custTypeTabs" style="margin-bottom:14px;"></div>
+          <div class="filter-bar">
+            <input class="search-input" id="custSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
+            <select class="select-input" id="custNationalityFilter"></select>
+            <select class="select-input" id="custSortBy">
+              <option value="newest" data-i18n="sort.newest">排序：最新优先</option>
+              <option value="oldest" data-i18n="sort.oldest">排序：最旧优先</option>
+              <option value="nameAsc" data-i18n="sort.nameAsc">姓名 A → Z</option>
+              <option value="nameDesc" data-i18n="sort.nameDesc">姓名 Z → A</option>
+              <option value="ratingHigh" data-i18n="sort.ratingHigh">评分：高到低</option>
+              <option value="ratingLow" data-i18n="sort.ratingLow">评分：低到高</option>
+            </select>
+            <select class="select-input" id="custRecentFilter">
+              <option value="" data-i18n="filter.allTime">添加时间：不限</option>
+              <option value="1" data-i18n="filter.today">今天新增</option>
+              <option value="7" data-i18n="filter.last7">最近7天</option>
+              <option value="30" data-i18n="filter.last30">最近30天</option>
+            </select>
+            <select class="select-input" id="custDurationFilter" style="display:none;">
+              <option value="" data-i18n="filter.allDurations">开通时长：不限</option>
+              <option value="6" data-i18n="filter.duration6">已开通 6 个月以上</option>
+              <option value="8" data-i18n="filter.duration8">已开通 8 个月以上</option>
+              <option value="12" data-i18n="filter.duration12">已开通 1 年以上</option>
+            </select>
+            <button class="btn btn-ghost" id="btnExportCustomers" data-i18n="btn.exportExcel">导出 Excel</button>
+          </div>
+          <div class="section-desc" style="margin-bottom:10px;" id="custCount"></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.phoneNumber">电话号码</th><th data-i18n="col.nationality">国籍</th>
+                <th data-i18n="col.id">证件</th><th data-i18n="col.subType">开通方式</th><th data-i18n="col.contractStatus">合约状态</th><th data-i18n="col.recentActivity">最近业务</th>
+                <th data-i18n="col.dateAdded">添加日期</th>
+                <th data-i18n="col.activeFor" id="colActiveFor" style="display:none;">开通时长</th>
+                <th data-i18n="col.dupeReason" id="colDupeReason" style="display:none;">重复原因</th>
+                <th data-i18n="col.rating">评分</th><th></th>
+              </tr></thead>
+              <tbody id="customersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-/* modal */
-.overlay{position:fixed;inset:0;background:rgba(12,17,38,.5);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;z-index:100;overflow-y:auto;padding:40px 16px;}
-.overlay.show{display:flex;animation:overlayin .15s var(--ease);}
-@keyframes overlayin{from{opacity:0;}to{opacity:1;}}
-.modal{background:#fff;border-radius:18px;width:100%;max-width:640px;box-shadow:var(--shadow-lg);animation:modalin .18s var(--ease);}
-@keyframes modalin{from{opacity:0;transform:translateY(10px) scale(.99);}to{opacity:1;transform:translateY(0) scale(1);}}
-.modal.wide{max-width:820px;}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:19px 22px;border-bottom:1px solid var(--border);}
-.modal-title{font-size:16.5px;font-weight:800;letter-spacing:-.01em;}
-.modal-close{width:30px;height:30px;border-radius:8px;border:none;background:var(--gray-light);font-size:16px;color:var(--text-soft);transition:background .15s var(--ease),color .15s var(--ease);}
-.modal-close:hover{background:#E2E6F0;color:var(--text);}
-.modal-body{padding:20px 22px;max-height:70vh;overflow-y:auto;}
-.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--border);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.form-grid.c3{grid-template-columns:1fr 1fr 1fr;}
-.form-field{display:flex;flex-direction:column;gap:6px;}
-.form-field.full{grid-column:1/-1;}
-.form-field label{font-size:12px;font-weight:700;color:var(--text-soft);}
-.form-field input,.form-field select,.form-field textarea{
-  padding:10px 12px;border-radius:9px;border:1px solid var(--border);font-size:13.5px;background:#fff;width:100%;
-  transition:border-color .15s var(--ease),box-shadow .15s var(--ease);
-}
-.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,237,.12);outline:none;}
-.form-field textarea{resize:vertical;min-height:60px;}
-.form-hr{grid-column:1/-1;border:none;border-top:1px dashed var(--border);margin:4px 0;}
-.form-subtitle{grid-column:1/-1;font-size:12.5px;font-weight:800;color:var(--navy);margin-top:2px;}
-.rating-stars{display:flex;gap:4px;font-size:20px;color:#DADEEA;}
-.rating-stars span{cursor:pointer;transition:transform .1s var(--ease);}
-.rating-stars span:hover{transform:scale(1.15);}
-.rating-stars span.on{color:#F2B03D;}
+      <!-- SHEET VIEW (editable, spreadsheet-style) -->
+      <section class="page" id="page-sheet">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="chip-tabs" id="sheetTypeTabs" style="margin-bottom:0;"></div>
+            </div>
+            <div class="section-desc" data-i18n="sheet.hint">💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存</div>
+          </div>
+          <div class="filter-bar" style="margin-top:14px;">
+            <input class="search-input" id="sheetSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
+            <select class="select-input" id="sheetNationalityFilter"></select>
+            <select class="select-input" id="sheetRatingFilter"></select>
+            <select class="select-input" id="sheetRecentFilter">
+              <option value="" data-i18n="filter.allTime">添加时间：不限</option>
+              <option value="0" data-i18n="filter.today">今天新增</option>
+              <option value="7" data-i18n="filter.last7">最近7天</option>
+              <option value="thisMonth" data-i18n="filter.thisMonth">本月</option>
+              <option value="30" data-i18n="filter.last30">最近30天</option>
+            </select>
+            <div class="date-range-pill" id="sheetDateRangePill">
+              <svg class="date-range-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+              <input type="date" id="sheetDateFrom" data-i18n-title="filter.activationDateFrom" title="开通日期起">
+              <span class="date-range-sep">–</span>
+              <input type="date" id="sheetDateTo" data-i18n-title="filter.activationDateTo" title="开通日期止">
+              <button class="date-range-clear" id="sheetDateRangeClear" data-i18n-title="filter.clearDates" title="清除日期">✕</button>
+            </div>
+            <select class="select-input" id="sheetSortOrder">
+              <option value="" data-i18n="sort.newest">排序：最新优先</option>
+              <option value="az" data-i18n="sort.nameAsc">姓名 A → Z</option>
+              <option value="za" data-i18n="sort.nameDesc">姓名 Z → A</option>
+            </select>
+          </div>
+          <div class="section-desc" style="margin:10px 0;" id="sheetCount"></div>
+          <div class="tbl-wrap sheet-tbl-wrap">
+            <table id="sheetTable"></table>
+          </div>
+        </div>
+      </section>
 
-/* customer detail */
-.profile-head{display:flex;gap:16px;align-items:center;}
-.profile-avatar{width:56px;height:56px;border-radius:15px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 6px 16px rgba(14,27,60,.25);}
-.profile-name{font-size:18.5px;font-weight:800;letter-spacing:-.01em;}
-.profile-tags{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;}
-.kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;margin-top:18px;font-size:13px;}
-.kv-grid .k{color:var(--text-soft);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
-.kv-grid .v{margin-top:3px;font-weight:600;}
-.service-card{border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:10px;transition:box-shadow .15s var(--ease),border-color .15s var(--ease);}
-.service-card:hover{box-shadow:var(--shadow);}
-.service-card-head{display:flex;justify-content:space-between;align-items:flex-start;}
-.profile-subcard{border:1px solid var(--border);border-radius:11px;padding:12px 14px;background:var(--gray-light);}
-.profile-subcard-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--text-soft);margin-bottom:2px;}
-.profile-subcard .kv-grid{margin-top:10px;}
-.progress-bar{height:6px;background:var(--gray-light);border-radius:6px;margin-top:8px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-dark));border-radius:6px;transition:width .3s var(--ease);}
+      <!-- AI BUSINESS INTELLIGENCE -->
+      <section class="page" id="page-ai">
+        <div class="section-desc" style="margin-bottom:16px;" data-i18n="ai.disclaimer">💡 优先级评分与商机建议由规则引擎与透明的加权评分计算得出，并非黑箱机器学习模型 — 每一项数字均可追溯到真实客户数据。</div>
 
-.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 14px 36px rgba(0,0,0,.24);z-index:200;display:none;}
-.toast.show{display:block;animation:fadein .22s var(--ease);}
-@keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        <div class="grid-4" id="aiStats" style="margin-bottom:16px;"></div>
 
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12.5px;}
-.bar-label{width:110px;flex:0 0 110px;color:var(--text-soft);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bar-track{flex:1;background:var(--gray-light);border-radius:6px;height:10px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--blue),var(--blue-dark));transition:width .3s var(--ease);}
-.bar-val{width:56px;text-align:right;font-weight:700;}
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="ai.topActions.title">🔥 今日建议优先处理</div>
+              <div class="section-desc" data-i18n="ai.topActions.desc">点击每一类查看对应客户名单</div>
+            </div>
+          </div>
+          <div id="aiTopActions"></div>
+        </div>
 
-.dropzone{border:2px dashed var(--border);border-radius:14px;padding:34px 20px;text-align:center;color:var(--text-soft);font-size:13px;transition:border-color .15s var(--ease),background .15s var(--ease);}
-.dropzone:hover{border-color:#C7CEE0;}
-.dropzone.drag{border-color:var(--blue);background:var(--blue-light);}
-.import-preview-table{max-height:280px;overflow:auto;border:1px solid var(--border);border-radius:10px;margin-top:12px;}
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="ai.ask.title">💬 向 AI 商业分析师提问</div>
+              <div class="section-desc" data-i18n="ai.ask.desc">用真实客户数据回答，并展示计算依据（点击下方问题试试看）</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <input class="search-input" id="aiAskInput" data-i18n-ph="ai.ask.placeholder" placeholder="例如：本月有多少客户可以升级？" style="flex:1;">
+            <button class="btn btn-primary" id="aiAskBtn" data-i18n="ai.ask.btn">提问</button>
+          </div>
+          <div class="qsearch-results" id="aiAskSuggestions" style="flex-direction:row;flex-wrap:wrap;margin-top:0;margin-bottom:10px;"></div>
+          <div id="aiAskAnswer"></div>
+        </div>
 
-/* ---------- print templates ---------- */
-.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
-.tpl-card{border:1px solid var(--border);border-radius:13px;overflow:hidden;background:#fff;cursor:pointer;transition:box-shadow .18s var(--ease),transform .12s var(--ease);}
-.tpl-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
-.tpl-thumb{width:100%;height:140px;background:var(--gray-light) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--text-soft);font-size:12px;}
-.tpl-card-body{padding:10px 12px;}
-.tpl-card-name{font-weight:700;font-size:13px;}
-.tpl-card-meta{font-size:11.5px;color:var(--text-soft);margin-top:2px;}
-.tpl-card-actions{display:flex;gap:6px;padding:0 12px 12px;}
-.tpl-new-card{border:2px dashed var(--border);border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:200px;color:var(--text-soft);font-weight:700;font-size:13px;cursor:pointer;transition:border-color .15s var(--ease),color .15s var(--ease);}
-.tpl-new-card:hover{border-color:var(--blue);color:var(--blue);}
-.tpl-editor-wrap{display:flex;gap:16px;}
-.tpl-canvas-col{flex:1;min-width:0;}
-.tpl-side-col{width:270px;flex:0 0 270px;display:flex;flex-direction:column;gap:12px;}
-.tpl-canvas{position:relative;width:100%;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--gray-light) center/cover no-repeat;user-select:none;cursor:crosshair;}
-.tpl-canvas img{width:100%;display:block;pointer-events:none;}
-.tpl-field-chip{position:absolute;transform:translate(-2px,-2px);background:rgba(47,111,237,.14);border:1.5px solid var(--blue);border-radius:6px;padding:1px 6px;font-size:10.5px;font-weight:700;color:var(--blue-dark);white-space:nowrap;cursor:grab;max-width:180px;overflow:hidden;text-overflow:ellipsis;}
-.tpl-field-chip.selected{background:rgba(232,131,58,.18);border-color:var(--orange);color:#9a5417;}
-.tpl-field-list-item{border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:12px;display:flex;align-items:center;justify-content:between;gap:6px;transition:border-color .15s var(--ease),background .15s var(--ease);}
-.tpl-field-list-item.selected{border-color:var(--blue);background:var(--blue-light);}
-.tpl-hint{font-size:11.5px;color:var(--text-soft);background:var(--gray-light);border-radius:8px;padding:8px 10px;line-height:1.5;}
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="ai.opps.title">客户商机列表</div>
+              <div class="section-desc" data-i18n="ai.opps.desc">按优先级排序，点击客户可查看详细的 AI 洞察</div>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <input class="search-input" id="aiSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
+            <select class="select-input" id="aiPriorityFilter">
+              <option value="" data-i18n="ai.filter.allPriority">全部优先级</option>
+              <option value="high" data-i18n="ai.priority.high">🔥 高优先级</option>
+              <option value="medium" data-i18n="ai.priority.medium">🟠 中优先级</option>
+              <option value="low" data-i18n="ai.priority.low">🟢 低优先级</option>
+              <option value="none" data-i18n="ai.priority.none">⚪ 无需处理</option>
+            </select>
+            <select class="select-input" id="aiTypeFilter">
+              <option value="" data-i18n="ai.filter.allTypes">全部商机类型</option>
+              <option value="postpaid_conversion" data-i18n="ai.opp.postpaid_conversion">先付转后付</option>
+              <option value="postpaid_conversion_soon" data-i18n="ai.opp.postpaid_conversion_soon">即将符合资格</option>
+              <option value="plan_review" data-i18n="ai.opp.plan_review">合约已到期</option>
+              <option value="renewal_followup" data-i18n="ai.opp.renewal_followup">即将到期</option>
+              <option value="id_verification" data-i18n="ai.opp.id_verification">证件待核实</option>
+              <option value="winback" data-i18n="ai.opp.winback">流失待挽回</option>
+            </select>
+          </div>
+          <div class="section-desc" style="margin-bottom:10px;" id="aiOppsCount"></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="ai.col.priority">优先级</th><th data-i18n="ai.col.score">评分</th>
+                <th data-i18n="ai.col.opportunity">商机类型</th><th data-i18n="ai.col.action">建议操作</th>
+                <th data-i18n="ai.col.currentRev">目前营收</th><th data-i18n="ai.col.uplift">潜在增量</th><th></th>
+              </tr></thead>
+              <tbody id="aiOppsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-/* print output */
-#printOverlay{display:none;}
-.print-page{position:relative;width:210mm;height:297mm;background:#fff;margin:0 auto;box-shadow:0 0 0 1px var(--border);
-  -webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
-.print-page.showbg{background-size:100% 100%;background-position:top left;background-repeat:no-repeat;}
-.print-field{position:absolute;white-space:nowrap;color:#111;font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;}
-.print-preview-scale-wrap{display:flex;justify-content:center;}
-.print-preview-scale-inner{transform-origin:top center;}
-@media print{
-  /* Remove the whole app UI AND any open modal from layout entirely (not just visually
-     hidden) — otherwise the browser paginates print output based on the full, tall layout
-     underneath (including the open print-preview modal itself), and the print overlay ends
-     up repeating on every one of those extra pages. */
-  .app{display:none !important;}
-  .overlay{display:none !important;}
-  #printOverlay{display:block !important;position:static;left:0;top:0;margin:0;
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
-  .print-page{box-shadow:none;margin:0;page-break-after:avoid;page-break-inside:avoid;}
-  @page{size:A4;margin:0;}
-}
-.prepaid3m-box{grid-column:1/-1;border:1.5px dashed var(--blue);border-radius:12px;padding:14px;background:var(--blue-light);}
-.prepaid3m-toggle{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;}
-.prepaid3m-toggle input{width:17px;height:17px;}
-.prepaid3m-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
-.subtype-toggle{display:flex;gap:10px;flex-wrap:wrap;}
-.subtype-opt{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--navy);cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;flex:1;min-width:220px;background:#fff;transition:border-color .15s var(--ease),background .15s var(--ease);}
-.subtype-opt input{width:16px;height:16px;}
-.subtype-opt:has(input:checked){border-color:var(--blue);background:var(--blue-light);}
-.import-mode-box{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
-.import-mode-box .section-subtitle{font-size:12.5px;font-weight:800;color:var(--navy);}
-.import-mode-opt{display:flex;align-items:flex-start;gap:10px;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:13px;color:var(--navy);transition:border-color .15s var(--ease),background .15s var(--ease);}
-.import-mode-opt input{width:16px;height:16px;margin-top:3px;flex:none;}
-.import-mode-opt:has(input:checked){border-color:var(--orange);background:var(--orange-light);}
-.import-skipdupe-opt{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--navy);cursor:pointer;}
-.import-skipdupe-opt input{width:15px;height:15px;flex:none;}
+      <!-- REMINDERS -->
+      <section class="page" id="page-reminders">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="rem.title">到期与跟进</div>
+              <div class="section-desc" data-i18n="rem.desc">把有效期与合同自动转换为可执行的联系任务</div>
+            </div>
+            <button class="btn btn-primary" id="btnAddReminder" data-i18n="btn.addFollowup">＋ 添加跟进</button>
+          </div>
+          <div class="chip-tabs" id="reminderTabs" style="margin:14px 0 16px;"></div>
+          <div id="reminderList"></div>
+        </div>
+      </section>
 
-/* ---------- editable sheet view ---------- */
-.sheet-tbl-wrap{overflow-x:auto;}
-.sheet-tbl-wrap table{border-collapse:collapse;}
-.sheet-tbl-wrap th{white-space:nowrap;}
-.sheet-tbl-wrap td{white-space:nowrap;padding:7px 9px;}
-.sheet-pill{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:filter .12s var(--ease),box-shadow .12s var(--ease);white-space:nowrap;}
-.sheet-pill:hover{filter:brightness(0.95);box-shadow:0 0 0 2px rgba(0,0,0,.06);}
-.sheet-pill.empty{background:var(--gray-light);color:var(--text-soft);font-weight:600;}
-.sheet-text{cursor:text;padding:3px 6px;border-radius:6px;display:inline-block;min-width:36px;}
-.sheet-text:hover{background:var(--gray-light);}
-.sheet-text-input{border:1.5px solid var(--blue);border-radius:6px;padding:2px 6px;font-size:13px;width:100%;min-width:70px;box-shadow:0 0 0 3px rgba(47,111,237,.12);outline:none;}
-.sheet-readonly{color:var(--text-soft);font-size:12px;}
+      <!-- ORDERS -->
+      <section class="page" id="page-orders">
+        <div class="card">
+          <div class="filter-bar">
+            <div class="section-head" style="flex:1;">
+              <div>
+                <div class="section-title" data-i18n="orders.title">业务订单</div>
+                <div class="section-desc" data-i18n="orders.desc">记录先付、后付、号码移动、充值、过户和解约</div>
+              </div>
+            </div>
+            <select class="select-input" id="orderTypeFilter"></select>
+            <select class="select-input" id="orderStatusFilter"></select>
+            <label class="import-skipdupe-opt" style="margin:0;white-space:nowrap;">
+              <input type="checkbox" id="orderShowHistory">
+              <span data-i18n="orders.showHistory">显示已变更的历史记录</span>
+            </label>
+            <button class="btn btn-primary" id="btnNewOrder" data-i18n="btn.newOrder">＋ 新增业务</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th data-i18n="col.customer">客户</th><th data-i18n="col.serviceType">业务类型</th><th data-i18n="col.carrier">通信公司</th>
+                <th data-i18n="col.plan">套餐</th><th data-i18n="col.amount">金额</th><th data-i18n="col.outstanding">欠款</th>
+                <th data-i18n="col.activated">开通日期</th><th data-i18n="col.status">办理状态</th><th></th>
+              </tr></thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-.cell-popover{position:fixed;display:none;background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--border);padding:10px;z-index:500;min-width:170px;max-width:260px;}
-.cell-popover-title{font-size:11px;font-weight:800;color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;padding:0 2px;}
-.cell-popover-options{display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;}
-.cell-popover-opt{padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:filter .12s var(--ease);}
-.cell-popover-opt:hover{filter:brightness(0.95);}
-.cell-popover-opt .check{opacity:0;font-weight:800;}
-.cell-popover-opt.selected .check{opacity:1;}
-.cell-popover-clear{margin-top:6px;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text-soft);background:var(--gray-light);cursor:pointer;text-align:center;}
-.cell-popover-clear:hover{background:#E2E6F0;}
+      <!-- REPORTS -->
+      <section class="page" id="page-reports">
+        <div class="chip-tabs" id="reportViewTabs" style="margin-bottom:16px;"></div>
 
-/* ---------- clickable tile-radio groups (choose by clicking, not typing) ---------- */
-.tile-radio-group{display:flex;flex-wrap:wrap;gap:8px;}
-.tile-radio{position:relative;padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:2px solid transparent;transition:transform .1s var(--ease),box-shadow .12s var(--ease);user-select:none;}
-.tile-radio:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.08);}
-.tile-radio.selected{border-color:currentColor;box-shadow:0 2px 10px rgba(0,0,0,.1);}
-.tile-radio.selected::after{content:"✓";margin-left:6px;font-weight:800;}
-.tile-radio-required::before{content:"*";color:var(--red);margin-right:3px;}
-.uppercase-input{text-transform:uppercase;}
-.uppercase-input::placeholder{text-transform:none;}
-.sheet-select-group{display:flex;flex-wrap:wrap;gap:8px;}
-.sheet-select-tile{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:#fff;color:var(--navy);transition:border-color .12s var(--ease),background .12s var(--ease);user-select:none;}
-.sheet-select-tile:hover{border-color:#C7CEE0;}
-.sheet-select-tile.checked{border-color:var(--blue);background:var(--blue-light);color:var(--blue-dark);}
-.sheet-select-tile input{width:15px;height:15px;flex:none;}
-.sheet-select-tile .n{font-weight:600;opacity:.7;}
-.option-field-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text-soft);width:100%;text-align:left;transition:border-color .12s var(--ease),box-shadow .12s var(--ease);}
-.option-field-btn:hover{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,237,.08);}
-.option-field-btn.chosen{color:var(--navy);border-color:transparent;}
-.option-field-btn .arrow{margin-left:auto;opacity:.5;font-size:10px;flex:none;}
-.type-choice-card{flex:1;border:2px solid var(--border);border-radius:16px;padding:26px 20px;text-align:center;cursor:pointer;transition:border-color .15s var(--ease),background .15s var(--ease),transform .1s var(--ease);}
-.type-choice-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.type-choice-card.prepaid:hover{border-color:var(--orange);background:var(--orange-light);}
-.type-choice-card.postpaid:hover{border-color:var(--blue);background:var(--blue-light);}
-.type-choice-icon{font-size:34px;margin-bottom:10px;}
-.type-choice-title{font-size:16px;font-weight:800;color:var(--navy);}
-.type-choice-desc{font-size:12px;color:var(--text-soft);margin-top:6px;line-height:1.5;}
+        <!-- MONTHLY VIEW -->
+        <div id="repMonthlyView">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="rep.selectMonth">选择月份</div>
+              <div class="section-desc" data-i18n="rep.selectMonthDesc">查看该月份的详细营收报告</div>
+            </div>
+            <select class="select-input" id="repMonthSelect" style="min-width:180px;"></select>
+          </div>
+        </div>
+        <div class="grid-4" id="repIncomeCards" style="margin-bottom:16px;"></div>
+        <div class="grid-2" id="repSecondaryStats" style="margin-bottom:16px;"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title" data-i18n="rep.byType">按业务类型的营收 / 收入</div>
+            <div id="repByType" style="margin-top:14px;"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="rep.popularPlans">热门套餐 Top 5</div>
+            <div id="repPlans" style="margin-top:14px;"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="section-head">
+            <div class="section-title" data-i18n="rep.monthlyComparison">月度对比 — 先付 / 后付收入</div>
+            <button class="btn btn-ghost" id="btnExportReport" data-i18n="btn.exportMonthExcel">导出该月份 Excel</button>
+          </div>
+          <div id="repMonthlyChart" style="margin:14px 0;"></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th data-i18n="col.month">月份</th><th data-i18n="col.prepaidCustomers">先付客户数</th><th data-i18n="col.prepaidIncome">先付收入</th><th data-i18n="col.postpaidCustomers">后付客户数</th><th data-i18n="col.postpaidExpected">后付预期收入</th><th data-i18n="col.postpaidActual">后付实际收入</th><th data-i18n="col.monthTotal">合计</th><th data-i18n="col.accumulated">累计总收入</th></tr></thead>
+            <tbody id="repMonthlyBody"></tbody>
+          </table></div>
+        </div>
+        </div>
 
-/* groups several compact option-picker fields (each already a single "click for popup"
-   button via renderCompactOptionField) into one visually bounded section, instead of
-   scattering them among the plain text inputs */
-.plan-options-box{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;padding:14px;background:var(--gray-light);border-radius:10px;}
-.plan-options-box .form-field{margin:0;}
+        <!-- DAILY VIEW -->
+        <div id="repDailyView" style="display:none;">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="section-head">
+              <div>
+                <div class="section-title" data-i18n="rep.daily.title">每日报表</div>
+                <div class="section-desc" data-i18n="rep.daily.desc">按日期查看先付 / 后付客户数与收入</div>
+              </div>
+              <input type="date" class="select-input" id="repDaySelect" style="min-width:170px;">
+            </div>
+          </div>
+          <div class="grid-4" id="repDailyCards" style="margin-bottom:16px;"></div>
+          <div class="grid-2" style="margin-bottom:16px;">
+            <div class="card">
+              <div class="section-title" data-i18n="rep.daily.prepaidListTitle">先付客户明细（本日）</div>
+              <div id="repDailyPrepaidList" style="margin-top:10px;"></div>
+            </div>
+            <div class="card">
+              <div class="section-title" data-i18n="rep.daily.postpaidListTitle">后付客户明细（本日）</div>
+              <div id="repDailyPostpaidList" style="margin-top:10px;"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="rep.daily.recent">近期每日记录</div>
+            <div class="tbl-wrap" style="margin-top:14px;"><table>
+              <thead><tr><th data-i18n="col.date">日期</th><th data-i18n="col.prepaidCustomers">先付客户数</th><th data-i18n="col.prepaidIncome">先付收入</th><th data-i18n="col.postpaidCustomers">后付客户数</th><th data-i18n="col.postpaidExpected">后付预期收入</th><th data-i18n="col.monthTotal">合计</th></tr></thead>
+              <tbody id="repDailyBody"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
 
-/* full-page lock screen shown on every load, before any customer data is touched */
-.lock-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0F1B3D,#1E3A6E);display:flex;align-items:center;justify-content:center;padding:20px;}
-.lock-card{width:100%;max-width:380px;background:#fff;border-radius:16px;padding:32px 28px;box-shadow:var(--shadow-lg);text-align:center;}
-.lock-badge{width:52px;height:52px;border-radius:14px;background:var(--blue);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
-.lock-title{font-size:17px;font-weight:800;color:var(--navy);}
-.lock-desc{font-size:12.5px;color:var(--text-soft);margin-top:6px;line-height:1.5;}
-.lock-card .form-field{text-align:left;}
-.lock-error{margin-top:12px;padding:8px 12px;background:#FEF2F2;color:#C0392B;border-radius:8px;font-size:12px;text-align:left;}
+      <!-- PRINT TEMPLATES -->
+      <section class="page" id="page-templates">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="tpl.title">运营商纸质表格模板</div>
+              <div class="section-desc" data-i18n="tpl.desc">上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印</div>
+            </div>
+          </div>
+          <div class="tpl-grid" id="tplGrid"></div>
+        </div>
+      </section>
 
-/* persistent banner shown whenever a server sync attempt fails — visible on every page
-   until the connection recovers, so staff know changes aren't reaching other computers
-   right now, without having to go check the Import/Export settings themselves */
-.offline-banner{background:#FFF7ED;color:#9A5B0F;border-bottom:1px solid #FDBA74;padding:9px 24px;font-size:12.5px;font-weight:700;}
+      <!-- IMPORT/EXPORT -->
+      <section class="page" id="page-io">
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title" data-i18n="io.import.title">导入 Excel</div>
+            <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.import.desc">支持导入现有的先付 / 后付客户记录（.xlsx / .csv）</div>
+            <div class="dropzone" id="dropzone">
+              <div style="font-size:26px;margin-bottom:8px;">⇪</div>
+              <div data-i18n="io.import.drop">拖拽文件到此处，或点击选择文件</div>
+              <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+            </div>
+            <div id="importSummary"></div>
+          </div>
+          <div class="card">
+            <div class="section-title" data-i18n="io.export.title">导出数据</div>
+            <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.export.desc">导出全部客户与业务数据为一个 Excel 文件（先付/后付各一个分页），结构与「表格视图」完全一致</div>
+            <button class="btn btn-primary" id="exportAllBtn" data-i18n="io.export.all">📤 导出全部数据</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;border:1.5px solid #C7D7FB;">
+          <div class="section-title" data-i18n="sync.title">服务器同步（多台电脑共享数据）</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="sync.desc">连接店内共享服务器后，本电脑与其他电脑可以使用同一份客户数据。未连接前，数据仅保存在本电脑。</div>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label data-i18n="sync.urlLabel">服务器地址</label>
+              <input id="syncServerUrl" placeholder="http://192.168.219.45:4000">
+            </div>
+            <div class="form-field full">
+              <label data-i18n="sync.keyLabel">密钥 API Key（在服务器 .env 文件中设置）</label>
+              <input id="syncApiKey" type="password" placeholder="•••••••••••••••••••••">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+            <button class="btn btn-ghost" id="btnTestSync" data-i18n="sync.test">测试连接</button>
+            <button class="btn btn-ghost" id="btnPushSync" data-i18n="sync.pushNow">立即推送本机数据到服务器</button>
+            <button class="btn btn-ghost" id="btnPullSync" data-i18n="sync.pullNow">从服务器拉取最新数据</button>
+          </div>
+          <label class="import-skipdupe-opt" style="margin-top:14px;">
+            <input type="checkbox" id="syncEnabledCheckbox">
+            <span data-i18n="sync.enable">启用自动同步（保存时自动推送，打开页面时自动拉取）</span>
+          </label>
+          <div class="section-desc" id="syncStatusText" style="margin-top:8px;"></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="section-title" data-i18n="io.bulkClearPayment.title">批量清空付款方式</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.bulkClearPayment.desc">用于一次性清空某个月份所有客户的付款方式，方便之后逐一核实填写</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input type="month" class="select-input" id="bulkClearPaymentMonth" style="max-width:160px;">
+            <select class="select-input" id="bulkClearPaymentDateField">
+              <option value="activationDate" data-i18n="io.bulkClearPayment.byActivation">按开通日期匹配</option>
+              <option value="createdAt" data-i18n="io.bulkClearPayment.byAdded">按添加日期匹配</option>
+            </select>
+            <button class="btn btn-danger" id="btnBulkClearPayment" data-i18n="io.bulkClearPayment.btn">清空该月份付款方式</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;" id="dataIssuesCard">
+          <div class="section-title" data-i18n="io.issues.title">数据完整性检查</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.issues.desc">缺失联系方式、有效期、证件信息或付款信息的客户</div>
+          <div id="dataIssuesList"></div>
+        </div>
+        <div class="card" style="margin-top:16px;border:1.5px solid #FBD5D5;">
+          <div class="section-title" style="color:#C0392B;" data-i18n="io.format.title">清空数据，重新开始</div>
+          <div class="section-desc" style="margin:6px 0 16px;" data-i18n="io.format.desc">清空全部客户与业务记录，方便导入全新的数据。此操作无法撤销 — 建议先导出备份。</div>
+          <button class="btn" style="background:#FEF2F2;color:#C0392B;border:1.5px solid #FCA5A5;" id="btnFormatData" data-i18n="io.format.btn">🗑 格式化数据 Format Data</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
 
-@media(max-width:900px){
-  .sidebar{position:fixed;left:-260px;transition:left .2s var(--ease);z-index:60;}
-  .sidebar.open{left:0;}
-  .app{display:block;}
-  .content{padding:16px;}
-  .topbar{padding:12px 16px;}
-  .form-grid,.form-grid.c3{grid-template-columns:1fr;}
-  .menu-btn{display:inline-flex!important;}
-}
-.menu-btn{display:none;border:none;background:var(--gray-light);border-radius:9px;width:36px;height:36px;align-items:center;justify-content:center;font-size:16px;transition:background .15s var(--ease);}
-.menu-btn:hover{background:#E2E6F0;}
+<!-- new customer: choose prepaid or postpaid first -->
+<div class="overlay" id="newCustomerTypeModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.chooseType">新建客户</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" style="margin-bottom:16px;" data-i18n="modal.chooseTypeDesc">先选择客户类型，两种表单的字段不同</div>
+      <div style="display:flex;gap:14px;">
+        <div class="type-choice-card prepaid" id="chooseTypePrepaid">
+          <div class="type-choice-icon">💳</div>
+          <div class="type-choice-title" data-i18n="opt.prepaidShort">先付卡</div>
+          <div class="type-choice-desc" data-i18n="modal.prepaidDesc">固定3个月充值套餐</div>
+        </div>
+        <div class="type-choice-card postpaid" id="chooseTypePostpaid">
+          <div class="type-choice-icon">📶</div>
+          <div class="type-choice-title" data-i18n="opt.postpaidShort">后付卡</div>
+          <div class="type-choice-desc" data-i18n="modal.postpaidDesc">按月合约，可选运营商与套餐</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- new postpaid customer: dedicated click-to-select form -->
+<div class="overlay" id="newPostpaidModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.newPostpaidCustomer">新建后付卡客户</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="pc_name" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="pc_nationality" placeholder="例如：CHINA"></div>
+        <div class="form-field"><label data-i18n="f.dob">出生日期</label><input id="pc_dob" type="date"></div>
+        <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="pc_years" type="number" min="0" step="0.5"></div>
+        <div class="form-field"><label data-i18n="f.idNumber">证件号码</label><input id="pc_idNumber"></div>
+        <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="pc_occupation"></div>
+
+        <div class="form-field full">
+          <label data-i18n="f.planOptions">套餐选项 Plan options</label>
+          <div class="plan-options-box">
+            <div class="form-field"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="pc_idType_group" data-field="idType"></div></div>
+            <div class="form-field"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="pc_workType_group" data-field="workType"></div></div>
+            <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="pc_contractLength_group" data-field="contractLength"></div></div>
+            <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pc_company_group" data-field="company"></div></div>
+            <div class="form-field"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="pc_partnerCompany_group" data-field="partnerCompany"></div></div>
+            <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pc_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+            <div class="form-field full"><label data-i18n="f.plan">套餐名称 Plan name</label><div class="tile-radio-group" id="pc_plan_group" data-field="plan"></div></div>
+          </div>
+        </div>
+
+        <div class="form-hr"></div>
+        <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="pc_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pc_activationDate" type="date"></div>
+        <div class="form-field full"><label data-i18n="f.simType">SIM 类型</label><div class="tile-radio-group" id="pc_simType_group" data-field="simType"></div></div>
+        <div class="form-field"><label data-i18n="f.monthlyFee">月租费（客户付给运营商，非本店收入）</label><input id="pc_monthlyFee" type="number" min="0"></div>
+        <div class="form-field full"><label data-i18n="f.handlerName">办理人 Handled by</label><div class="tile-radio-group" id="pc_handlerName_group" data-field="handlerName"></div></div>
+
+        <div class="form-hr"></div>
+        <div class="form-subtitle" data-i18n="f.profitSection">公司价格与折扣 Company price & discount</div>
+        <div class="form-field"><label data-i18n="f.expectedProfit">公司价格 Company price（运营商目录/预估价，非最终结算价）</label><input id="pc_expectedProfit" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.usimFee">USIM 费用 USIM fee（本店承担的成本）</label><input id="pc_usimFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣 Discount / month</label><input id="pc_discountPerMonth" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountMonths">折扣月数 Discount months</label><input id="pc_discountMonths" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income（公司价格 − 折扣 − USIM费用）</label><input id="pc_netExpectedPreview" disabled></div>
+
+        <div class="form-field full"><label data-i18n="f.referralFriend">介绍人 Referred by (朋友姓名，如有)</label><input id="pc_referralFriend" placeholder="朋友姓名"></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pc_notes"></textarea></div>
+      </div>
+      <div class="section-desc" style="margin-top:6px;" data-i18n="f.actualProfitHint">💡 「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在「保存客户」后于表格视图中随时补填。</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="savePostpaidCustomerBtn" data-i18n="btn.saveCustomer">保存客户</button>
+    </div>
+  </div>
+</div>
+
+<!-- customer modal -->
+<div class="overlay" id="customerModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" id="customerModalTitle" data-i18n="modal.newCustomer">新建客户</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="customerForm">
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="f_name" class="uppercase-input" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.phone">联系电话</label><input id="f_phone" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="f_nationality" class="uppercase-input" data-i18n-ph="f.nationalityPh" placeholder="例如：CHINA"></div>
+        <div class="form-field"><label data-i18n="f.dob">出生日期（6位数字 YYMMDD）</label><input id="f_dob" placeholder="예: 040728" maxlength="6" inputmode="numeric"></div>
+        <div class="form-field full"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="f_idType_group" data-field="idType"></div></div>
+        <div class="form-field"><label data-i18n="f.idNumber">证件号码 (ARC/Passport)</label><input id="f_idNumber" class="uppercase-input"></div>
+        <div class="form-field" id="f_idExpiryField"><label data-i18n="f.idExpiry">证件有效期至</label><input id="f_idExpiry" type="date"></div>
+        <div class="form-field full"><label data-i18n="f.occupation">职业</label><div class="tile-radio-group" id="f_occupation_group" data-field="occupation"></div></div>
+        <div class="form-field"><label data-i18n="f.years">在韩年数</label><input id="f_years" type="number" min="0" step="0.5"></div>
+        <div class="form-field"><label data-i18n="f.referral">客户来源</label><select id="f_referral"></select></div>
+        <div class="form-field"><label data-i18n="f.carrierType">通信网 Carrier</label><select id="f_carrierType"><option value="SKT">SKT</option><option value="KT">KT</option><option value="LG">LG</option></select></div>
+        <div class="form-field"><label data-i18n="f.planType">业务类型 Plan type</label><select id="f_planType"></select></div>
+        <div class="form-field"><label data-i18n="f.branchOffice">接收处管理编码 Branch office</label><select id="f_branchOffice"><option value="KY0000489">KY0000489</option><option value="시엔에스">시엔에스</option></select></div>
+        <div class="form-field"><label data-i18n="f.handlerName">办理人 Handled by</label><select id="f_handlerName"><option value="Jason">Jason</option><option value="Jihan">Jihan</option><option value="Himobile365">Himobile365</option></select></div>
+        <div class="form-field full"><label data-i18n="f.address">地址</label><select id="f_address"></select></div>
+        <div class="form-field full"><label data-i18n="f.rating">客户评分</label><div class="rating-stars" id="f_rating">★★★★★</div></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="f_notes" data-i18n-ph="f.notesPh" placeholder="职业、客户来源等"></textarea></div>
+
+        <div class="prepaid3m-box" id="prepaid3mFields">
+          <div class="section-desc" id="prepaid3mHint" data-i18n="prepaid3m.hint">先付卡为一次性付款，价格根据所选天数自动带入（可修改）；选择90天套餐时会自动套用프리티电信（Preeti Telecom）申请表，其余天数请另外选择对应模板</div>
+          <div class="prepaid3m-fields">
+            <div class="form-field full"><label class="tile-radio-required" data-i18n="f.prepaidPlan">充值套餐 Plan</label><div class="tile-radio-group" id="p3_prepaidPlan_group" data-field="prepaidPlan"></div></div>
+            <div class="form-field"><label data-i18n="f.price">价格 Price（一次性付款 one-time payment）</label>
+              <div class="currency-input-wrap"><span class="currency-badge" id="p3_currencyBadge">₩</span><input id="p3_price" type="number" min="0"></div>
+            </div>
+            <div class="form-field"><label data-i18n="f.discount">折扣 Discount</label><input id="p3_discount" type="number" min="0" value="0"></div>
+            <div class="form-field"><label data-i18n="f.finalPrice">最终价格 Final price</label><input id="p3_finalPricePreview" disabled></div>
+            <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호 USIM number</label><input id="p3_usimNumber" placeholder="USIM Serial Number"></div>
+            <div class="form-field full"><label data-i18n="f.simType">SIM 类型</label><div class="tile-radio-group" id="p3_simType_group" data-field="simType"></div></div>
+            <div class="form-field full"><label data-i18n="f.company">회사명 Company</label><div class="tile-radio-group" id="p3_company_group" data-field="company"></div></div>
+            <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="p3_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+            <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="p3_number" placeholder="010-0000-0000"></div>
+            <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="p3_activationDate" type="date"></div>
+            <div class="form-field full"><label data-i18n="print.template">打印模板</label><select id="p3_template"></select></div>
+            <div class="form-field full" id="p3_paymentMethodField"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="p3_paymentMethod_group" data-field="paymentMethod"></div></div>
+          </div>
+        </div>
+
+        <!-- shown only when editing an existing postpaid customer's profile — the postpaid
+             equivalent of the prepaid box above, so "Edit profile" has the same full field
+             access as creating a new customer would, regardless of plan type -->
+        <div class="prepaid3m-box" id="postpaidEditFields" style="display:none;">
+          <div class="section-desc" data-i18n="postpaidEdit.hint">编辑该客户当前后付套餐的完整信息</div>
+          <div class="prepaid3m-fields">
+            <div class="form-field full"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="pe_workType_group" data-field="workType"></div></div>
+            <div class="form-field full"><label data-i18n="f.plan">套餐名称</label><div class="tile-radio-group" id="pe_plan_group" data-field="plan"></div></div>
+            <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="pe_contractLength_group" data-field="contractLength"></div></div>
+            <div class="form-field full"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pe_company_group" data-field="company"></div></div>
+            <div class="form-field full"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="pe_partnerCompany_group" data-field="partnerCompany"></div></div>
+            <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pe_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+            <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="pe_number" placeholder="010-0000-0000"></div>
+            <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pe_activationDate" type="date"></div>
+            <div class="form-field"><label data-i18n="f.monthlyFee">月租费</label><input id="pe_monthlyFee" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.expectedProfit">公司价格 Company price</label><input id="pe_expectedProfit" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.actualProfit">公司实际结算价</label><input id="pe_actualProfit" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.usimFee">USIM 费用</label><input id="pe_usimFee" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="pe_discountPerMonth" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.discountMonths">折扣月数</label><input id="pe_discountMonths" type="number" min="0"></div>
+            <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入</label><input id="pe_netExpectedPreview" disabled></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="deleteCustomerBtn" style="margin-right:auto;display:none;" data-i18n="btn.deleteCustomer">删除客户</button>
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="saveCustomerBtn" data-i18n="btn.saveCustomer">保存客户</button>
+      <button class="btn btn-primary" id="savePrintCustomerBtn" style="display:none;background:var(--orange);">🖨 <span data-i18n="btn.savePrint">保存并打印申请表</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- customer detail modal -->
+<div class="overlay" id="detailModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.customerProfile">客户档案</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="detailDeleteBtn" style="margin-right:auto;" data-i18n="btn.deleteCustomer">删除客户</button>
+      <button class="btn btn-ghost" id="detailEditBtn" data-i18n="btn.edit">编辑资料</button>
+      <button class="btn btn-primary" id="detailAddServiceBtn" data-i18n="btn.addService">＋ 新增业务</button>
+    </div>
+  </div>
+</div>
+
+<!-- order/service modal -->
+<div class="overlay" id="orderModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" id="orderModalTitle" data-i18n="modal.newOrder">新增业务</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="orderForm">
+        <div class="form-field full"><label data-i18n="f.customer">客户</label><select id="o_customer"></select></div>
+        <div class="form-subtitle" data-i18n="f.serviceInfo">业务信息</div>
+        <div class="form-field"><label data-i18n="f.serviceType">业务类型</label><select id="o_type"></select></div>
+        <div class="form-field" id="o_planDurationField" style="display:none;"><label data-i18n="f.contractLength">合约期限</label><select id="o_planDuration">
+          <option value="185">185일 (185 days)</option>
+          <option value="245">245일 (245 days)</option>
+          <option value="365">365일 (365 days)</option>
+        </select></div>
+        <div class="form-field" id="o_companyField" style="display:none;"><label data-i18n="f.company">가입회사 Company</label><select id="o_company"></select></div>
+        <div class="form-field" id="o_partnerCompanyField" style="display:none;"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><select id="o_partnerCompany"></select></div>
+        <div class="form-field full"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="o_carrierType_group" data-field="carrierType"></div></div>
+        <div class="form-field"><label data-i18n="f.plan">套餐名称</label><input id="o_plan" placeholder="360 / 60天"></div>
+        <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="o_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.simType">SIM 类型</label><select id="o_simType"><option value="physical" data-i18n="opt.physical">实体卡</option><option value="esim">eSIM</option></select></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="o_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.durationDays">合同时长（天）</label><input id="o_durationDays" type="number" min="0" placeholder="30 / 60 / 90 / 365"></div>
+        <div class="form-field"><label data-i18n="f.expiryDate">到期日期</label><input id="o_expiryDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.status">办理状态</label><select id="o_status"></select></div>
+        <div class="form-field" id="o_usedDaysField" style="display:none;"><label data-i18n="f.usedDays">已使用天数 Used days</label><input id="o_usedDaysDisplay" disabled></div>
+        <div class="form-hr"></div>
+        <div class="form-subtitle" id="o_feeInfoTitle" data-i18n="f.feeInfo">费用信息</div>
+        <div class="form-field" id="o_monthlyFeeField"><label data-i18n="f.monthlyFee">月租费</label><input id="o_monthlyFee" type="number" min="0"></div>
+        <div class="form-field" id="o_discountField"><label data-i18n="f.discount">折扣</label><input id="o_discount" type="number" min="0"></div>
+        <div class="form-field" id="o_firstMonthPaymentField"><label data-i18n="f.firstMonthPayment">首月费用</label><input id="o_firstMonthPayment" type="number" min="0"></div>
+        <div class="form-field" id="o_activationFeeField"><label data-i18n="f.activationFee">开通费</label><input id="o_activationFee" type="number" min="0"></div>
+        <div class="form-field" id="o_simFeeField"><label data-i18n="f.simFee">SIM 卡费</label><input id="o_simFee" type="number" min="0"></div>
+        <div class="form-hr" id="o_paymentHr"></div>
+        <div class="form-subtitle" id="o_paymentInfoTitle" data-i18n="f.paymentInfo">收款与利润</div>
+        <div class="form-field" id="o_sellingPriceField"><label id="o_sellingPriceLabel" data-i18n="f.sellingPrice">销售价</label><input id="o_sellingPrice" type="number" min="0"></div>
+        <div class="form-field" id="o_costField"><label data-i18n="f.cost">成本</label><input id="o_cost" type="number" min="0"></div>
+        <div class="form-field" id="o_receivedField"><label data-i18n="f.received">已收金额</label><input id="o_received" type="number" min="0"></div>
+        <div class="form-field" id="o_paymentMethodField"><label data-i18n="f.paymentMethod">付款方式</label><select id="o_paymentMethod"></select></div>
+        <div class="form-field" id="o_commissionField"><label data-i18n="f.commission">返点 / 提成</label><input id="o_commission" type="number" min="0"></div>
+        <div class="form-field" id="o_expectedProfitField" style="display:none;"><label data-i18n="f.expectedProfit">公司价格 Company price</label><input id="o_expectedProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_actualProfitField" style="display:none;"><label data-i18n="f.actualProfit">公司实际结算价 Real company price</label><input id="o_actualProfit" type="number" min="0"></div>
+        <div class="form-field" id="o_usimFeeField" style="display:none;"><label data-i18n="f.usimFee">USIM 费用 USIM fee</label><input id="o_usimFee" type="number" min="0"></div>
+        <div class="form-field" id="o_discountPerMonthField" style="display:none;"><label data-i18n="f.discountPerMonth">每月折扣</label><input id="o_discountPerMonth" type="number" min="0"></div>
+        <div class="form-field" id="o_discountMonthsField" style="display:none;"><label data-i18n="f.discountMonths">折扣月数</label><input id="o_discountMonths" type="number" min="0"></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="o_notes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="saveOrderBtn" data-i18n="btn.saveOrder">保存业务</button>
+    </div>
+  </div>
+</div>
+
+<!-- change subscription modal (used for both "Change to Postpaid" and "Change Plan") -->
+<div class="overlay" id="changeSubModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" id="changeSubModalTitle" data-i18n="modal.changeToPostpaid">转为后付卡</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" id="changeSubCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="section-desc" style="margin-bottom:14px;color:var(--blue);">💡 <span data-i18n="cs.autofillHint">姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改</span></div>
+      <div class="form-grid">
+        <div class="form-field"><label data-i18n="f.name">客户姓名</label><input id="cs_name" placeholder="例如: KIM MINJUN"></div>
+        <div class="form-field"><label data-i18n="f.nationality">国籍 / Country</label><input id="cs_nationality" placeholder="例如：CHINA"></div>
+        <div class="form-field"><label data-i18n="f.number">电话号码</label><input id="cs_number" placeholder="010-0000-0000"></div>
+        <div class="form-field"><label data-i18n="f.occupation">职业</label><input id="cs_occupation"></div>
+        <div class="form-field"><label data-i18n="f.idType">证件类型</label><div class="tile-radio-group" id="cs_idType_group" data-field="idType"></div></div>
+        <div class="form-field"><label data-i18n="cs.idNumberArc">证件号码 (ARC)</label><input id="cs_idNumber"></div>
+
+        <div class="form-field full">
+          <label data-i18n="f.planOptions">套餐选项 Plan options</label>
+          <div class="plan-options-box">
+            <div class="form-field"><label class="tile-radio-required" data-i18n="f.workType">业务向 Work type</label><div class="tile-radio-group" id="cs_workType_group" data-field="workType"></div></div>
+            <div class="form-field"><label data-i18n="f.contractLength">合约期限</label><div class="tile-radio-group" id="cs_contractLength_group" data-field="contractLength"></div></div>
+            <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="cs_company_group" data-field="company"></div></div>
+            <div class="form-field"><label data-i18n="f.partnerCompany">파트너사 Partner company</label><div class="tile-radio-group" id="cs_partnerCompany_group" data-field="partnerCompany"></div></div>
+            <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="cs_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+          </div>
+        </div>
+
+        <div class="form-hr"></div>
+        <div class="form-field full"><label data-i18n="f.plan">套餐名称</label><div class="tile-radio-group" id="cs_plan_group" data-field="plan"></div></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="cs_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.monthlyFee">月租费（客户付给运营商，非本店收入）</label><input id="cs_monthlyFee" type="number" min="0"></div>
+        <div class="form-field full"><label data-i18n="f.handlerName">办理人 Handled by</label><div class="tile-radio-group" id="cs_handlerName_group" data-field="handlerName"></div></div>
+
+        <div class="form-hr"></div>
+        <div class="form-subtitle" data-i18n="f.profitSection">公司价格与折扣 Company price & discount</div>
+        <div class="form-field"><label data-i18n="f.expectedProfit">公司价格 Company price</label><input id="cs_expectedProfit" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.usimFee">USIM 费用 USIM fee</label><input id="cs_usimFee" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountPerMonth">每月折扣 Discount / month</label><input id="cs_discountPerMonth" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.discountMonths">折扣月数 Discount months</label><input id="cs_discountMonths" type="number" min="0"></div>
+        <div class="form-field"><label data-i18n="f.netExpectedProfit">预期收入 Expected income</label><input id="cs_netExpectedPreview" disabled></div>
+
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="cs_notes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="saveChangeSubBtn" data-i18n="btn.confirmChange">确认变更</button>
+    </div>
+  </div>
+</div>
+
+<!-- shared prepaid plan assignment modal — used for both "Recharge" (existing prepaid
+     customer whose plan is ending/ended) and "Change to Prepaid" (postpaid customer
+     switching back), since both are really the same action: assign a fresh prepaid plan
+     to a customer who already exists in the system -->
+<div class="overlay" id="prepaidAssignModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="prepaidAssignModalTitle">Recharge</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" id="prepaidAssignCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="form-grid">
+        <div class="form-field full"><label class="tile-radio-required" data-i18n="f.prepaidPlan">充值套餐 Plan</label><div class="tile-radio-group" id="pa_prepaidPlan_group" data-field="prepaidPlan"></div></div>
+        <div class="form-field"><label data-i18n="f.price">价格 Price</label>
+          <div class="currency-input-wrap"><span class="currency-badge" id="pa_currencyBadge">₩</span><input id="pa_price" type="number" min="0"></div>
+        </div>
+        <div class="form-field"><label data-i18n="f.discount">折扣 Discount</label><input id="pa_discount" type="number" min="0" value="0"></div>
+        <div class="form-field"><label data-i18n="f.finalPrice">最终价格 Final price</label><input id="pa_finalPricePreview" disabled></div>
+        <div class="form-field"><label data-i18n="f.activationDate">开通日期</label><input id="pa_activationDate" type="date"></div>
+        <div class="form-field"><label data-i18n="f.usimNumber">USIM 일련번호</label><input id="pa_usimNumber"></div>
+        <div class="form-field"><label data-i18n="f.company">가입회사 Company</label><div class="tile-radio-group" id="pa_company_group" data-field="company"></div></div>
+        <div class="form-field"><label data-i18n="f.svcCarrierType">통신사 Carrier type</label><div class="tile-radio-group" id="pa_svcCarrierType_group" data-field="svcCarrierType"></div></div>
+        <div class="form-field full"><label data-i18n="f.notes">备注</label><textarea id="pa_notes"></textarea></div>
+        <div class="form-field full"><label data-i18n="f.paymentMethod">付款方式 Payment method</label><div class="tile-radio-group" id="pa_paymentMethod_group" data-field="paymentMethod"></div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="savePrepaidAssignBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- cancel subscription modal -->
+<div class="overlay" id="cancelSubModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.cancelSubscription">取消订阅</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" id="cancelSubCurrentPlan" style="margin-bottom:14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;"></div>
+      <div class="form-grid">
+        <div class="form-field full">
+          <label data-i18n="f.cancelReason">取消原因</label>
+          <select id="cs_cancelReason">
+            <option value="cancelled" data-i18n="reason.cancelled">客户不再续约 / 主动停用</option>
+            <option value="switched_carrier" data-i18n="reason.switched_carrier">客户转换其他通信社</option>
+            <option value="other" data-i18n="reason.other">其他原因</option>
+          </select>
+        </div>
+        <div class="form-field full"><label data-i18n="f.notes">备注（可选）</label><textarea id="cs_cancelNotes"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.back">返回</button>
+      <button class="btn btn-danger" id="confirmCancelSubBtn" data-i18n="btn.confirmCancel">确认取消订阅</button>
+    </div>
+  </div>
+</div>
+
+<!-- import preview modal -->
+<div class="overlay" id="importModalOverlay">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.importPreview">导入预览</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field full" style="margin-bottom:12px;">
+        <label data-i18n="io.import.sheets">选择要导入的表格 Sheets to import（可多选，例如同时导入先付卡与后付卡）</label>
+        <div class="sheet-select-group" id="importSheetChecklist"></div>
+      </div>
+      <div id="importSingleSheetControls" class="form-grid" style="margin-bottom:10px;">
+        <div class="form-field"><label data-i18n="io.import.headerRow">标题行 Header row</label><input type="number" id="importHeaderRow" min="1" style="width:100%;"></div>
+        <div class="form-field full">
+          <label data-i18n="io.import.subType">这批客户属于 Customer type for this sheet</label>
+          <select id="importSubType">
+            <option value="auto" data-i18n="io.import.subTypeAuto">自动判断（根据表格名称）Auto-detect from sheet name</option>
+            <option value="prepaid" data-i18n="io.import.subTypePrepaid">先付卡 Prepaid</option>
+            <option value="postpaid" data-i18n="io.import.subTypePostpaid">后付卡 Postpaid</option>
+          </select>
+        </div>
+      </div>
+      <div class="section-desc" id="importInfo" style="margin-bottom:10px;"></div>
+      <div class="import-preview-table"><table id="importPreviewTable"></table></div>
+      <div id="importMultiSheetSummary"></div>
+      <div class="section-desc" id="importNameWarning" style="margin-top:8px;color:#C0392B;display:none;"></div>
+      <div class="import-mode-box">
+        <div class="section-subtitle" data-i18n="io.import.modeTitle">导入方式</div>
+        <label class="import-mode-opt">
+          <input type="radio" name="importMode" value="merge" id="importMode_merge" checked>
+          <span>
+            <b data-i18n="io.import.modeMerge">与现有客户合并（自动跳过重复项）</b>
+            <div class="section-desc" data-i18n="io.import.modeMergeDesc">保留现有客户档案，仅新增导入文件中不重复的客户</div>
+            <label class="import-skipdupe-opt" id="importSkipDupeWrap">
+              <input type="checkbox" id="importSkipDupes" checked>
+              <span data-i18n="io.import.skipDupes">自动跳过重复客户（按姓名或电话匹配）</span>
+            </label>
+            <div class="section-desc" id="importSkipDupesHint" style="margin-left:26px;"></div>
+          </span>
+        </label>
+        <label class="import-mode-opt">
+          <input type="radio" name="importMode" value="replace" id="importMode_replace">
+          <span>
+            <b data-i18n="io.import.modeReplace">清空现有客户，改用此文件的数据</b>
+            <div class="section-desc" data-i18n="io.import.modeReplaceDesc">导入前会先自动导出当前客户数据备份（Excel），再清空并载入新文件</div>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="confirmImportBtn" data-i18n="btn.confirmImport">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- template editor modal -->
+<div class="overlay" id="templateEditorOverlay">
+  <div class="modal wide" style="max-width:960px;">
+    <div class="modal-head">
+      <div class="modal-title" id="templateEditorTitle" data-i18n="tpl.editor.new">新建模板</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="form-field"><label data-i18n="tpl.name">模板名称</label><input id="tpl_name" placeholder="例如：LG U+ 알뜰폰 3个月先付卡申请表"></div>
+        <div class="form-field"><label data-i18n="tpl.carrier">通信社</label><input id="tpl_carrier" placeholder="LG U+ 알뜰폰"></div>
+      </div>
+      <div id="tplUploadZone" class="dropzone" style="margin-bottom:14px;">
+        <div style="font-size:26px;margin-bottom:8px;">🖼️</div>
+        <div data-i18n="tpl.uploadHint">点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）</div>
+        <input type="file" id="tplImageInput" accept="image/*" style="display:none">
+      </div>
+      <div class="tpl-editor-wrap" id="tplEditorWrap" style="display:none;">
+        <div class="tpl-canvas-col">
+          <div class="tpl-hint" style="margin-bottom:8px;" data-i18n="tpl.canvasHint">点击图片任意位置添加字段，拖动字段调整位置</div>
+          <div class="tpl-canvas" id="tplCanvas"></div>
+        </div>
+        <div class="tpl-side-col">
+          <button class="btn btn-ghost btn-sm" id="tplChangeImageBtn" data-i18n="tpl.changeImage">更换图片</button>
+          <div class="section-title" style="font-size:13px;" data-i18n="tpl.fieldsList">已添加字段</div>
+          <div id="tplFieldList" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="tplDeleteBtn" style="margin-right:auto;display:none;" data-i18n="btn.delete">删除</button>
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="tplSaveBtn" data-i18n="btn.saveTemplate">保存模板</button>
+    </div>
+  </div>
+</div>
+
+<!-- field edit popover (simple inline panel reused inside list) -->
+
+<!-- print preview modal -->
+<div class="overlay" id="printPreviewOverlay">
+  <div class="modal wide" style="max-width:900px;">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="print.preview">打印预览</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="margin-bottom:12px;">
+        <div class="form-field"><label data-i18n="print.template">选择模板</label><select id="pp_template"></select></div>
+        <div class="form-field" style="justify-content:flex-end;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text-soft);margin-top:22px;">
+            <input type="checkbox" id="pp_showbg" style="width:16px;height:16px;"> <span data-i18n="print.includeBg">预览显示底图（打印在空白纸上勾选此项）</span>
+          </label>
+        </div>
+      </div>
+      <div style="max-height:62vh;overflow:auto;background:#EDEFF4;border-radius:10px;padding:16px;">
+        <div class="print-preview-scale-wrap">
+          <div class="print-preview-scale-inner" style="width:105mm;height:148.5mm;overflow:hidden;">
+            <div id="printPreviewArea" style="transform-origin:top left;transform:scale(.5);"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-desc" style="margin-top:10px;" data-i18n="print.bgHint">如果打印出来没有底图，请在浏览器打印对话框中开启「背景图形 / Background graphics」选项后再打印。</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="pp_printBtn">🖨 <span data-i18n="btn.print">打印</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="printOverlay"></div>
+
+<div class="toast" id="toast"></div>
+<div class="cell-popover" id="cellPopover">
+  <div class="cell-popover-title" id="cellPopoverTitle"></div>
+  <div class="cell-popover-options" id="cellPopoverOptions"></div>
+</div>
+<div class="cell-popover" id="statBreakdownPopover">
+  <div class="cell-popover-title" id="statBreakdownTitle"></div>
+  <div id="statBreakdownBody" style="padding:4px 2px;"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
