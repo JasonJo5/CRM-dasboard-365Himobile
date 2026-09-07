@@ -2986,9 +2986,11 @@ function buildPrepaidServiceFromForm(cust){
     number: document.getElementById('p3_number').value.trim(),
     usimNumber: document.getElementById('p3_usimNumber').value.trim(),
     simType: document.getElementById('p3_simType_group').dataset.selected || 'physical', activationDate, durationDays,
-    sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || '', commission:0, notes:'',
+    expiryDate: d.toISOString().slice(0,10), status:'active',
+    price, discount, sellingPrice:finalPrice, cost:0, received:finalPrice, paymentMethod: document.getElementById('p3_paymentMethod_group').dataset.selected || '', commission:0, notes:'',
     company: document.getElementById('p3_company_group').dataset.selected || '',
     svcCarrierType: document.getElementById('p3_svcCarrierType_group').dataset.selected || '',
+    monthlyFee:0, firstMonthPayment:0, activationFee:0, simFee:0,
   };
 }
 function saveCustomerAndPrint(){
@@ -3127,7 +3129,7 @@ function openCustomerDetail(id){
     <div class="profile-head">
       <div class="profile-avatar">${initials(c.name)}</div>
       <div>
-        <div class="profile-name">${escapeHtml(c.name)}</div>
+        <div class="profile-name">${escapeHtml(c.name)}<button class="copy-name-btn copy-name-btn-lg" data-copy-name="${c.id}" title="${t('btn.copyName')}">📋</button></div>
         <div class="profile-tags">
           <span class="pill pill-blue">${c.nationality}</span>
           <span class="pill pill-gray">${(c.idType?t('idtype.'+c.idType):'—')} · ${escapeHtml(c.idNumber||'—')}</span>
@@ -3174,6 +3176,12 @@ function openCustomerDetail(id){
   // removed entirely — "Edit profile" above is now the single edit path for this customer.
   document.getElementById('detailBody').querySelectorAll('[data-print-service]').forEach(b=>{
     b.addEventListener('click', ()=> quickPrintService(id, b.dataset.printService));
+  });
+  document.getElementById('detailBody').querySelectorAll('[data-copy-name]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      copyCustomerNameToClipboard(btn.getAttribute('data-copy-name'), btn);
+    });
   });
   const btnToPostpaid = document.getElementById('btnChangeToPostpaid');
   if(btnToPostpaid) btnToPostpaid.addEventListener('click', ()=> openChangeSubModal(id, 'to_postpaid'));
