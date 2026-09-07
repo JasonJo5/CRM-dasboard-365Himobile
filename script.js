@@ -44,7 +44,7 @@ const I18N = {
     'sub.sheet':'像表格一样直接编辑客户与套餐信息',
     'sheet.hint':'💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存',
     'sub.dashboard':'门店运营总览','sub.customers':'客户资料与套餐管理','sub.ai':'商机识别、优先级排序与营收预测','sub.reminders':'到期、合同与信息变更提醒','sub.orders':'先付、后付、号码移动等业务记录','sub.reports':'营收、利润与客户结构报表','sub.templates':'运营商申请表自动填写与打印','sub.io':'Excel 导入与数据备份',
-    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并',
+    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并','btn.copyName':'复制姓名',
     'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回','btn.undoCancel':'恢复订阅 Reactivate',
     'btn.recharge':'充值续约','btn.changeToPrepaid':'转为先付卡','btn.confirmRecharge':'确认充值',
     'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布',
@@ -136,7 +136,7 @@ const I18N = {
     'sub.sheet':'Edit customer & plan info directly, like a spreadsheet',
     'sheet.hint':'💡 Click a colored tag to pick a new value; click text/numbers/dates to edit directly — press Enter or click away to save',
     'sub.dashboard':'Store operations overview','sub.customers':'Customer profiles & plan management','sub.ai':'Opportunity detection, priority ranking & revenue forecasts','sub.reminders':'Expiry, contract & info-change reminders','sub.orders':'Prepaid, postpaid, porting and other service records','sub.reports':'Revenue, profit and customer breakdowns','sub.templates':'Auto-fill and print carrier application forms','sub.io':'Excel import and data backup',
-    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge',
+    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge','btn.copyName':'Copy name',
     'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back','btn.undoCancel':'Reactivate',
     'btn.recharge':'Recharge','btn.changeToPrepaid':'Change to Prepaid','btn.confirmRecharge':'Confirm Recharge',
     'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source',
@@ -481,6 +481,27 @@ function sheetReadonlyCell(text){
   return `<span class="sheet-readonly">${escapeHtml(text==null?'—':String(text))}</span>`;
 }
 function sheetRecordFor(type, id){ return type==='customer' ? getCustomer(id) : getService(id); }
+/* Copies a customer's name straight to the clipboard from their row in Sheet View — for
+   pasting into a messaging app, search box, print form, etc. without having to manually
+   select the text first. Briefly swaps the button's icon to a checkmark as confirmation,
+   since clipboard writes have no other visible feedback of their own. */
+async function copyCustomerNameToClipboard(customerId, btnEl){
+  const cust = getCustomer(customerId);
+  if(!cust) return;
+  try{
+    await navigator.clipboard.writeText(cust.name);
+    if(btnEl){
+      const original = btnEl.textContent;
+      btnEl.textContent = '✓';
+      btnEl.classList.add('copied');
+      setTimeout(()=>{ btnEl.textContent = original; btnEl.classList.remove('copied'); }, 1200);
+    }
+  }catch(err){
+    // clipboard access can be blocked (e.g. insecure context, browser permission) — falls
+    // back to the toast so the person still sees SOMETHING happened, even if not a silent copy
+    toast(LANG==='zh'?'无法复制，请手动选择姓名':'Couldn\'t copy — please select the name manually');
+  }
+}
 /* single choke point for writing a sheet edit back to the data model, keeping expiry dates
    in sync when activation date or contract length changes on a service */
 /* Deferring the table rebuild after a commit (rather than doing it immediately) protects
@@ -731,7 +752,7 @@ function renderSheetPage(){
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
       const commonCells = `
-        <td class="name-cell" title="${escapeHtml(c.name)}" style="cursor:pointer;" data-open-customer="${c.id}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
+        <td class="name-cell" title="${escapeHtml(c.name)}" style="cursor:pointer;" data-open-customer="${c.id}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span><button class="copy-name-btn" data-copy-name="${c.id}" title="${t('btn.copyName')}">📋</button></td>
         <td>${sheetTextCell('service',svc.id,'activationDate',svc.activationDate,'date')}</td>
         <td>${sheetTextCell('service',svc.id,'expiryDate',svc.expiryDate,'date')}</td>
         <td>${sheetPillCell('customer',c.id,'planType',c.planType,['신규가입','번호이동','명의변경','기간연장','선불전환'], t('f.planType'))}</td>
@@ -784,6 +805,12 @@ function renderSheetPage(){
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
+  });
+  document.getElementById('sheetTable').querySelectorAll('[data-copy-name]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation(); // otherwise this click also bubbles up and opens the customer's detail page
+      copyCustomerNameToClipboard(btn.getAttribute('data-copy-name'), btn);
+    });
   });
   if(scrollWrap && savedScrollLeft!==undefined){
     scrollWrap.scrollLeft = savedScrollLeft;
@@ -869,7 +896,7 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
       var mergeBtn = '';
     }
     return `<tr class="row-click ${groupBand}" data-open-customer="${c.id}">
-      <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span></td>
+      <td class="name-cell" title="${escapeHtml(c.name)}"><span class="avatar">${initials(c.name)}</span><span class="name-text">${escapeHtml(c.name)}</span><button class="copy-name-btn" data-copy-name="${c.id}" title="${t('btn.copyName')}">📋</button></td>
       <td>${escapeHtml(c.phone||'—')}</td>
       <td><span class="cell-ellipsis">${escapeHtml(c.nationality)}</span></td>
       <td>${c.idType?t('idtype.'+c.idType):'—'}</td>
@@ -884,6 +911,12 @@ function renderSheetSimpleView(tab, dupeGroups, filters){
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${rowsHtml}</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
+  });
+  document.getElementById('sheetTable').querySelectorAll('[data-copy-name]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      copyCustomerNameToClipboard(btn.getAttribute('data-copy-name'), btn);
+    });
   });
   document.getElementById('sheetTable').querySelectorAll('[data-merge-group]').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); mergeDuplicateGroup(dupeGroups[Number(el.dataset.mergeGroup)].map(c=>c.id)); renderSheetPage(); });
