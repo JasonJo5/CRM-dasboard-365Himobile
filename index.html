@@ -88,6 +88,16 @@
         <div id="dashDupeBanner" style="display:none;margin-bottom:16px;"></div>
         <div class="grid-4" id="dashStats" style="margin-bottom:16px;"></div>
         <div class="grid-4" id="dashStats2" style="margin-bottom:16px;"></div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
+              <div class="section-title" data-i18n="dash.paymentToday.title">今日付款方式汇总（先付）</div>
+              <div class="section-desc" data-i18n="dash.paymentToday.desc">今日各付款方式的客户数与收入合计</div>
+            </div>
+            <a class="link" data-nav="reports" data-i18n="dash.viewall">查看全部 →</a>
+          </div>
+          <div id="dashPaymentToday" style="margin-top:10px;"></div>
+        </div>
         <div class="grid-2">
           <div class="card">
             <div class="section-head">
@@ -398,6 +408,11 @@
         </div>
         <div class="grid-4" id="repIncomeCards" style="margin-bottom:16px;"></div>
         <div class="grid-2" id="repSecondaryStats" style="margin-bottom:16px;"></div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-title" data-i18n="rep.monthly.paymentBreakdownTitle">付款方式汇总（先付）</div>
+          <div class="section-desc" data-i18n="rep.monthly.paymentBreakdownDesc">按付款方式统计所选月份先付客户数与收入合计</div>
+          <div id="repMonthlyPaymentBreakdown" style="margin-top:10px;"></div>
+        </div>
         <div class="grid-2">
           <div class="card">
             <div class="section-title" data-i18n="rep.byType">按业务类型的营收 / 收入</div>
