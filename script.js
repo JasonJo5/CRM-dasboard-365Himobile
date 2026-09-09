@@ -47,7 +47,7 @@ const I18N = {
     'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并','btn.copyName':'复制姓名',
     'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回','btn.undoCancel':'恢复订阅 Reactivate',
     'btn.recharge':'充值续约','btn.changeToPrepaid':'转为先付卡','btn.confirmRecharge':'确认充值',
-    'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布',
+    'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布','dash.paymentToday.title':'今日付款方式汇总（先付）','dash.paymentToday.desc':'今日各付款方式的客户数与收入合计',
     'dash.quickSearch':'🔍 快速搜索客户姓名、号码或证件号...','dash.noMatches':'没有找到匹配的客户','dash.dupeBanner':'发现 {groups} 组重复客户（共 {n} 位），建议检查并合并','dash.dupeBannerBtn':'立即查看','dash.renewals.title':'合约即将到期（30天内）','dash.renewals.desc':'后付卡合约即将到期，建议提前联系续约','dash.renewals.emptyTitle':'近期没有合约到期 👍','dash.renewals.emptyDesc':'未来30天内没有后付卡合约到期','dash.winback.title':'流失客户 / 待挽回','dash.winback.desc':'已取消订阅、尚未重新开通的客户','dash.winback.emptyTitle':'暂无流失客户','dash.winback.emptyDesc':'所有曾经订阅过的客户目前都有有效订阅','dash.revenueTrend.title':'营收趋势（近6个月）','dash.cancelReasons.title':'取消原因分布','dash.noCancellations':'近6个月内没有取消记录 👍',
     'stat.totalCustomers':'客户总数','stat.newThisMonth':'本月新开通','stat.followup7':'7天内需跟进','stat.revenueMonth':'本月实收','stat.fromRecords':'来自现有先付 / 后付记录','stat.vsLastMonth':'较上月','stat.includesExpiry':'包含到期与首月入账','stat.expiringSoon':'即将到期客户','stat.infoChangeNeeded':'需信息变更客户',
     'stat.activePrepaid':'当前先付卡客户','stat.activePostpaid':'当前后付卡客户','stat.activeBook':'目前有效订阅','stat.outstanding':'未收总额','stat.outstandingSub':'所有有效及近期订单','stat.renewalsSoon':'即将到期合约','stat.renewalsSub':'30天内到期（后付卡）','stat.newActivity':'较上月新增',
@@ -78,7 +78,7 @@ const I18N = {
     'type.prepaid':'先付卡','type.postpaid':'后付卡','type.porting':'号码移动','type.transfer':'过户 / 名义变更','type.topup':'充值 / 续费','type.cancel':'解约',
     'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.over_contract':'已超合约期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
     'pay.cash':'现金','pay.transfer':'银行转账','pay.card':'刷卡','pay.kakaopay':'KakaoPay','pay.other':'其他',
-    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更',
+    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期',
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
@@ -86,7 +86,7 @@ const I18N = {
     'rep.view.monthly':'📅 月度报表','rep.view.daily':'📆 每日报表','rep.monthlyComparison':'月度对比 — 先付 / 后付收入','rep.prepaidIncome':'先付总收入','rep.postpaidExpected':'后付预期收入','rep.postpaidActual':'后付实际收入','rep.accumulated':'累计总收入',
     'rep.daily.title':'每日报表','rep.daily.desc':'按日期查看先付 / 后付客户数与收入','rep.daily.recent':'近期每日记录','rep.daily.prepaidCustomers':'先付客户数','rep.daily.postpaidCustomers':'后付客户数',
     'col.prepaidCustomers':'先付客户数','col.postpaidCustomers':'后付客户数','col.prepaidIncome':'先付收入','col.postpaidExpected':'后付预期收入','col.postpaidActual':'后付实际收入','col.monthTotal':'合计','col.date':'日期','col.accumulated':'累计总收入',
-    'rep.daily.prepaidListTitle':'先付客户明细（本日）','rep.daily.postpaidListTitle':'后付客户明细（本日）','rep.daily.paymentBreakdownTitle':'付款方式汇总（先付，本日）','rep.daily.paymentBreakdownDesc':'按付款方式统计当日先付客户数与收入合计','rep.daily.notSet':'未填写',
+    'rep.daily.prepaidListTitle':'先付客户明细（本日）','rep.daily.postpaidListTitle':'后付客户明细（本日）','rep.daily.paymentBreakdownTitle':'付款方式汇总（先付，本日）','rep.daily.paymentBreakdownDesc':'按付款方式统计当日先付客户数与收入合计','rep.daily.notSet':'未填写','rep.monthly.paymentBreakdownTitle':'付款方式汇总（先付）','rep.monthly.paymentBreakdownDesc':'按付款方式统计所选月份先付客户数与收入合计',
     'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入','rep.transactionCount':'笔交易记录','rep.nowPrepaid':'位客户目前为先付卡','rep.nowPostpaid':'位客户目前为后付卡',
     'stat.weekProfit':'本周收入','stat.monthExpected':'本月预期收入','stat.monthActual':'本月实际收入','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
@@ -139,7 +139,7 @@ const I18N = {
     'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge','btn.copyName':'Copy name',
     'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back','btn.undoCancel':'Reactivate',
     'btn.recharge':'Recharge','btn.changeToPrepaid':'Change to Prepaid','btn.confirmRecharge':'Confirm Recharge',
-    'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source',
+    'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source','dash.paymentToday.title':"Today's payment method breakdown (prepaid)",'dash.paymentToday.desc':'Customer count and income total per payment method today',
     'dash.quickSearch':'🔍 Quick search by name, phone, or ID...','dash.noMatches':'No matching customers found','dash.dupeBanner':'Found {groups} duplicate groups ({n} customers total) — worth reviewing and merging','dash.dupeBannerBtn':'Review now','dash.renewals.title':'Contracts ending soon (30 days)','dash.renewals.desc':'Postpaid contracts nearing renewal — reach out ahead of time','dash.renewals.emptyTitle':'No contracts ending soon 👍','dash.renewals.emptyDesc':'No postpaid contracts due for renewal in the next 30 days','dash.winback.title':'Cancelled / win-back opportunities','dash.winback.desc':'Customers who cancelled and haven\'t restarted','dash.winback.emptyTitle':'No lapsed customers','dash.winback.emptyDesc':'Everyone who ever subscribed currently has an active plan','dash.revenueTrend.title':'Revenue trend (last 6 months)','dash.cancelReasons.title':'Cancellation reasons','dash.noCancellations':'No cancellations in the last 6 months 👍',
     'stat.totalCustomers':'Total customers','stat.newThisMonth':'New this month','stat.followup7':'Due within 7 days','stat.revenueMonth':'Revenue this month','stat.fromRecords':'From existing prepaid / postpaid records','stat.vsLastMonth':'vs last month','stat.includesExpiry':'Includes expiries & first-month payments','stat.expiringSoon':'Expiring soon','stat.infoChangeNeeded':'Need info change',
     'stat.activePrepaid':'Active prepaid','stat.activePostpaid':'Active postpaid','stat.activeBook':'Currently active','stat.outstanding':'Outstanding total','stat.outstandingSub':'Across active & recent orders','stat.renewalsSoon':'Contracts renewing soon','stat.renewalsSub':'Postpaid, due within 30 days','stat.newActivity':'New vs last month',
@@ -170,7 +170,7 @@ const I18N = {
     'type.prepaid':'Prepaid SIM','type.postpaid':'Postpaid SIM','type.porting':'Number porting','type.transfer':'Ownership transfer','type.topup':'Top-up / renewal','type.cancel':'Cancellation',
     'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.over_contract':'Over contract','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
     'pay.cash':'Cash','pay.transfer':'Bank transfer','pay.card':'Card','pay.kakaopay':'KakaoPay','pay.other':'Other',
-    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change',
+    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring',
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
@@ -178,7 +178,7 @@ const I18N = {
     'rep.view.monthly':'📅 Monthly Report','rep.view.daily':'📆 Daily Report','rep.monthlyComparison':'Month-to-month comparison — Prepaid / Postpaid income','rep.prepaidIncome':'Prepaid total income','rep.postpaidExpected':'Postpaid expected income','rep.postpaidActual':'Postpaid actual income','rep.accumulated':'Accumulated income',
     'rep.daily.title':'Daily Report','rep.daily.desc':'View prepaid / postpaid customer counts and income by date','rep.daily.recent':'Recent daily records','rep.daily.prepaidCustomers':'Prepaid customers','rep.daily.postpaidCustomers':'Postpaid customers',
     'col.prepaidCustomers':'Prepaid customers','col.postpaidCustomers':'Postpaid customers','col.prepaidIncome':'Prepaid income','col.postpaidExpected':'Postpaid expected','col.postpaidActual':'Postpaid actual','col.monthTotal':'Total','col.date':'Date','col.accumulated':'Accumulated total',
-    'rep.daily.prepaidListTitle':'Prepaid customers (today)','rep.daily.postpaidListTitle':'Postpaid customers (today)','rep.daily.paymentBreakdownTitle':'Payment method breakdown (prepaid, today)','rep.daily.paymentBreakdownDesc':'Customer count and income total for each payment method used today','rep.daily.notSet':'Not set',
+    'rep.daily.prepaidListTitle':'Prepaid customers (today)','rep.daily.postpaidListTitle':'Postpaid customers (today)','rep.daily.paymentBreakdownTitle':'Payment method breakdown (prepaid, today)','rep.daily.paymentBreakdownDesc':'Customer count and income total for each payment method used today','rep.daily.notSet':'Not set','rep.monthly.paymentBreakdownTitle':'Payment method breakdown (prepaid)','rep.monthly.paymentBreakdownDesc':'Customer count and income total for each payment method used in the selected month',
     'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income','rep.transactionCount':'transactions','rep.nowPrepaid':'now prepaid','rep.nowPostpaid':'now postpaid',
     'stat.weekProfit':'Income this week','stat.monthExpected':'Expected income this month','stat.monthActual':'Actual income this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
@@ -314,6 +314,35 @@ const SHEET_PILL_COLORS = [
 function sheetColorFor(list, value){
   const idx = list.indexOf(value);
   return SHEET_PILL_COLORS[(idx>=0?idx:list.length) % SHEET_PILL_COLORS.length];
+}
+/* Builds the "X customers · ₩Y" per-payment-method breakdown HTML from a list of prepaid
+   services — shared by Daily Report, Monthly Report, and the Dashboard widget so all three
+   stay visually and numerically consistent rather than each having their own copy of this
+   grouping logic. Postpaid isn't passed in here at all since it has no payment method
+   concept the way prepaid does — every caller is expected to pre-filter to prepaid only.
+   Blank/unset gets its own bucket rather than being silently dropped, since a customer with
+   no payment method chosen yet is common and still needs to show up in the count. */
+function paymentBreakdownHtml(prepaidServices, emptyMsg){
+  const groups = {};
+  prepaidServices.forEach(s=>{
+    const key = PAYMENT_METHODS.includes(s.paymentMethod) ? s.paymentMethod : '';
+    groups[key] = groups[key] || {count:0, sum:0};
+    groups[key].count++;
+    groups[key].sum += Number(s.sellingPrice)||0;
+  });
+  const rows = Object.entries(groups).sort((a,b)=> b[1].sum-a[1].sum);
+  if(!rows.length) return `<div class="muted" style="padding:10px 4px;">${emptyMsg||(LANG==='zh'?'没有先付记录':'No prepaid signups')}</div>`;
+  return rows.map(([method, v])=>{
+    const label = method ? method : t('rep.daily.notSet');
+    const c = method ? sheetColorFor(PAYMENT_METHODS, method) : {bg:'var(--gray-light)', fg:'var(--text-soft)'};
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span class="pill" style="background:${c.bg};color:${c.fg};">${escapeHtml(label)}</span>
+        <span class="muted" style="font-size:12.5px;">${v.count} ${LANG==='zh'?'位':(v.count===1?'customer':'customers')}</span>
+      </div>
+      <b>${fmtWon(v.sum)}</b>
+    </div>`;
+  }).join('');
 }
 /* Generic clickable "choose by tapping, not typing" option group — reused across the new
    postpaid customer form for every single-select field (work type, contract length, company,
@@ -1944,6 +1973,12 @@ function renderDashboard(){
       <div class="stat-value" style="color:${s.color||'inherit'}">${s.value}</div>
       <div class="stat-delta">${s.sub}</div>
     </div>`).join('');
+  // today's prepaid payment method breakdown — same logic and layout as the Daily Report's
+  // version, kept right on the dashboard so it's something you glance at each morning
+  // instead of something you have to go looking for in Reports
+  const todayPrepaid = svcs.filter(s=>s.type==='prepaid' && s.activationDate===todayISO());
+  document.getElementById('dashPaymentToday').innerHTML = paymentBreakdownHtml(todayPrepaid,
+    LANG==='zh'?'今天还没有先付记录':'No prepaid signups yet today');
 
   // duplicate customers nudge banner
   const dupeGroups = getDuplicateGroups();
@@ -3757,6 +3792,7 @@ function renderReminders(){
     {key:'all', label:'rem.tab.all', n:all.filter(r=>r.uiStatus!=='completed').length},
     {key:'today', label:'rem.tab.today', n:all.filter(r=>r.daysLeft<=0 && r.uiStatus!=='completed').length},
     {key:'week', label:'rem.tab.week', n:all.filter(r=>r.daysLeft>0 && r.daysLeft<=7 && r.uiStatus!=='completed').length},
+    {key:'expiring', label:'rem.tab.expiring', n:all.filter(r=>r.type==='expiry' && r.uiStatus!=='completed').length},
     {key:'infochange', label:'rem.tab.infochange', n:all.filter(r=>r.type==='info_change' && r.uiStatus!=='completed').length},
     {key:'done', label:'rem.tab.done', n:all.filter(r=>r.uiStatus==='completed').length},
   ];
@@ -3766,6 +3802,11 @@ function renderReminders(){
   let list = all;
   if(reminderTab==='today') list = all.filter(r=>r.daysLeft<=0 && r.uiStatus!=='completed');
   else if(reminderTab==='week') list = all.filter(r=>r.daysLeft>0 && r.daysLeft<=7 && r.uiStatus!=='completed');
+  // "expiring" is deliberately prepaid-only ('expiry' vs postpaid's separate 'contract_end'
+  // type) — a prepaid plan running out and a postpaid contract renewing are different kinds
+  // of follow-up with different urgency, so lumping them into one tab would bury the
+  // prepaid-specific view this was actually asked for inside a mixed list again.
+  else if(reminderTab==='expiring') list = all.filter(r=>r.type==='expiry' && r.uiStatus!=='completed');
   else if(reminderTab==='infochange') list = all.filter(r=>r.type==='info_change' && r.uiStatus!=='completed');
   else if(reminderTab==='done') list = all.filter(r=>r.uiStatus==='completed');
   else list = all.filter(r=>r.uiStatus!=='completed');
@@ -3906,6 +3947,8 @@ function renderMonthlyReport(){
     {label:t('stat.newThisMonth'), value:newCustomerIds.size, sub:`${newThisMonthPrepaidCount} ${t('rep.nowPrepaid')} · ${newThisMonthPostpaidCount} ${t('rep.nowPostpaid')}`},
     {label:t('stat.pendingReminders'), value:pendingReminders},
   ].map(s=>`<div class="card stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div>${s.sub?`<div class="stat-delta">${s.sub}</div>`:''}</div>`).join('');
+  document.getElementById('repMonthlyPaymentBreakdown').innerHTML = paymentBreakdownHtml(prepaidSvcs,
+    LANG==='zh'?'该月份没有先付记录':'No prepaid signups in this period');
 
   const typeMap = {};
   svcs.forEach(s=>{ const k=t('type.'+s.type); typeMap[k]=typeMap[k]||{rev:0}; typeMap[k].rev+=netProfitFor(s); });
@@ -4024,28 +4067,8 @@ function renderDailyReport(){
 
   // Payment method breakdown for the day — prepaid only, since postpaid doesn't carry a
   // payment method at all (it's a monthly contract billed by the carrier, not a one-time
-  // payment collected in-store the way prepaid is). Blank/unset gets its own bucket rather
-  // than being silently dropped, since a customer with no payment method chosen yet is
-  // common and still needs to show up in the count.
-  const paymentGroups = {};
-  dayPrepaid.forEach(s=>{
-    const key = PAYMENT_METHODS.includes(s.paymentMethod) ? s.paymentMethod : '';
-    paymentGroups[key] = paymentGroups[key] || {count:0, sum:0};
-    paymentGroups[key].count++;
-    paymentGroups[key].sum += Number(s.sellingPrice)||0;
-  });
-  const paymentRows = Object.entries(paymentGroups).sort((a,b)=> b[1].sum-a[1].sum);
-  document.getElementById('repDailyPaymentBreakdown').innerHTML = paymentRows.length ? paymentRows.map(([method, v])=>{
-    const label = method ? method : t('rep.daily.notSet');
-    const c = method ? sheetColorFor(PAYMENT_METHODS, method) : {bg:'var(--gray-light)', fg:'var(--text-soft)'};
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--border);">
-      <div style="display:flex;align-items:center;gap:9px;">
-        <span class="pill" style="background:${c.bg};color:${c.fg};">${escapeHtml(label)}</span>
-        <span class="muted" style="font-size:12.5px;">${v.count} ${LANG==='zh'?'位':(v.count===1?'customer':'customers')}</span>
-      </div>
-      <b>${fmtWon(v.sum)}</b>
-    </div>`;
-  }).join('') : `<div class="muted" style="padding:10px 4px;">${LANG==='zh'?'当天没有先付记录':'No prepaid signups this day'}</div>`;
+  // payment collected in-store the way prepaid is).
+  document.getElementById('repDailyPaymentBreakdown').innerHTML = paymentBreakdownHtml(dayPrepaid);
 
   const days = Object.keys(byDay).sort().reverse().slice(0,30);
   document.getElementById('repDailyBody').innerHTML = days.length ? days.map(d=>{
