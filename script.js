@@ -512,11 +512,26 @@ async function copyCustomerNameToClipboard(customerId, btnEl){
    not-yet-committed edit elsewhere. Skipping the rebuild whenever that's the case is safe:
    the data from THIS commit is already saved, and whatever cell is now being edited will
    trigger its own rebuild once it, too, gets committed. */
+// Set the instant a mousedown lands on any editable cell — deliberately BEFORE the click
+// that follows it, and before any blur it triggers on a currently-open input. This is what
+// lets the deferred rebuild below correctly recognize "someone is already mid-interaction
+// with a different cell", even in the split second where that interaction has only gotten
+// as far as mousedown and hasn't produced a live .sheet-text-input yet — checking only for
+// an existing input/popover was too late to see that, since it runs before the SECOND
+// click has had a chance to actually open anything.
+let sheetMouseDownAt = 0;
+document.addEventListener('mousedown', e=>{
+  if(e.target.closest('#sheetTable [data-sheet-text], #sheetTable [data-sheet-select]')) sheetMouseDownAt = Date.now();
+}, true);
 function deferredSheetRerender(){
-  setTimeout(()=>{
-    const activeEdit = document.querySelector('.sheet-text-input') || (document.getElementById('cellPopover')?.style.display==='block' ? true : null);
-    if(!activeEdit) renderSheetPage();
-  }, 0);
+  const attempt = ()=>{
+    const recentMouseDown = (Date.now()-sheetMouseDownAt) < 400; // a click sequence is still plausibly in flight
+    const activeEdit = document.querySelector('.sheet-text-input') || document.getElementById('cellPopover')?.style.display==='block';
+    if(activeEdit || recentMouseDown){ setTimeout(attempt, 150); return; } // retry rather than give up — the
+    // rebuild still needs to happen eventually so derived cells like Final Price catch up
+    renderSheetPage();
+  };
+  setTimeout(attempt, 0);
 }
 function sheetCommitEdit(recordType, recordId, field, value){
   const rec = sheetRecordFor(recordType, recordId);
@@ -1824,7 +1839,7 @@ function populateStaticSelects(){
   const os = document.getElementById('o_status');
   os.innerHTML = STATUSES.map(k=>`<option value="${k}">${t('status.'+k)}</option>`).join('');
   const opm = document.getElementById('o_paymentMethod');
-  opm.innerHTML = PAY_METHODS.map(k=>`<option value="${k}">${t('pay.'+k)}</option>`).join('');
+  opm.innerHTML = `<option value="">—</option>` + PAY_METHODS.map(k=>`<option value="${k}">${t('pay.'+k)}</option>`).join('');
   // filters — preserve whatever the user already had selected when rebuilding option labels
   // (this is what silently broke the nationality filter: it used to reset to blank on every render)
   const custNat = document.getElementById('custNationalityFilter');
@@ -3374,7 +3389,7 @@ function openOrderModal(service, presetCustomerId){
   document.getElementById('o_sellingPrice').value = service?.sellingPrice ?? '';
   document.getElementById('o_cost').value = service?.cost ?? '';
   document.getElementById('o_received').value = service?.received ?? '';
-  document.getElementById('o_paymentMethod').value = service?.paymentMethod || 'cash';
+  document.getElementById('o_paymentMethod').value = service?.paymentMethod || '';
   document.getElementById('o_commission').value = service?.commission ?? '';
   document.getElementById('o_notes').value = service?.notes || '';
   document.getElementById('o_expectedProfit').value = service?.expectedProfit ?? '';
@@ -4116,7 +4131,7 @@ function prepaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
     c.handlerName||'', c.planType||'', s.svcCarrierType||'', s.company||'',
     s.activationDate||'', s.expiryDate||'', s.durationDays||'', Number(s.price)||0, Number(s.discount)||0,
-    Math.max(0,(Number(s.price)||0)-(Number(s.discount)||0)), s.paymentMethod||'cash', s.notes||''];
+    Math.max(0,(Number(s.price)||0)-(Number(s.discount)||0)), s.paymentMethod||'', s.notes||''];
 }
 function postpaidExportRow(c, s){
   return [c.name, c.nationality||'', c.phone||'', c.dob||'', c.idType||'', c.idNumber||'', c.occupation||'', c.years||0,
@@ -4247,8 +4262,8 @@ function restoreOwnExportSheet(sheetName, rows){
   return added;
 }
 // Matches whatever's in the Excel cell against the known payment method values, case- and
-// whitespace-insensitively — falls back to 'cash' for anything blank or unrecognized (e.g.
-// a manually-typed variant), same as every other default in this import path.
+// whitespace-insensitively — blank or unrecognized (e.g. a manually-typed variant) stays
+// blank rather than being guessed at, same principle as every other blank default here.
 function normPaymentMethod(v){
   const norm = String(v||'').trim().toLowerCase();
   return PAYMENT_METHODS.includes(norm) ? norm : '';
@@ -4572,7 +4587,7 @@ function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
         type:resolvedSubType, carrier:String(carrier||''), plan:String(plan||''),
         number:String(guessField(row,['number','号码','currentnumber','开通号码'])||''), simType:'physical',
         activationDate:importedActivationDate, durationDays,
-        expiryDate:computedExpiryDate, status:'active', notes:'', paymentMethod:'cash', commission:0,
+        expiryDate:computedExpiryDate, status:'active', notes:'', paymentMethod:'', commission:0,
         company:String(guessField(row,['company','가입회사','开通社','通信公司'])||''),
         partnerCompany:String(guessField(row,['partnercompany','签约公司','파트너사'])||''),
         svcCarrierType:String(guessField(row,['carriertype','통신사','통신사長신사','通信社'])||''),
