@@ -987,7 +987,7 @@ function monthsSince(dateStr){
 }
 function fmtDate(d){ if(!d) return '—'; if(!isIsoDate(d)) return '—'; return d.slice(0,10); }
 function fmtWon(n){ n = Math.round(Number(n)||0); return '₩'+n.toLocaleString('en-US'); }
-function calcAge(dob){ if(!dob || !isIsoDate(dob)) return null; const d=new Date(dob); const now=new Date(); let age = now.getFullYear()-d.getFullYear(); const m = now.getMonth()-d.getMonth(); if(m<0 || (m===0 && now.getDate()<d.getDate())) age--; return age; }
+function calcAge(dob){ if(!dob || !isIsoDate(dob)) return null; const d=new Date(dob); if(isNaN(d.getTime())) return null; const now=new Date(); let age = now.getFullYear()-d.getFullYear(); const m = now.getMonth()-d.getMonth(); if(m<0 || (m===0 && now.getDate()<d.getDate())) age--; return age; }
 function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function isIsoDate(s){ return typeof s==='string' && /^\d{4}-\d{2}-\d{2}/.test(s); }
 /* Real-world spreadsheets store dates in all kinds of formats — Excel serials, "2026/2/23",
@@ -1501,6 +1501,7 @@ function eligPostpaidConversion(c){
     if(age>=POSTPAID_MIN_AGE) return {status:'eligible', reason:t('ai.elig.ageOk').replace('{age}',age)};
     const bday = new Date(c.dob);
     const nextBday = new Date(bday.getFullYear()+POSTPAID_MIN_AGE, bday.getMonth(), bday.getDate());
+    if(isNaN(nextBday.getTime())) return {status:'unknown', reason:t('ai.elig.noDob')};
     const days = daysBetween(todayISO(), nextBday.toISOString().slice(0,10));
     if(days<=ELIGIBLE_SOON_DAYS) return {status:'soon', reason:t('ai.elig.turningAge').replace('{days}',days), days};
     return {status:'not_yet', reason:t('ai.elig.tooYoung').replace('{age}',age)};
