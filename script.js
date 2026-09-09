@@ -86,7 +86,7 @@ const I18N = {
     'rep.view.monthly':'📅 月度报表','rep.view.daily':'📆 每日报表','rep.monthlyComparison':'月度对比 — 先付 / 后付收入','rep.prepaidIncome':'先付总收入','rep.postpaidExpected':'后付预期收入','rep.postpaidActual':'后付实际收入','rep.accumulated':'累计总收入',
     'rep.daily.title':'每日报表','rep.daily.desc':'按日期查看先付 / 后付客户数与收入','rep.daily.recent':'近期每日记录','rep.daily.prepaidCustomers':'先付客户数','rep.daily.postpaidCustomers':'后付客户数',
     'col.prepaidCustomers':'先付客户数','col.postpaidCustomers':'后付客户数','col.prepaidIncome':'先付收入','col.postpaidExpected':'后付预期收入','col.postpaidActual':'后付实际收入','col.monthTotal':'合计','col.date':'日期','col.accumulated':'累计总收入',
-    'rep.daily.prepaidListTitle':'先付客户明细（本日）','rep.daily.postpaidListTitle':'后付客户明细（本日）',
+    'rep.daily.prepaidListTitle':'先付客户明细（本日）','rep.daily.postpaidListTitle':'后付客户明细（本日）','rep.daily.paymentBreakdownTitle':'付款方式汇总（先付，本日）','rep.daily.paymentBreakdownDesc':'按付款方式统计当日先付客户数与收入合计','rep.daily.notSet':'未填写',
     'rep.selectMonth':'选择月份','rep.selectMonthDesc':'查看该月份的详细营收报告','rep.allTime':'全部时间','rep.transactions':'本月交易明细','rep.allTransactions':'全部交易明细','rep.profit':'收入','rep.totalExpected':'累计预期收入','rep.transactionCount':'笔交易记录','rep.nowPrepaid':'位客户目前为先付卡','rep.nowPostpaid':'位客户目前为后付卡',
     'stat.weekProfit':'本周收入','stat.monthExpected':'本月预期收入','stat.monthActual':'本月实际收入','stat.notReconciled':'尚未核对','stat.reconciledCount':'笔已核对','stat.pendingReminders':'待处理提醒',
     'io.import.title':'导入 Excel','io.import.desc':'支持导入现有的先付 / 后付客户记录（.xlsx / .csv）','io.import.drop':'拖拽文件到此处，或点击选择文件',
@@ -178,7 +178,7 @@ const I18N = {
     'rep.view.monthly':'📅 Monthly Report','rep.view.daily':'📆 Daily Report','rep.monthlyComparison':'Month-to-month comparison — Prepaid / Postpaid income','rep.prepaidIncome':'Prepaid total income','rep.postpaidExpected':'Postpaid expected income','rep.postpaidActual':'Postpaid actual income','rep.accumulated':'Accumulated income',
     'rep.daily.title':'Daily Report','rep.daily.desc':'View prepaid / postpaid customer counts and income by date','rep.daily.recent':'Recent daily records','rep.daily.prepaidCustomers':'Prepaid customers','rep.daily.postpaidCustomers':'Postpaid customers',
     'col.prepaidCustomers':'Prepaid customers','col.postpaidCustomers':'Postpaid customers','col.prepaidIncome':'Prepaid income','col.postpaidExpected':'Postpaid expected','col.postpaidActual':'Postpaid actual','col.monthTotal':'Total','col.date':'Date','col.accumulated':'Accumulated total',
-    'rep.daily.prepaidListTitle':'Prepaid customers (today)','rep.daily.postpaidListTitle':'Postpaid customers (today)',
+    'rep.daily.prepaidListTitle':'Prepaid customers (today)','rep.daily.postpaidListTitle':'Postpaid customers (today)','rep.daily.paymentBreakdownTitle':'Payment method breakdown (prepaid, today)','rep.daily.paymentBreakdownDesc':'Customer count and income total for each payment method used today','rep.daily.notSet':'Not set',
     'rep.selectMonth':'Select month','rep.selectMonthDesc':'View a detailed revenue report for that month','rep.allTime':'All time','rep.transactions':'Transactions this month','rep.allTransactions':'All transactions','rep.profit':'Income','rep.totalExpected':'Total expected income','rep.transactionCount':'transactions','rep.nowPrepaid':'now prepaid','rep.nowPostpaid':'now postpaid',
     'stat.weekProfit':'Income this week','stat.monthExpected':'Expected income this month','stat.monthActual':'Actual income this month','stat.notReconciled':'Not reconciled yet','stat.reconciledCount':'reconciled','stat.pendingReminders':'Pending reminders',
     'io.import.title':'Import Excel','io.import.desc':'Import existing prepaid / postpaid customer records (.xlsx / .csv)','io.import.drop':'Drag a file here, or click to choose',
@@ -4020,6 +4020,31 @@ function renderDailyReport(){
   document.querySelectorAll('#repDailyPrepaidList [data-open-customer], #repDailyPostpaidList [data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
   });
+
+  // Payment method breakdown for the day — prepaid only, since postpaid doesn't carry a
+  // payment method at all (it's a monthly contract billed by the carrier, not a one-time
+  // payment collected in-store the way prepaid is). Blank/unset gets its own bucket rather
+  // than being silently dropped, since a customer with no payment method chosen yet is
+  // common and still needs to show up in the count.
+  const paymentGroups = {};
+  dayPrepaid.forEach(s=>{
+    const key = PAYMENT_METHODS.includes(s.paymentMethod) ? s.paymentMethod : '';
+    paymentGroups[key] = paymentGroups[key] || {count:0, sum:0};
+    paymentGroups[key].count++;
+    paymentGroups[key].sum += Number(s.sellingPrice)||0;
+  });
+  const paymentRows = Object.entries(paymentGroups).sort((a,b)=> b[1].sum-a[1].sum);
+  document.getElementById('repDailyPaymentBreakdown').innerHTML = paymentRows.length ? paymentRows.map(([method, v])=>{
+    const label = method ? method : t('rep.daily.notSet');
+    const c = method ? sheetColorFor(PAYMENT_METHODS, method) : {bg:'var(--gray-light)', fg:'var(--text-soft)'};
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span class="pill" style="background:${c.bg};color:${c.fg};">${escapeHtml(label)}</span>
+        <span class="muted" style="font-size:12.5px;">${v.count} ${LANG==='zh'?'位':(v.count===1?'customer':'customers')}</span>
+      </div>
+      <b>${fmtWon(v.sum)}</b>
+    </div>`;
+  }).join('') : `<div class="muted" style="padding:10px 4px;">${LANG==='zh'?'当天没有先付记录':'No prepaid signups this day'}</div>`;
 
   const days = Object.keys(byDay).sort().reverse().slice(0,30);
   document.getElementById('repDailyBody').innerHTML = days.length ? days.map(d=>{
