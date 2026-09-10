@@ -78,7 +78,7 @@ const I18N = {
     'type.prepaid':'先付卡','type.postpaid':'后付卡','type.porting':'号码移动','type.transfer':'过户 / 名义变更','type.topup':'充值 / 续费','type.cancel':'解约',
     'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.over_contract':'已超合约期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
     'pay.cash':'现金','pay.transfer':'银行转账','pay.card':'刷卡','pay.kakaopay':'KakaoPay','pay.other':'其他',
-    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期',
+    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期',
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
@@ -113,6 +113,11 @@ const I18N = {
     'ai.action.postpaidConversion':'联系客户，推荐转为后付卡','ai.action.waitEligibility':'暂缓联系，待资格达成后再跟进','ai.action.planReview':'合约已到期，建议协助办理续约或更换套餐','ai.action.renewalFollowup':'合约即将到期，提前联系提醒续约','ai.action.idVerification':'联系客户补充或更新证件信息','ai.action.winback':'客户已流失，建议主动联系挽回','ai.action.none':'暂无建议操作',
     'ai.disclaimer':'💡 优先级评分与商机建议由规则引擎与透明的加权评分计算得出，并非黑箱机器学习模型 — 每一项数字均可追溯到真实客户数据。',
     'ai.topActions.title':'🔥 今日建议优先处理','ai.topActions.desc':'点击每一类查看对应客户名单','ai.topActions.emptyTitle':'目前没有需要优先处理的事项 👍','ai.topActions.emptyDesc':'所有客户目前都没有紧急商机或风险',
+    'ai.stay.title':'按预计在韩时长的商机','ai.stay.desc':'点击每一类查看对应客户名单','ai.stay.category':'类别','ai.stay.count':'客户数','ai.stay.action':'建议操作',
+    'ai.stay.readyForPostpaid':'🟢 可转后付','ai.stay.readyForPostpaidAction':'联系转后付事宜','ai.stay.readyForPostpaidDesc':'先付客户中，已满19岁、使用护照登记、且预计在韩停留1年以上',
+    'ai.stay.prepaidRecharge':'🔵 先付续费','ai.stay.prepaidRechargeAction':'联系续费事宜','ai.stay.prepaidRechargeDesc':'1/2/3个月套餐即将到期，且仍有剩余在韩时间的先付客户',
+    'ai.stay.postpaidUpgrade':'🟣 后付续约','ai.stay.postpaidUpgradeAction':'提供新合约','ai.stay.postpaidUpgradeDesc':'合约已到期，且预计还将在韩停留8个月以上的后付客户',
+    'ai.stay.noYearsNote':'（结果基于客户档案中的「在韩年数」字段，代表预计剩余停留时长；未填写该字段的客户不会出现在此处）',
     'ai.ask.title':'💬 向 AI 商业分析师提问','ai.ask.desc':'用真实客户数据回答，并展示计算依据（点击下方问题试试看）','ai.ask.placeholder':'例如：本月有多少客户可以升级？','ai.ask.btn':'提问',
     'ai.opps.title':'客户商机列表','ai.opps.desc':'按优先级排序，点击客户可查看详细的 AI 洞察',
     'ai.filter.allPriority':'全部优先级','ai.filter.allTypes':'全部商机类型',
@@ -170,7 +175,7 @@ const I18N = {
     'type.prepaid':'Prepaid SIM','type.postpaid':'Postpaid SIM','type.porting':'Number porting','type.transfer':'Ownership transfer','type.topup':'Top-up / renewal','type.cancel':'Cancellation',
     'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.over_contract':'Over contract','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
     'pay.cash':'Cash','pay.transfer':'Bank transfer','pay.card':'Card','pay.kakaopay':'KakaoPay','pay.other':'Other',
-    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring',
+    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired',
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
@@ -205,6 +210,11 @@ const I18N = {
     'ai.action.postpaidConversion':'Contact customer about postpaid conversion','ai.action.waitEligibility':'Hold off — follow up once eligible','ai.action.planReview':'Contract completed — help arrange renewal or plan change','ai.action.renewalFollowup':'Contract ending soon — send a renewal reminder','ai.action.idVerification':'Contact customer to update or complete ID info','ai.action.winback':'Customer has lapsed — worth a win-back outreach','ai.action.none':'No recommended action',
     'ai.disclaimer':'💡 Priority scores and opportunities come from a rule engine and a transparent weighted formula — not a black-box ML model. Every number traces back to real customer data.',
     'ai.topActions.title':'🔥 Top actions today','ai.topActions.desc':'Click a category to see the matching customers','ai.topActions.emptyTitle':'Nothing urgent right now 👍','ai.topActions.emptyDesc':'No customers currently have pressing opportunities or risks',
+    'ai.stay.title':'Opportunities by expected time remaining in Korea','ai.stay.desc':'Click a category to see the matching customers','ai.stay.category':'Category','ai.stay.count':'Customers','ai.stay.action':'Suggested action',
+    'ai.stay.readyForPostpaid':'🟢 Ready for postpaid','ai.stay.readyForPostpaidAction':'Contact about postpaid','ai.stay.readyForPostpaidDesc':'Prepaid customers who are 19+, ID-verified with a passport, and staying 1+ more year',
+    'ai.stay.prepaidRecharge':'🔵 Prepaid recharge','ai.stay.prepaidRechargeAction':'Contact about recharge','ai.stay.prepaidRechargeDesc':'Prepaid customers on a 1/2/3-month plan ending soon who still have remaining stay time',
+    'ai.stay.postpaidUpgrade':'🟣 Postpaid upgrade','ai.stay.postpaidUpgradeAction':'Offer new contract','ai.stay.postpaidUpgradeDesc':'Postpaid customers whose contract has ended, staying 8+ more months',
+    'ai.stay.noYearsNote':'(based on the "Years in Korea" field on each customer profile, read as expected remaining stay — customers with that field left blank won\'t appear here)',
     'ai.ask.title':'💬 Ask the AI business analyst','ai.ask.desc':'Answered from real customer data, with the calculation shown (try a suggestion below)','ai.ask.placeholder':'e.g. How many customers can upgrade this month?','ai.ask.btn':'Ask',
     'ai.opps.title':'Customer opportunities','ai.opps.desc':'Sorted by priority — click a customer to see their full AI insight',
     'ai.filter.allPriority':'All priorities','ai.filter.allTypes':'All opportunity types',
@@ -1522,6 +1532,41 @@ const CONTRACT_APPROACHING_DAYS = 30;
 const ELIGIBLE_SOON_DAYS = 90;
 
 /* ---- Eligibility Engine ---- */
+/* Three stay-duration-driven opportunity categories, distinct from the existing AI
+   opportunity engine above (which is score/priority based and covers many signal types at
+   once). These are specifically about matching an offer to how much longer a customer
+   plans to remain in Korea, using the "Years in Korea" field — which, in how this store
+   actually uses it, records REMAINING intended stay rather than time already spent, so it
+   can be read directly as a countdown rather than needing any new field on the form.
+     🟢 readyForPostpaid — prepaid customers old enough, ID-verified, and staying long
+        enough that postpaid's better per-month value would suit them.
+     🔵 prepaidRecharge — prepaid customers on a 1/2/3-month plan running out soon who are
+        still sticking around, so recharging (not converting) is the right offer.
+     🟣 postpaidUpgrade — customers whose postpaid contract already ended who are staying
+        8+ more months, worth a fresh longer-term contract rather than lapsing. */
+function getStayBasedOpportunities(){
+  const readyForPostpaid = [], prepaidRecharge = [], postpaidUpgrade = [];
+  DB.customers.forEach(c=>{
+    const svc = activeSubscriptionFor(c.id);
+    if(!svc) return;
+    const age = calcAge(c.dob);
+    const years = Number(c.years);
+    const hasYears = c.years!==undefined && c.years!=='' && !isNaN(years);
+    if(svc.type==='prepaid'){
+      if(age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && years>=1){
+        readyForPostpaid.push({customer:c, service:svc});
+      }
+      if([30,60,90].includes(Number(svc.durationDays)) && computedStatus(svc)==='expiring_soon' && hasYears && years>0){
+        prepaidRecharge.push({customer:c, service:svc});
+      }
+    } else if(svc.type==='postpaid'){
+      if(computedStatus(svc)==='over_contract' && hasYears && years>=(8/12)){
+        postpaidUpgrade.push({customer:c, service:svc});
+      }
+    }
+  });
+  return {readyForPostpaid, prepaidRecharge, postpaidUpgrade};
+}
 function eligPostpaidConversion(c){
   const active = activeSubscriptionFor(c.id);
   if(!active || active.type!=='postpaid'){
@@ -1720,6 +1765,23 @@ function statusPillClass(st){
 }
 
 /* reminders are derived from services + customers, with a persisted state map (id -> status) */
+/* Unlike buildReminders() (which only surfaces things due within 30 days, since that's
+   built for actionable near-term follow-ups), this covers EVERY current prepaid
+   subscription regardless of how far off its expiry is — someone asking "show me everyone
+   who signed up this month" wants to see their 90-day customers too, not just the ones
+   who happen to fall inside a 30-day window. Cancelled/superseded plans are excluded since
+   they're not a meaningful "expired" for this purpose — this is about plans running their
+   natural course, not ones someone explicitly ended. */
+function getPrepaidCohortList(){
+  const now = todayISO();
+  return DB.customers.map(c=>{
+    const svc = activeSubscriptionFor(c.id);
+    if(!svc || svc.type!=='prepaid') return null;
+    const status = computedStatus(svc); // 'expired' | 'expiring_soon' | 'active' (or others we don't care about here)
+    if(!['expired','expiring_soon','active'].includes(status)) return null;
+    return {customer:c, service:svc, status, daysLeft: svc.expiryDate ? daysBetween(now, svc.expiryDate) : null};
+  }).filter(Boolean);
+}
 function buildReminders(){
   const list = [];
   const now = todayISO();
@@ -1788,6 +1850,10 @@ const ICONS = {
 };
 let currentPage = 'dashboard';
 let reminderTab = 'all';
+let reminderSignupMonth = 'all'; // used only by the "expiring" tab's filters
+let reminderDurationFilter = 'all';
+let reminderNationalityFilter = 'all';
+let reminderStatusFilter = 'all'; // 'all' | 'expired' | 'expiring_soon' | 'active'
 
 function renderNav(){
   const reminders = buildReminders().filter(r=>r.uiStatus==='pending');
@@ -2289,6 +2355,56 @@ function renderAIPage(){
 
   renderAISuggestions();
   renderAIOppsTable();
+  renderAIStayCards();
+}
+let aiStayExpanded = null; // which of the 3 categories is currently expanded below the table
+function renderAIStayCards(){
+  const {readyForPostpaid, prepaidRecharge, postpaidUpgrade} = getStayBasedOpportunities();
+  const cats = [
+    {key:'readyForPostpaid', list:readyForPostpaid, color:'var(--green)', bg:'var(--green-light)'},
+    {key:'prepaidRecharge', list:prepaidRecharge, color:'var(--blue)', bg:'var(--blue-light)'},
+    {key:'postpaidUpgrade', list:postpaidUpgrade, color:'#8B5CF6', bg:'#F1EBFF'},
+  ];
+  document.getElementById('aiStayCards').innerHTML = cats.map(cat=>`
+    <div class="card stat-card" style="cursor:pointer;background:${cat.list.length?cat.bg:'var(--card)'};" data-stay-card="${cat.key}">
+      <div class="stat-label" style="color:${cat.color};font-weight:700;">${t('ai.stay.'+cat.key)}</div>
+      <div class="stat-value">${cat.list.length}</div>
+      <div class="stat-delta">${t('ai.stay.'+cat.key+'Action')}</div>
+    </div>`).join('');
+  document.getElementById('aiStayTableBody').innerHTML = cats.map(cat=>`
+    <tr class="row-click" data-stay-row="${cat.key}">
+      <td style="font-weight:700;">${t('ai.stay.'+cat.key)}</td>
+      <td>${cat.list.length}</td>
+      <td class="muted" style="font-size:12.5px;">${t('ai.stay.'+cat.key+'Action')}</td>
+    </tr>`).join('');
+  document.querySelectorAll('[data-stay-card], [data-stay-row]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const key = el.dataset.stayCard || el.dataset.stayRow;
+      aiStayExpanded = aiStayExpanded===key ? null : key;
+      renderAIStayExpandedList(cats);
+    });
+  });
+  renderAIStayExpandedList(cats);
+}
+function renderAIStayExpandedList(cats){
+  const box = document.getElementById('aiStayExpandedList');
+  if(!aiStayExpanded){ box.innerHTML = ''; return; }
+  const cat = cats.find(c=>c.key===aiStayExpanded);
+  box.innerHTML = `
+    <div class="muted" style="font-size:11.5px;margin-bottom:8px;">${t('ai.stay.noYearsNote')}</div>
+    ${cat.list.length ? cat.list.map(({customer:c, service:svc})=>`
+      <div class="service-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div>
+              <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
+              <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${LANG==='zh'?'预计在韩剩余':'~remaining stay'} ${c.years} ${LANG==='zh'?'年':'yr'}</div>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-ghost" data-open-customer="${c.id}">${t('btn.view')}</button>
+        </div>
+      </div>`).join('') : emptyState()}`;
+  bindRowOpens();
 }
 let aiAtRiskOnly = false;
 function renderAIOppsTable(){
@@ -3788,25 +3904,26 @@ document.getElementById('confirmCancelSubBtn').addEventListener('click', ()=>{
 /* ---------------- REMINDERS ---------------- */
 function renderReminders(){
   const all = buildReminders();
+  const cohortAll = getPrepaidCohortList(); // unfiltered — used only for the tab's count badge
   const tabs = [
     {key:'all', label:'rem.tab.all', n:all.filter(r=>r.uiStatus!=='completed').length},
     {key:'today', label:'rem.tab.today', n:all.filter(r=>r.daysLeft<=0 && r.uiStatus!=='completed').length},
     {key:'week', label:'rem.tab.week', n:all.filter(r=>r.daysLeft>0 && r.daysLeft<=7 && r.uiStatus!=='completed').length},
-    {key:'expiring', label:'rem.tab.expiring', n:all.filter(r=>r.type==='expiry' && r.uiStatus!=='completed').length},
+    {key:'expiring', label:'rem.tab.expiring', n:cohortAll.length},
     {key:'infochange', label:'rem.tab.infochange', n:all.filter(r=>r.type==='info_change' && r.uiStatus!=='completed').length},
     {key:'done', label:'rem.tab.done', n:all.filter(r=>r.uiStatus==='completed').length},
   ];
   document.getElementById('reminderTabs').innerHTML = tabs.map(tb=>`<button class="chip-tab ${reminderTab===tb.key?'active':''}" data-tab="${tb.key}">${t(tb.label)} <span class="n">${tb.n}</span></button>`).join('');
   document.querySelectorAll('[data-tab]').forEach(b=> b.addEventListener('click', ()=>{ reminderTab=b.dataset.tab; renderReminders(); }));
 
+  const filterBox = document.getElementById('reminderExpiringFilter');
+  filterBox.style.display = reminderTab==='expiring' ? 'flex' : 'none';
+
+  if(reminderTab==='expiring'){ renderExpiringCohortTab(cohortAll); return; }
+
   let list = all;
   if(reminderTab==='today') list = all.filter(r=>r.daysLeft<=0 && r.uiStatus!=='completed');
   else if(reminderTab==='week') list = all.filter(r=>r.daysLeft>0 && r.daysLeft<=7 && r.uiStatus!=='completed');
-  // "expiring" is deliberately prepaid-only ('expiry' vs postpaid's separate 'contract_end'
-  // type) — a prepaid plan running out and a postpaid contract renewing are different kinds
-  // of follow-up with different urgency, so lumping them into one tab would bury the
-  // prepaid-specific view this was actually asked for inside a mixed list again.
-  else if(reminderTab==='expiring') list = all.filter(r=>r.type==='expiry' && r.uiStatus!=='completed');
   else if(reminderTab==='infochange') list = all.filter(r=>r.type==='info_change' && r.uiStatus!=='completed');
   else if(reminderTab==='done') list = all.filter(r=>r.uiStatus==='completed');
   else list = all.filter(r=>r.uiStatus!=='completed');
@@ -3841,6 +3958,80 @@ function renderReminders(){
   document.querySelectorAll('[data-rem-done]').forEach(b=> b.addEventListener('click', ()=>{ DB.reminderState[b.dataset.remDone]='completed'; saveDB(DB); toast(t('toast.reminderDone')); renderReminders(); renderNav(); }));
   document.querySelectorAll('[data-rem-followup]').forEach(b=> b.addEventListener('click', ()=>{ DB.reminderState[b.dataset.remFollowup]='pending'; saveDB(DB); toast(t('toast.reminderFollowup')); renderReminders(); }));
 }
+/* The "Prepaid expiring" tab's own render path — deliberately separate from the generic
+   reminder list above, since this works over every current prepaid subscription (not a
+   30-day actionable window) and needs its own richer filter set: signup month, plan
+   duration, nationality, and a current-status breakdown (expired / expiring soon / still
+   active), rather than the single due-date sort the other tabs use. */
+function renderExpiringCohortTab(cohortAll){
+  const durationsPresent = [...new Set(cohortAll.map(x=>x.service.durationDays).filter(Boolean))].sort((a,b)=>a-b);
+  const durSel = document.getElementById('reminderDurationFilter');
+  durSel.innerHTML = `<option value="all">${t('rep.allTime')}</option>` + durationsPresent.map(d=>`<option value="${d}">${d} ${LANG==='zh'?'天':'days'}</option>`).join('');
+  durSel.value = reminderDurationFilter;
+  durSel.onchange = ()=>{ reminderDurationFilter = durSel.value; renderReminders(); };
+
+  const natsPresent = [...new Set(cohortAll.map(x=>x.customer.nationality).filter(Boolean))].sort();
+  const natSel = document.getElementById('reminderNationalityFilter');
+  natSel.innerHTML = `<option value="all">${t('filter.allNationalities')}</option>` + natsPresent.map(n=>`<option value="${n}">${n}</option>`).join('');
+  natSel.value = reminderNationalityFilter;
+  natSel.onchange = ()=>{ reminderNationalityFilter = natSel.value; renderReminders(); };
+
+  const monthsWithPrepaidSignups = [...new Set(DB.services.filter(s=>s.type==='prepaid' && s.activationDate).map(s=>s.activationDate.slice(0,7)))].sort().reverse();
+  const monthSel = document.getElementById('reminderSignupMonth');
+  monthSel.innerHTML = `<option value="all">${t('rep.allTime')}</option>` + monthsWithPrepaidSignups.map(m=>`<option value="${m}">${fmtMonthLabel(m)}</option>`).join('');
+  monthSel.value = reminderSignupMonth;
+  monthSel.onchange = ()=>{ reminderSignupMonth = monthSel.value; renderReminders(); };
+
+  // apply signup month / duration / nationality first, THEN compute status counts off of
+  // that already-narrowed set — so the status chip counts reflect the other filters too,
+  // rather than always showing totals across everyone regardless of what's been picked
+  let scoped = cohortAll;
+  if(reminderSignupMonth!=='all') scoped = scoped.filter(x=> x.service.activationDate && x.service.activationDate.slice(0,7)===reminderSignupMonth);
+  if(reminderDurationFilter!=='all') scoped = scoped.filter(x=> String(x.service.durationDays)===reminderDurationFilter);
+  if(reminderNationalityFilter!=='all') scoped = scoped.filter(x=> x.customer.nationality===reminderNationalityFilter);
+
+  const statusChips = [
+    {key:'all', label:t('rem.status.all'), n:scoped.length},
+    {key:'expired', label:t('rem.status.expired'), n:scoped.filter(x=>x.status==='expired').length},
+    {key:'expiring_soon', label:t('rem.status.expiringSoon'), n:scoped.filter(x=>x.status==='expiring_soon').length},
+    {key:'active', label:t('rem.status.active'), n:scoped.filter(x=>x.status==='active').length},
+  ];
+  document.getElementById('reminderStatusChips').innerHTML = statusChips.map(sc=>`<button class="chip-tab ${reminderStatusFilter===sc.key?'active':''}" data-statuschip="${sc.key}">${sc.label} <span class="n">${sc.n}</span></button>`).join('');
+  document.querySelectorAll('[data-statuschip]').forEach(b=> b.addEventListener('click', ()=>{ reminderStatusFilter=b.dataset.statuschip; renderReminders(); }));
+
+  const final = reminderStatusFilter==='all' ? scoped : scoped.filter(x=>x.status===reminderStatusFilter);
+  // expired first (most urgent to act on), then soonest-expiring, then everyone else
+  final.sort((a,b)=>{
+    const order = {expired:0, expiring_soon:1, active:2};
+    if(order[a.status]!==order[b.status]) return order[a.status]-order[b.status];
+    return (a.daysLeft??999) - (b.daysLeft??999);
+  });
+
+  const statusPill = st => st==='expired' ? `<span class="pill pill-red">${t('rem.status.expired')}</span>`
+    : st==='expiring_soon' ? `<span class="pill pill-orange">${t('rem.status.expiringSoon')}</span>`
+    : `<span class="pill pill-green">${t('rem.status.active')}</span>`;
+
+  document.getElementById('reminderList').innerHTML = final.length ? final.map(x=>{
+    const {customer:c, service:svc, daysLeft} = x;
+    const dtxt = daysLeft===null ? '' : (daysLeft<0 ? `${Math.abs(daysLeft)} ${t('rem.overdue')}` : (daysLeft===0? t('rem.today') : `${daysLeft} ${t('rem.dueIn')}`));
+    return `<div class="service-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div>
+            <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
+            <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${svc.durationDays||'?'} ${LANG==='zh'?'天':'days'} · ${LANG==='zh'?'开通于':'signed up'} ${fmtDate(svc.activationDate)}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${dtxt ? `<span class="muted" style="font-size:12px;">${dtxt}</span>` : ''}
+          ${statusPill(x.status)}
+        </div>
+      </div>
+    </div>`;
+  }).join('') : emptyState();
+  bindRowOpens();
+}
+
 
 /* ---------------- ORDERS PAGE ---------------- */
 function renderOrders(){
