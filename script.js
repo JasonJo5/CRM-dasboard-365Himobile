@@ -1552,6 +1552,16 @@ function getStayBasedOpportunities(){
     const age = calcAge(c.dob);
     const years = Number(c.years);
     const hasYears = c.years!==undefined && c.years!=='' && !isNaN(years);
+    // "Years in Korea" is stated ONCE, the first time a customer signs up — it's a
+    // countdown from THAT moment, and needs to keep counting down across every recharge
+    // afterward, not reset at each one. Someone who said "1 year" at their very first
+    // signup, then did a 3-month prepaid plan followed by a 1-month recharge, has used up
+    // 4 of those 12 months by the time the recharge ends — not just the 1 month of the
+    // most recent service alone. Measuring from the earliest prepaid activation on record
+    // (rather than the current/most recent one) is what makes that accumulate correctly.
+    const earliestPrepaidDate = customerServices(c.id).filter(s=>s.type==='prepaid' && s.activationDate).map(s=>s.activationDate).sort()[0];
+    const monthsElapsedSinceStated = hasYears && earliestPrepaidDate ? daysBetween(earliestPrepaidDate, todayISO())/30.44 : 0;
+    const remainingStayYears = hasYears ? years - (monthsElapsedSinceStated/12) : null;
     if(svc.type==='prepaid'){
       // "Ready for postpaid" (the eligible/ready-NOW case) should only surface once the
       // current prepaid period is actually finished — someone still mid-way through their
@@ -1566,15 +1576,15 @@ function getStayBasedOpportunities(){
         const nextBday = new Date(bday.getFullYear()+POSTPAID_MIN_AGE, bday.getMonth(), bday.getDate());
         const daysUntil19 = isNaN(nextBday.getTime()) ? null : daysBetween(todayISO(), nextBday.toISOString().slice(0,10));
         readyForPostpaid.push({customer:c, service:svc, subStatus:'underage', daysUntil19});
-      } else if(computedStatus(svc)==='expired' && age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && years>=(8/12)){
-        readyForPostpaid.push({customer:c, service:svc, subStatus:'eligible'});
+      } else if(computedStatus(svc)==='expired' && age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && remainingStayYears>=(8/12)){
+        readyForPostpaid.push({customer:c, service:svc, subStatus:'eligible', remainingStayYears});
       }
       if([30,60,90].includes(Number(svc.durationDays)) && computedStatus(svc)==='expiring_soon' && hasYears && years>0){
         prepaidRecharge.push({customer:c, service:svc});
       }
     } else if(svc.type==='postpaid'){
-      if(computedStatus(svc)==='over_contract' && hasYears && years>=(8/12)){
-        postpaidUpgrade.push({customer:c, service:svc});
+      if(computedStatus(svc)==='over_contract' && hasYears && remainingStayYears>=(8/12)){
+        postpaidUpgrade.push({customer:c, service:svc, remainingStayYears});
       }
     }
   });
@@ -2474,7 +2484,7 @@ function renderAIStayExpandedList(cats){
     return (a.days??0) - (b.days??0);
   });
 
-  box.innerHTML = withDays.length ? withDays.map(({customer:c, service:svc, days, subStatus, daysUntil19})=>{
+  box.innerHTML = withDays.length ? withDays.map(({customer:c, service:svc, days, subStatus, daysUntil19, remainingStayYears})=>{
     let dayLabel, dayPillClass;
     if(subStatus==='underage'){
       dayLabel = daysUntil19===null ? '' : (LANG==='zh' ? `还差 ${daysUntil19} 天满19岁` : `${daysUntil19}d until 19`);
@@ -2492,6 +2502,13 @@ function renderAIStayExpandedList(cats){
       if(days>0){ planLabel = LANG==='zh' ? `合约中 · 还剩${days}天` : `In contract · ${days}d left`; planPillClass = 'pill-blue'; }
       else { planLabel = LANG==='zh' ? '套餐已结束' : 'Plan finished'; planPillClass = 'pill-gray'; }
     }
+    // Shows the actual worked-out remaining stay (already decayed from whatever was
+    // originally stated, down to what's left as of today) rather than just the raw
+    // "Years in Korea" value — so it's visible AT A GLANCE why someone qualifies, without
+    // needing to check their signup date and do the subtraction by hand.
+    const remainingStayNote = (subStatus==='eligible' && remainingStayYears!=null)
+      ? (LANG==='zh' ? `预计还剩 ${(remainingStayYears*12).toFixed(1)} 个月在韩` : `~${(remainingStayYears*12).toFixed(1)}mo stay left`)
+      : '';
     return `<div class="ai-stay-row" style="--accent:${cat.color};${subStatus==='underage'?'opacity:.8;':''}">
       <span class="avatar">${initials(c.name)}</span>
       <div style="min-width:0;flex:1;">
@@ -2502,7 +2519,7 @@ function renderAIStayExpandedList(cats){
           ${subStatus==='underage' ? `<span class="pill pill-gray">${t('ai.stay.underage')}</span>` : ''}
           ${planLabel ? `<span class="pill ${planPillClass}">${planLabel}</span>` : ''}
         </div>
-        <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'到期':'expiry'} ${fmtDate(svc.expiryDate)}</div>
+        <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'到期':'expiry'} ${fmtDate(svc.expiryDate)}${remainingStayNote?` · ${remainingStayNote}`:''}</div>
       </div>
       ${dayLabel ? `<span class="pill ${dayPillClass}" style="flex:0 0 auto;font-weight:700;">${dayLabel}</span>` : ''}
     </div>`;
