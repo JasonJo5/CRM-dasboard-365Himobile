@@ -408,3 +408,21 @@ select.select-input:focus{border-color:var(--blue);outline:none;}
 }
 .menu-btn{display:none;border:none;background:var(--gray-light);border-radius:9px;width:36px;height:36px;align-items:center;justify-content:center;font-size:16px;transition:background .15s var(--ease);}
 .menu-btn:hover{background:#E2E6F0;}
+
+/* ---------------- AI Insights: stay-based opportunity cards ---------------- */
+.ai-stay-card{cursor:pointer;padding:24px 22px;border-radius:16px;border:2px solid transparent;box-shadow:0 1px 2px rgba(20,30,70,.04);transition:transform .15s var(--ease),box-shadow .15s var(--ease),border-color .15s var(--ease);}
+.ai-stay-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,30,70,.1);}
+.ai-stay-card.selected{border-color:var(--accent);box-shadow:0 8px 20px rgba(20,30,70,.12);}
+.ai-stay-card-icon{width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 6px rgba(20,30,70,.08);margin-bottom:14px;}
+.ai-stay-card-label{font-size:13.5px;font-weight:800;color:var(--accent);margin-bottom:4px;}
+.ai-stay-card-value{font-size:36px;font-weight:800;line-height:1.1;letter-spacing:-.02em;color:var(--navy);}
+.ai-stay-card-action{font-size:12px;font-weight:700;color:var(--accent);margin-top:8px;opacity:.85;}
+.ai-stay-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--border);border-left:4px solid var(--accent);margin-bottom:8px;background:#fff;transition:background .12s var(--ease);}
+.ai-stay-row:hover{background:var(--gray-light);}
+
+/* ---------------- Reminders: modernized list row ---------------- */
+.rem-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--border);border-left:4px solid var(--accent);margin-bottom:8px;background:#fff;transition:background .12s var(--ease),box-shadow .12s var(--ease);}
+.rem-row:hover{background:var(--gray-light);box-shadow:0 2px 8px rgba(20,30,70,.06);}
+.rem-row-date{min-width:44px;text-align:center;flex:0 0 auto;}
+.rem-row-date-month{font-size:10.5px;color:var(--text-soft);font-weight:700;text-transform:uppercase;}
+.rem-row-date-day{font-size:19px;font-weight:800;}
