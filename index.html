@@ -276,89 +276,17 @@
 
       <!-- AI BUSINESS INTELLIGENCE -->
       <section class="page" id="page-ai">
-        <div class="section-desc" style="margin-bottom:16px;" data-i18n="ai.disclaimer">💡 优先级评分与商机建议由规则引擎与透明的加权评分计算得出，并非黑箱机器学习模型 — 每一项数字均可追溯到真实客户数据。</div>
-
-        <div class="grid-4" id="aiStats" style="margin-bottom:16px;"></div>
-
-        <div class="card" style="margin-bottom:16px;">
+        <div class="section-desc" style="margin-bottom:16px;" data-i18n="ai.stay.pageDesc">找出适合转后付、需要续费、或适合升级合约的客户 — 点击任意卡片查看名单与明细</div>
+        <div id="aiStayCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px;"></div>
+        <div class="card" id="aiStayListCard" style="display:none;">
           <div class="section-head">
             <div>
-              <div class="section-title" data-i18n="ai.stay.title">按预计在韩时长的商机</div>
-              <div class="section-desc" data-i18n="ai.stay.desc">点击每一类查看对应客户名单</div>
+              <div class="section-title" id="aiStayListTitle"></div>
+              <div class="section-desc" id="aiStayListDesc"></div>
             </div>
+            <button class="btn btn-ghost btn-sm" id="aiStayListClose">✕</button>
           </div>
-          <div id="aiStayCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;"></div>
-          <table style="width:100%;">
-            <thead><tr>
-              <th data-i18n="ai.stay.category">类别</th><th data-i18n="ai.stay.count">客户数</th><th data-i18n="ai.stay.action">建议操作</th>
-            </tr></thead>
-            <tbody id="aiStayTableBody"></tbody>
-          </table>
-          <div id="aiStayExpandedList" style="margin-top:14px;"></div>
-        </div>
-
-        <div class="card" style="margin-bottom:16px;">
-          <div class="section-head">
-            <div>
-              <div class="section-title" data-i18n="ai.topActions.title">🔥 今日建议优先处理</div>
-              <div class="section-desc" data-i18n="ai.topActions.desc">点击每一类查看对应客户名单</div>
-            </div>
-          </div>
-          <div id="aiTopActions"></div>
-        </div>
-
-        <div class="card" style="margin-bottom:16px;">
-          <div class="section-head">
-            <div>
-              <div class="section-title" data-i18n="ai.ask.title">💬 向 AI 商业分析师提问</div>
-              <div class="section-desc" data-i18n="ai.ask.desc">用真实客户数据回答，并展示计算依据（点击下方问题试试看）</div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <input class="search-input" id="aiAskInput" data-i18n-ph="ai.ask.placeholder" placeholder="例如：本月有多少客户可以升级？" style="flex:1;">
-            <button class="btn btn-primary" id="aiAskBtn" data-i18n="ai.ask.btn">提问</button>
-          </div>
-          <div class="qsearch-results" id="aiAskSuggestions" style="flex-direction:row;flex-wrap:wrap;margin-top:0;margin-bottom:10px;"></div>
-          <div id="aiAskAnswer"></div>
-        </div>
-
-        <div class="card">
-          <div class="section-head">
-            <div>
-              <div class="section-title" data-i18n="ai.opps.title">客户商机列表</div>
-              <div class="section-desc" data-i18n="ai.opps.desc">按优先级排序，点击客户可查看详细的 AI 洞察</div>
-            </div>
-          </div>
-          <div class="filter-bar">
-            <input class="search-input" id="aiSearch" data-i18n-ph="ph.search" placeholder="搜索姓名、号码、国籍或证件号">
-            <select class="select-input" id="aiPriorityFilter">
-              <option value="" data-i18n="ai.filter.allPriority">全部优先级</option>
-              <option value="high" data-i18n="ai.priority.high">🔥 高优先级</option>
-              <option value="medium" data-i18n="ai.priority.medium">🟠 中优先级</option>
-              <option value="low" data-i18n="ai.priority.low">🟢 低优先级</option>
-              <option value="none" data-i18n="ai.priority.none">⚪ 无需处理</option>
-            </select>
-            <select class="select-input" id="aiTypeFilter">
-              <option value="" data-i18n="ai.filter.allTypes">全部商机类型</option>
-              <option value="postpaid_conversion" data-i18n="ai.opp.postpaid_conversion">先付转后付</option>
-              <option value="postpaid_conversion_soon" data-i18n="ai.opp.postpaid_conversion_soon">即将符合资格</option>
-              <option value="plan_review" data-i18n="ai.opp.plan_review">合约已到期</option>
-              <option value="renewal_followup" data-i18n="ai.opp.renewal_followup">即将到期</option>
-              <option value="id_verification" data-i18n="ai.opp.id_verification">证件待核实</option>
-              <option value="winback" data-i18n="ai.opp.winback">流失待挽回</option>
-            </select>
-          </div>
-          <div class="section-desc" style="margin-bottom:10px;" id="aiOppsCount"></div>
-          <div class="tbl-wrap">
-            <table>
-              <thead><tr>
-                <th data-i18n="col.customer">客户</th><th data-i18n="ai.col.priority">优先级</th><th data-i18n="ai.col.score">评分</th>
-                <th data-i18n="ai.col.opportunity">商机类型</th><th data-i18n="ai.col.action">建议操作</th>
-                <th data-i18n="ai.col.currentRev">目前营收</th><th data-i18n="ai.col.uplift">潜在增量</th><th></th>
-              </tr></thead>
-              <tbody id="aiOppsBody"></tbody>
-            </table>
-          </div>
+          <div id="aiStayExpandedList" style="margin-top:10px;"></div>
         </div>
       </section>
 
