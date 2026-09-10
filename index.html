@@ -283,6 +283,23 @@
         <div class="card" style="margin-bottom:16px;">
           <div class="section-head">
             <div>
+              <div class="section-title" data-i18n="ai.stay.title">按预计在韩时长的商机</div>
+              <div class="section-desc" data-i18n="ai.stay.desc">点击每一类查看对应客户名单</div>
+            </div>
+          </div>
+          <div id="aiStayCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;"></div>
+          <table style="width:100%;">
+            <thead><tr>
+              <th data-i18n="ai.stay.category">类别</th><th data-i18n="ai.stay.count">客户数</th><th data-i18n="ai.stay.action">建议操作</th>
+            </tr></thead>
+            <tbody id="aiStayTableBody"></tbody>
+          </table>
+          <div id="aiStayExpandedList" style="margin-top:14px;"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-head">
+            <div>
               <div class="section-title" data-i18n="ai.topActions.title">🔥 今日建议优先处理</div>
               <div class="section-desc" data-i18n="ai.topActions.desc">点击每一类查看对应客户名单</div>
             </div>
@@ -356,6 +373,17 @@
             <button class="btn btn-primary" id="btnAddReminder" data-i18n="btn.addFollowup">＋ 添加跟进</button>
           </div>
           <div class="chip-tabs" id="reminderTabs" style="margin:14px 0 16px;"></div>
+          <div id="reminderExpiringFilter" style="display:none;flex-direction:column;gap:10px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <label class="muted" style="font-size:12.5px;" data-i18n="rem.expiring.signedUpIn">签约月份</label>
+              <select class="select-input" id="reminderSignupMonth" style="max-width:180px;"></select>
+              <label class="muted" style="font-size:12.5px;margin-left:6px;" data-i18n="rem.expiring.duration">套餐时长</label>
+              <select class="select-input" id="reminderDurationFilter" style="max-width:150px;"></select>
+              <label class="muted" style="font-size:12.5px;margin-left:6px;" data-i18n="f.nationality">国籍</label>
+              <select class="select-input" id="reminderNationalityFilter" style="max-width:170px;"></select>
+            </div>
+            <div class="chip-tabs" id="reminderStatusChips"></div>
+          </div>
           <div id="reminderList"></div>
         </div>
       </section>
