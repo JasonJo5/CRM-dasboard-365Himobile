@@ -114,7 +114,7 @@ const I18N = {
     'ai.disclaimer':'💡 优先级评分与商机建议由规则引擎与透明的加权评分计算得出，并非黑箱机器学习模型 — 每一项数字均可追溯到真实客户数据。',
     'ai.topActions.title':'🔥 今日建议优先处理','ai.topActions.desc':'点击每一类查看对应客户名单','ai.topActions.emptyTitle':'目前没有需要优先处理的事项 👍','ai.topActions.emptyDesc':'所有客户目前都没有紧急商机或风险',
     'ai.stay.title':'按预计在韩时长的商机','ai.stay.desc':'点击每一类查看对应客户名单','ai.stay.category':'类别','ai.stay.count':'客户数','ai.stay.action':'建议操作','ai.stay.pageDesc':'找出适合转后付、需要续费、或适合升级合约的客户 — 点击任意卡片查看名单与明细',
-    'ai.stay.readyForPostpaid':'可转后付','ai.stay.readyForPostpaidAction':'联系转后付事宜','ai.stay.readyForPostpaidDesc':'先付套餐已到期的客户——已满19岁、护照登记、预计在韩停留8个月以上的视为符合资格；未满19岁的也会列出，并显示距离19岁生日还有多少天','ai.stay.underage':'未满19岁',
+    'ai.stay.readyForPostpaid':'可转后付','ai.stay.readyForPostpaidAction':'联系转后付事宜','ai.stay.readyForPostpaidDesc':'先付套餐已到期的客户——已满19岁、护照登记、预计在韩停留8个月以上的视为符合资格；未满19岁的也会列出，并显示距离19岁生日还有多少天','ai.stay.underage':'未满19岁','ai.stay.missing.summary':'位客户因资料不全，未能纳入上方统计','ai.stay.missing.both':'缺少证件类型与在韩年数','ai.stay.missing.idType':'证件类型非护照或未填写','ai.stay.missing.years':'缺少在韩年数','ai.stay.missing.dob':'缺少出生日期，无法判断年龄','btn.hide':'收起','btn.show':'展开',
     'ai.stay.prepaidRecharge':'先付续费','ai.stay.prepaidRechargeAction':'联系续费事宜','ai.stay.prepaidRechargeDesc':'1/2/3个月套餐即将到期，且仍有剩余在韩时间的先付客户',
     'ai.stay.postpaidUpgrade':'后付续约','ai.stay.postpaidUpgradeAction':'提供新合约','ai.stay.postpaidUpgradeDesc':'合约已到期，且预计还将在韩停留8个月以上的后付客户',
     'ai.stay.noYearsNote':'（结果基于客户档案中的「在韩年数」字段，代表预计剩余停留时长；未填写该字段的客户不会出现在此处）',
@@ -211,7 +211,7 @@ const I18N = {
     'ai.disclaimer':'💡 Priority scores and opportunities come from a rule engine and a transparent weighted formula — not a black-box ML model. Every number traces back to real customer data.',
     'ai.topActions.title':'🔥 Top actions today','ai.topActions.desc':'Click a category to see the matching customers','ai.topActions.emptyTitle':'Nothing urgent right now 👍','ai.topActions.emptyDesc':'No customers currently have pressing opportunities or risks',
     'ai.stay.title':'Opportunities by expected time remaining in Korea','ai.stay.desc':'Click a category to see the matching customers','ai.stay.category':'Category','ai.stay.count':'Customers','ai.stay.action':'Suggested action','ai.stay.pageDesc':'Find customers ready to move to postpaid, due for a recharge, or worth offering a longer contract — click any card to see the list and details',
-    'ai.stay.readyForPostpaid':'Ready for postpaid','ai.stay.readyForPostpaidAction':'Contact about postpaid','ai.stay.readyForPostpaidDesc':'Prepaid customers whose current plan has finished — 19+, passport-verified, staying 8+ more months counts as eligible; under-19 customers are listed too, showing days until their 19th birthday','ai.stay.underage':'Under 19',
+    'ai.stay.readyForPostpaid':'Ready for postpaid','ai.stay.readyForPostpaidAction':'Contact about postpaid','ai.stay.readyForPostpaidDesc':'Prepaid customers whose current plan has finished — 19+, passport-verified, staying 8+ more months counts as eligible; under-19 customers are listed too, showing days until their 19th birthday','ai.stay.underage':'Under 19','ai.stay.missing.summary':'customers are missing data and aren\'t included in the counts above','ai.stay.missing.both':'Missing both ID type and Years in Korea','ai.stay.missing.idType':'ID type isn\'t Passport, or is blank','ai.stay.missing.years':'Missing Years in Korea','ai.stay.missing.dob':'Missing date of birth, so age can\'t be determined','btn.hide':'Hide','btn.show':'Show',
     'ai.stay.prepaidRecharge':'Prepaid recharge','ai.stay.prepaidRechargeAction':'Contact about recharge','ai.stay.prepaidRechargeDesc':'Prepaid customers on a 1/2/3-month plan ending soon who still have remaining stay time',
     'ai.stay.postpaidUpgrade':'Postpaid upgrade','ai.stay.postpaidUpgradeAction':'Offer new contract','ai.stay.postpaidUpgradeDesc':'Postpaid customers whose contract has ended, staying 8+ more months',
     'ai.stay.noYearsNote':'(based on the "Years in Korea" field on each customer profile, read as expected remaining stay — customers with that field left blank won\'t appear here)',
@@ -1553,22 +1553,21 @@ function getStayBasedOpportunities(){
     const years = Number(c.years);
     const hasYears = c.years!==undefined && c.years!=='' && !isNaN(years);
     if(svc.type==='prepaid'){
-      // "Ready for postpaid" should only surface once the current prepaid period is
-      // actually finished — someone still mid-way through their prepaid plan hasn't lost
-      // anything by staying prepaid yet, and offering postpaid too early would mean they're
-      // effectively paying for overlapping service instead of a clean switch-over.
-      if(computedStatus(svc)==='expired'){
-        if(age!==null && age<POSTPAID_MIN_AGE){
-          // Under 19 still belongs here — just as a heads-up with a countdown, not a
-          // ready-now match, since passport/stay-duration don't matter until they're
-          // actually old enough for postpaid to be an option at all.
-          const bday = new Date(c.dob);
-          const nextBday = new Date(bday.getFullYear()+POSTPAID_MIN_AGE, bday.getMonth(), bday.getDate());
-          const daysUntil19 = isNaN(nextBday.getTime()) ? null : daysBetween(todayISO(), nextBday.toISOString().slice(0,10));
-          readyForPostpaid.push({customer:c, service:svc, subStatus:'underage', daysUntil19});
-        } else if(age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && years>=(8/12)){
-          readyForPostpaid.push({customer:c, service:svc, subStatus:'eligible'});
-        }
+      // "Ready for postpaid" (the eligible/ready-NOW case) should only surface once the
+      // current prepaid period is actually finished — someone still mid-way through their
+      // prepaid plan hasn't lost anything by staying prepaid yet, and offering postpaid too
+      // early would mean they're effectively paying for overlapping service instead of a
+      // clean switch-over. The under-19 case is different: it's a heads-up countdown, not
+      // an action to take right now, so it shouldn't wait on plan status at all — someone
+      // turning 19 in 3 months is worth knowing about whether their current plan still has
+      // 80 days left or has already run out.
+      if(age!==null && age<POSTPAID_MIN_AGE){
+        const bday = new Date(c.dob);
+        const nextBday = new Date(bday.getFullYear()+POSTPAID_MIN_AGE, bday.getMonth(), bday.getDate());
+        const daysUntil19 = isNaN(nextBday.getTime()) ? null : daysBetween(todayISO(), nextBday.toISOString().slice(0,10));
+        readyForPostpaid.push({customer:c, service:svc, subStatus:'underage', daysUntil19});
+      } else if(computedStatus(svc)==='expired' && age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && years>=(8/12)){
+        readyForPostpaid.push({customer:c, service:svc, subStatus:'eligible'});
       }
       if([30,60,90].includes(Number(svc.durationDays)) && computedStatus(svc)==='expiring_soon' && hasYears && years>0){
         prepaidRecharge.push({customer:c, service:svc});
@@ -1580,6 +1579,37 @@ function getStayBasedOpportunities(){
     }
   });
   return {readyForPostpaid, prepaidRecharge, postpaidUpgrade};
+}
+/* All three categories above silently skip anyone missing the data they need to judge —
+   there's no way to tell if someone's "ready" without knowing their ID type or expected
+   stay, so leaving them out (rather than guessing) is correct. But that silence can make
+   the counts look mysteriously low with no way to tell why. This walks the same candidate
+   pools and counts specifically who got skipped and for which missing field, so that's
+   visible instead of hidden. */
+function getStayBasedDiagnostics(){
+  const missingYearsOnly=[], missingIdTypeOnly=[], missingBoth=[], noDobOnExpiredPlan=[];
+  DB.customers.forEach(c=>{
+    const svc = activeSubscriptionFor(c.id);
+    if(!svc) return;
+    const age = calcAge(c.dob);
+    const hasYears = c.years!==undefined && c.years!=='' && !isNaN(Number(c.years));
+    const isCandidate = (svc.type==='prepaid' && computedStatus(svc)==='expired' && age!==null && age>=POSTPAID_MIN_AGE)
+      || (svc.type==='prepaid' && [30,60,90].includes(Number(svc.durationDays)) && computedStatus(svc)==='expiring_soon')
+      || (svc.type==='postpaid' && computedStatus(svc)==='over_contract');
+    if(!isCandidate) return;
+    const needsIdType = svc.type==='prepaid' && computedStatus(svc)==='expired';
+    const missingId = needsIdType && c.idType!=='Passport';
+    const missingYr = !hasYears;
+    if(missingId && missingYr) missingBoth.push(c);
+    else if(missingId) missingIdTypeOnly.push(c);
+    else if(missingYr) missingYearsOnly.push(c);
+  });
+  DB.customers.forEach(c=>{
+    const svc = activeSubscriptionFor(c.id);
+    if(svc && svc.type==='prepaid' && computedStatus(svc)==='expired' && calcAge(c.dob)===null) noDobOnExpiredPlan.push(c);
+  });
+  return {missingYearsOnly, missingIdTypeOnly, missingBoth, noDobOnExpiredPlan,
+    total: missingYearsOnly.length+missingIdTypeOnly.length+missingBoth.length+noDobOnExpiredPlan.length};
 }
 function eligPostpaidConversion(c){
   const active = activeSubscriptionFor(c.id);
@@ -2349,6 +2379,39 @@ function renderAIPage(){
 }
 let aiStayExpanded = null; // which of the 3 categories is currently expanded below
 let aiStaySignupMonth = 'all';
+let aiStayMissingExpanded = false;
+function renderAIStayMissingDataBanner(){
+  const box = document.getElementById('aiStayMissingDataBanner');
+  const diag = getStayBasedDiagnostics();
+  if(diag.total===0){ box.style.display='none'; return; }
+  box.style.display = '';
+  const groups = [
+    {list:diag.missingBoth, label:t('ai.stay.missing.both')},
+    {list:diag.missingIdTypeOnly, label:t('ai.stay.missing.idType')},
+    {list:diag.missingYearsOnly, label:t('ai.stay.missing.years')},
+    {list:diag.noDobOnExpiredPlan, label:t('ai.stay.missing.dob')},
+  ].filter(g=>g.list.length);
+  box.innerHTML = `<div class="service-card" style="background:#FFFBEB;border-color:#FDE68A;margin-bottom:18px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;" data-missing-toggle>
+      <div>⚠️ <b>${diag.total}</b> ${t('ai.stay.missing.summary')}</div>
+      <span class="pill pill-orange">${aiStayMissingExpanded ? t('btn.hide') : t('btn.show')}</span>
+    </div>
+    ${aiStayMissingExpanded ? `<div style="margin-top:12px;">
+      ${groups.map(g=>`
+        <div style="margin-bottom:10px;">
+          <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:4px;">${g.label} (${g.list.length})</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${g.list.map(c=>`<span class="pill pill-gray" style="cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)}</span>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>` : ''}
+  </div>`;
+  document.querySelector('[data-missing-toggle]')?.addEventListener('click', ()=>{
+    aiStayMissingExpanded = !aiStayMissingExpanded;
+    renderAIStayMissingDataBanner();
+  });
+  bindRowOpens();
+}
 function renderAIStayCards(){
   const {readyForPostpaid, prepaidRecharge, postpaidUpgrade} = getStayBasedOpportunities();
   const cats = [
@@ -2356,6 +2419,7 @@ function renderAIStayCards(){
     {key:'prepaidRecharge', icon:'↻', list:prepaidRecharge, color:'#2563EB', grad:'linear-gradient(135deg,#EFF6FF,#DBEAFE)'},
     {key:'postpaidUpgrade', icon:'★', list:postpaidUpgrade, color:'#8B5CF6', grad:'linear-gradient(135deg,#F5F3FF,#EDE9FE)'},
   ];
+  renderAIStayMissingDataBanner();
   document.getElementById('aiStayCards').innerHTML = cats.map(cat=>{
     const selected = aiStayExpanded===cat.key;
     return `<div class="ai-stay-card ${selected?'selected':''}" style="background:${cat.list.length?cat.grad:'var(--card)'};--accent:${cat.color};" data-stay-card="${cat.key}">
@@ -2419,6 +2483,15 @@ function renderAIStayExpandedList(cats){
     else if(days<0){ dayLabel = LANG==='zh' ? `${Math.abs(days)} 天前已结束` : `Finished ${Math.abs(days)}d ago`; dayPillClass = 'pill-red'; }
     else if(days===0){ dayLabel = LANG==='zh' ? '今天到期' : 'Due today'; dayPillClass = 'pill-red'; }
     else { dayLabel = LANG==='zh' ? `还剩 ${days} 天` : `${days}d left`; dayPillClass = days<=7 ? 'pill-orange' : 'pill-gray'; }
+    // Underage entries can still have their current prepaid plan running or already
+    // finished — shown as a second, separate indicator from the age countdown, since
+    // both are useful to know at a glance: whether they're mid-contract right now, AND
+    // how long until they're even old enough for postpaid to be worth bringing up.
+    let planLabel = '', planPillClass = '';
+    if(subStatus==='underage' && days!==null){
+      if(days>0){ planLabel = LANG==='zh' ? `合约中 · 还剩${days}天` : `In contract · ${days}d left`; planPillClass = 'pill-blue'; }
+      else { planLabel = LANG==='zh' ? '套餐已结束' : 'Plan finished'; planPillClass = 'pill-gray'; }
+    }
     return `<div class="ai-stay-row" style="--accent:${cat.color};${subStatus==='underage'?'opacity:.8;':''}">
       <span class="avatar">${initials(c.name)}</span>
       <div style="min-width:0;flex:1;">
@@ -2427,6 +2500,7 @@ function renderAIStayExpandedList(cats){
           <button class="copy-name-btn" data-copy-name="${c.id}" title="${t('btn.copyName')}">📋</button>
           <span class="pill pill-blue" style="margin-left:2px;">${escapeHtml(c.nationality||'')}</span>
           ${subStatus==='underage' ? `<span class="pill pill-gray">${t('ai.stay.underage')}</span>` : ''}
+          ${planLabel ? `<span class="pill ${planPillClass}">${planLabel}</span>` : ''}
         </div>
         <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'到期':'expiry'} ${fmtDate(svc.expiryDate)}</div>
       </div>
