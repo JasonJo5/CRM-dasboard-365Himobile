@@ -2338,27 +2338,29 @@ function renderAIPage(){
   renderAIStayCards();
 }
 let aiStayExpanded = null; // which of the 3 categories is currently expanded below
+let aiStaySignupMonth = 'all';
 function renderAIStayCards(){
   const {readyForPostpaid, prepaidRecharge, postpaidUpgrade} = getStayBasedOpportunities();
   const cats = [
-    {key:'readyForPostpaid', icon:'🟢', list:readyForPostpaid, color:'var(--green)', bg:'var(--green-light)'},
-    {key:'prepaidRecharge', icon:'🔵', list:prepaidRecharge, color:'var(--blue)', bg:'var(--blue-light)'},
-    {key:'postpaidUpgrade', icon:'🟣', list:postpaidUpgrade, color:'#8B5CF6', bg:'#F1EBFF'},
+    {key:'readyForPostpaid', icon:'🟢', list:readyForPostpaid, color:'#16A34A', grad:'linear-gradient(135deg,#ECFDF5,#D1FAE5)'},
+    {key:'prepaidRecharge', icon:'🔵', list:prepaidRecharge, color:'#2563EB', grad:'linear-gradient(135deg,#EFF6FF,#DBEAFE)'},
+    {key:'postpaidUpgrade', icon:'🟣', list:postpaidUpgrade, color:'#8B5CF6', grad:'linear-gradient(135deg,#F5F3FF,#EDE9FE)'},
   ];
   document.getElementById('aiStayCards').innerHTML = cats.map(cat=>{
     const selected = aiStayExpanded===cat.key;
-    return `<div class="card" style="cursor:pointer;padding:22px 20px;background:${cat.list.length?cat.bg:'var(--card)'};border:2px solid ${selected?cat.color:'transparent'};transition:border-color .12s var(--ease);" data-stay-card="${cat.key}">
-      <div style="font-size:26px;margin-bottom:8px;">${cat.icon}</div>
-      <div style="font-size:14px;font-weight:800;color:${cat.color};margin-bottom:2px;">${t('ai.stay.'+cat.key)}</div>
-      <div style="font-size:32px;font-weight:800;line-height:1.15;margin:4px 0;">${cat.list.length}</div>
-      <div class="muted" style="font-size:12.5px;">${t('ai.stay.'+cat.key+'Action')}</div>
+    return `<div class="ai-stay-card ${selected?'selected':''}" style="background:${cat.list.length?cat.grad:'var(--card)'};--accent:${cat.color};" data-stay-card="${cat.key}">
+      <div class="ai-stay-card-icon">${cat.icon}</div>
+      <div class="ai-stay-card-label">${t('ai.stay.'+cat.key)}</div>
+      <div class="ai-stay-card-value">${cat.list.length}</div>
+      <div class="ai-stay-card-action">${t('ai.stay.'+cat.key+'Action')} →</div>
     </div>`;
   }).join('');
   document.querySelectorAll('[data-stay-card]').forEach(el=>{
     el.addEventListener('click', ()=>{
       const key = el.dataset.stayCard;
       aiStayExpanded = aiStayExpanded===key ? null : key;
-      renderAIStayCards(); // re-render so the clicked card's border-highlight updates too
+      aiStaySignupMonth = 'all'; // reset the filter whenever switching categories, so it never silently hides everything in a newly-opened list
+      renderAIStayCards(); // re-render so the clicked card's selected state updates too
     });
   });
   document.getElementById('aiStayListClose').onclick = ()=>{ aiStayExpanded=null; renderAIStayCards(); };
@@ -2371,38 +2373,43 @@ function renderAIStayExpandedList(cats){
   const cat = cats.find(c=>c.key===aiStayExpanded);
   document.getElementById('aiStayListTitle').textContent = `${cat.icon} ${t('ai.stay.'+cat.key)} (${cat.list.length})`;
   document.getElementById('aiStayListDesc').textContent = t('ai.stay.'+cat.key+'Desc');
-  const box = document.getElementById('aiStayExpandedList');
 
+  // Signup-month filter — same idea as the Reminders "Prepaid expiring" tab, so someone
+  // can ask "of the customers I signed up in a specific month, who's now ready/due" here
+  // too, not just there.
+  const monthsPresent = [...new Set(cat.list.map(x=>x.service.activationDate).filter(Boolean).map(d=>d.slice(0,7)))].sort().reverse();
+  const monthSel = document.getElementById('aiStaySignupMonth');
+  monthSel.innerHTML = `<option value="all">${t('rep.allTime')}</option>` + monthsPresent.map(m=>`<option value="${m}">${fmtMonthLabel(m)}</option>`).join('');
+  monthSel.value = aiStaySignupMonth;
+  monthSel.onchange = ()=>{ aiStaySignupMonth = monthSel.value; renderAIStayExpandedList(cats); };
+
+  const filtered = aiStaySignupMonth==='all' ? cat.list : cat.list.filter(x=> x.service.activationDate && x.service.activationDate.slice(0,7)===aiStaySignupMonth);
+
+  const box = document.getElementById('aiStayExpandedList');
   // Sort most-urgent first: already-finished plans furthest in the past, then soonest to
   // expire — so the person someone should call FIRST is always at the top of the list.
-  const withDays = cat.list.map(x=>{
+  const withDays = filtered.map(x=>{
     const days = x.service.expiryDate ? daysBetween(todayISO(), x.service.expiryDate) : null;
     return {...x, days};
   }).sort((a,b)=> (a.days??0) - (b.days??0));
 
   box.innerHTML = withDays.length ? withDays.map(({customer:c, service:svc, days})=>{
-    let dayLabel, dayColor;
-    if(days===null){ dayLabel = ''; dayColor = 'var(--text-soft)'; }
-    else if(days<0){ dayLabel = LANG==='zh' ? `${Math.abs(days)} 天前已结束` : `Finished ${Math.abs(days)}d ago`; dayColor = 'var(--red)'; }
-    else if(days===0){ dayLabel = LANG==='zh' ? '今天到期' : 'Due today'; dayColor = 'var(--red)'; }
-    else { dayLabel = LANG==='zh' ? `还剩 ${days} 天` : `${days}d left`; dayColor = days<=7 ? 'var(--orange)' : 'var(--text-soft)'; }
-    return `<div class="service-card" style="margin-bottom:8px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:12px;min-width:0;">
-          <span class="avatar">${initials(c.name)}</span>
-          <div style="min-width:0;">
-            <div style="font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;" data-open-customer="${c.id}">
-              ${escapeHtml(c.name)}
-              <button class="copy-name-btn" data-copy-name="${c.id}" title="${t('btn.copyName')}">📋</button>
-              <span class="pill pill-blue" style="margin-left:2px;">${escapeHtml(c.nationality||'')}</span>
-            </div>
-            <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'到期':'expiry'} ${fmtDate(svc.expiryDate)}</div>
-          </div>
+    let dayLabel, dayPillClass;
+    if(days===null){ dayLabel = ''; dayPillClass = 'pill-gray'; }
+    else if(days<0){ dayLabel = LANG==='zh' ? `${Math.abs(days)} 天前已结束` : `Finished ${Math.abs(days)}d ago`; dayPillClass = 'pill-red'; }
+    else if(days===0){ dayLabel = LANG==='zh' ? '今天到期' : 'Due today'; dayPillClass = 'pill-red'; }
+    else { dayLabel = LANG==='zh' ? `还剩 ${days} 天` : `${days}d left`; dayPillClass = days<=7 ? 'pill-orange' : 'pill-gray'; }
+    return `<div class="ai-stay-row" style="--accent:${cat.color};">
+      <span class="avatar">${initials(c.name)}</span>
+      <div style="min-width:0;flex:1;">
+        <div style="font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;flex-wrap:wrap;" data-open-customer="${c.id}">
+          ${escapeHtml(c.name)}
+          <button class="copy-name-btn" data-copy-name="${c.id}" title="${t('btn.copyName')}">📋</button>
+          <span class="pill pill-blue" style="margin-left:2px;">${escapeHtml(c.nationality||'')}</span>
         </div>
-        <div style="text-align:right;flex:0 0 auto;">
-          <div style="font-weight:800;color:${dayColor};font-size:13.5px;">${dayLabel}</div>
-        </div>
+        <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'到期':'expiry'} ${fmtDate(svc.expiryDate)}</div>
       </div>
+      ${dayLabel ? `<span class="pill ${dayPillClass}" style="flex:0 0 auto;font-weight:700;">${dayLabel}</span>` : ''}
     </div>`;
   }).join('') : emptyState();
   bindRowOpens();
@@ -3841,25 +3848,22 @@ function renderReminders(){
     const c = getCustomer(r.customerId);
     const dtxt = r.daysLeft<0 ? `${Math.abs(r.daysLeft)} ${t('rem.overdue')}` : (r.daysLeft===0? t('rem.today') : `${r.daysLeft} ${t('rem.dueIn')}`);
     const {month, day} = dateBadgeParts(r.dueDate);
-    return `<div class="service-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="min-width:56px;text-align:center;">
-            <div style="font-size:11px;color:var(--text-soft);font-weight:700;">${month}${LANG==='zh'?'月':'/'}</div>
-            <div style="font-size:18px;font-weight:800;color:${r.daysLeft<=0?'var(--red)':'var(--orange)'}">${day}</div>
-          </div>
-          <div>
-            <div style="font-weight:700;cursor:pointer;" data-open-customer="${c?c.id:''}">${c?escapeHtml(c.name):''} <span class="pill pill-blue" style="margin-left:4px;">${t('rem.type.'+r.type)}</span></div>
-            <div class="muted" style="font-size:12px;">${escapeHtml(r.sub||'')} · ${c?escapeHtml(c.phone||''):''}</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="pill ${r.daysLeft<=0?'pill-red':'pill-orange'}">${dtxt}</span>
-          ${r.uiStatus==='completed'
-            ? `<span class="pill pill-green">${t('status.completed')}</span>`
-            : `<button class="btn btn-sm btn-ghost" data-rem-followup="${r.id}">${t('btn.followUpAgain')}</button><button class="btn btn-sm btn-primary" data-rem-done="${r.id}">${t('btn.complete')}</button>`
-          }
-        </div>
+    const accent = r.daysLeft<=0 ? '#DC2626' : (r.daysLeft<=7 ? '#EA580C' : '#94A3B8');
+    return `<div class="rem-row" style="--accent:${accent};">
+      <div class="rem-row-date">
+        <div class="rem-row-date-month">${month}${LANG==='zh'?'月':'/'}</div>
+        <div class="rem-row-date-day" style="color:${accent}">${day}</div>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;cursor:pointer;" data-open-customer="${c?c.id:''}">${c?escapeHtml(c.name):''} <span class="pill pill-blue" style="margin-left:4px;">${t('rem.type.'+r.type)}</span></div>
+        <div class="muted" style="font-size:12px;">${escapeHtml(r.sub||'')} · ${c?escapeHtml(c.phone||''):''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto;">
+        <span class="pill ${r.daysLeft<=0?'pill-red':'pill-orange'}">${dtxt}</span>
+        ${r.uiStatus==='completed'
+          ? `<span class="pill pill-green">${t('status.completed')}</span>`
+          : `<button class="btn btn-sm btn-ghost" data-rem-followup="${r.id}">${t('btn.followUpAgain')}</button><button class="btn btn-sm btn-primary" data-rem-done="${r.id}">${t('btn.complete')}</button>`
+        }
       </div>
     </div>`;
   }).join('') : emptyState();
@@ -3923,18 +3927,16 @@ function renderExpiringCohortTab(cohortAll){
   document.getElementById('reminderList').innerHTML = final.length ? final.map(x=>{
     const {customer:c, service:svc, daysLeft} = x;
     const dtxt = daysLeft===null ? '' : (daysLeft<0 ? `${Math.abs(daysLeft)} ${t('rem.overdue')}` : (daysLeft===0? t('rem.today') : `${daysLeft} ${t('rem.dueIn')}`));
-    return `<div class="service-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div>
-            <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
-            <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${svc.durationDays||'?'} ${LANG==='zh'?'天':'days'} · ${LANG==='zh'?'开通于':'signed up'} ${fmtDate(svc.activationDate)}</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          ${dtxt ? `<span class="muted" style="font-size:12px;">${dtxt}</span>` : ''}
-          ${statusPill(x.status)}
-        </div>
+    const accent = x.status==='expired' ? '#DC2626' : (x.status==='expiring_soon' ? '#EA580C' : '#16A34A');
+    return `<div class="rem-row" style="--accent:${accent};">
+      <span class="avatar">${initials(c.name)}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
+        <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${svc.durationDays||'?'} ${LANG==='zh'?'天':'days'} · ${LANG==='zh'?'开通于':'signed up'} ${fmtDate(svc.activationDate)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto;">
+        ${dtxt ? `<span class="muted" style="font-size:12px;">${dtxt}</span>` : ''}
+        ${statusPill(x.status)}
       </div>
     </div>`;
   }).join('') : emptyState();
@@ -3961,20 +3963,17 @@ function renderPostpaidContractTab(list){
     ${sorted.length ? sorted.map(x=>{
       const {customer:c, service:svc, daysLeft} = x;
       const dtxt = daysLeft===null ? '' : (daysLeft<0 ? `${Math.abs(daysLeft)}${LANG==='zh'?' 天前已超期':'d past contract end'}` : (daysLeft===0? t('rem.today') : `${daysLeft} ${t('rem.dueIn')}`));
-      return `<div class="service-card" style="margin-bottom:8px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span class="avatar">${initials(c.name)}</span>
-            <div>
-              <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
-              <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'合约期至':'contract through'} ${fmtDate(svc.expiryDate)}</div>
-              ${statusNote(x.status) ? `<div class="muted" style="font-size:11.5px;margin-top:2px;">${statusNote(x.status)}</div>` : ''}
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            ${dtxt ? `<span class="muted" style="font-size:12px;">${dtxt}</span>` : ''}
-            ${statusPill(x.status)}
-          </div>
+      const accent = x.status==='over_contract' ? '#2563EB' : (x.status==='expiring_soon' ? '#EA580C' : '#16A34A');
+      return `<div class="rem-row" style="--accent:${accent};align-items:flex-start;">
+        <span class="avatar">${initials(c.name)}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
+          <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'合约期至':'contract through'} ${fmtDate(svc.expiryDate)}</div>
+          ${statusNote(x.status) ? `<div class="muted" style="font-size:11.5px;margin-top:2px;">${statusNote(x.status)}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto;">
+          ${dtxt ? `<span class="muted" style="font-size:12px;">${dtxt}</span>` : ''}
+          ${statusPill(x.status)}
         </div>
       </div>`;
     }).join('') : emptyState()}`;
