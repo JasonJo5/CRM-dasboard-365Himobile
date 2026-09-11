@@ -308,7 +308,8 @@ select.select-input:focus{border-color:var(--blue);outline:none;}
   .overlay{display:none !important;}
   #printOverlay{display:block !important;position:static;left:0;top:0;margin:0;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
-  .print-page{box-shadow:none;margin:0;page-break-after:avoid;page-break-inside:avoid;}
+  .print-page{box-shadow:none;margin:0;page-break-inside:avoid;}
+  .print-page:not(:last-child){page-break-after:always;}
   @page{size:A4;margin:0;}
 }
 .prepaid3m-box{grid-column:1/-1;border:1.5px dashed var(--blue);border-radius:12px;padding:14px;background:var(--blue-light);}
