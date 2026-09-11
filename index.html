@@ -771,6 +771,25 @@
   </div>
 </div>
 
+<!-- picks which carrier's ID-change form pair (Page 1 + Page 2) to print, when more than
+     one carrier's forms are on file, or the customer's carrier can't be auto-matched -->
+<div class="overlay" id="idChangePrintPickerOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="rem.idChange.pickCarrierTitle">选择证件变更申请表（按通信社）</div>
+      <button class="modal-close" id="idChangePrintPickerClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" style="margin-bottom:14px;" data-i18n="rem.idChange.pickCarrierDesc">该客户的通信社有多份或未能自动匹配的证件变更申请表，请选择要打印的版本。</div>
+      <div class="form-field full"><label data-i18n="tpl.carrier">通信社</label><select class="select-input" id="idcp_carrier" style="width:100%;"></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="idChangePrintPickerCancel" data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="idChangePrintPickerPrint">🖨 <span data-i18n="btn.print">打印</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- change subscription modal (used for both "Change to Postpaid" and "Change Plan") -->
 <div class="overlay" id="changeSubModalOverlay">
   <div class="modal wide">
