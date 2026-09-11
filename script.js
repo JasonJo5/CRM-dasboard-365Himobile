@@ -44,7 +44,7 @@ const I18N = {
     'sub.sheet':'像表格一样直接编辑客户与套餐信息',
     'sheet.hint':'💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存',
     'sub.dashboard':'门店运营总览','sub.customers':'客户资料与套餐管理','sub.ai':'找出适合转后付、需要续费、或适合升级合约的客户','sub.reminders':'到期、合同与信息变更提醒','sub.orders':'先付、后付、号码移动等业务记录','sub.reports':'营收、利润与客户结构报表','sub.templates':'运营商申请表自动填写与打印','sub.io':'Excel 导入与数据备份',
-    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并','btn.copyName':'复制姓名',
+    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并','btn.copyName':'复制姓名','btn.save':'保存','btn.requestIdChange':'申请证件变更','btn.markComplete':'标记已完成',
     'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回','btn.undoCancel':'恢复订阅 Reactivate',
     'btn.recharge':'充值续约','btn.changeToPrepaid':'转为先付卡','btn.confirmRecharge':'确认充值',
     'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布','dash.paymentToday.title':'今日付款方式汇总（先付）','dash.paymentToday.desc':'今日各付款方式的客户数与收入合计',
@@ -63,7 +63,7 @@ const I18N = {
     'modal.newCustomer':'新建客户','modal.editCustomer':'编辑客户','modal.customerProfile':'客户档案','modal.newOrder':'新增业务','modal.editOrder':'编辑业务','modal.importPreview':'导入预览','modal.changeToPostpaid':'转为后付卡','modal.changePlan':'变更套餐','modal.cancelSubscription':'取消订阅',
     'cs.autofillHint':'姓名 / 电话 / 国籍 / 职业 / 证件号码已根据现有客户资料自动填写，可直接修改','cs.idNumberArc':'证件号码 (ARC)',
     'modal.chooseType':'新建客户','modal.chooseTypeDesc':'先选择客户类型，两种表单的字段不同','modal.prepaidDesc':'固定3个月充值套餐','modal.postpaidDesc':'按月合约，可选运营商与套餐','modal.newPostpaidCustomer':'新建后付卡客户',
-    'f.contactHandle':'联系账号 / ID','f.workType':'业务向','f.handlerName':'办理人','f.referralFriend':'介绍人（朋友姓名）',
+    'f.contactHandle':'联系账号 / ID','f.workType':'业务向','f.handlerName':'办理人','f.referralFriend':'介绍人（朋友姓名）','f.date':'日期',
     'f.profitSection':'公司价格与折扣','f.expectedProfit':'公司价格','f.actualProfit':'公司实际结算价','f.usimFee':'USIM 费用','f.discountPerMonth':'每月折扣','f.discountMonths':'折扣月数','f.netExpectedProfit':'预期收入','f.expectedIncome':'预期收入','f.actualIncome':'实际收入','f.discountTotal':'折扣总额','f.actualProfitHint':'💡「公司实际结算价」会在月底运营商结算后填写，用于计算实际收入并与预期收入核对 — 可在保存客户后于「表格视图」中随时补填。',
     'f.name':'客户姓名','f.phone':'联系电话','f.nationality':'国籍','f.nationalityPh':'例如：CHINA / VIETNAM','f.dob':'出生日期','f.kakao':'KakaoTalk ID','f.wechat':'微信 WeChat','f.idType':'证件类型','f.idNumber':'证件号码','f.idExpiry':'证件有效期至','f.occupation':'职业','f.workplace':'工作单位','f.years':'在韩年数','f.referral':'客户来源','f.carrierType':'通信网','f.planType':'业务类型','f.branchOffice':'接收处管理编码','f.subType':'开通方式','f.address':'地址','f.addressPh':'韩国地址（用于打印申请表）','f.rating':'客户评分','f.notes':'备注','f.notesPh':'职业、客户来源等',
     'opt.prepaid':'先付卡（3个月充值）','opt.postpaid':'后付卡','opt.prepaidShort':'先付卡','opt.postpaidShort':'后付卡','prepaid3m.hint':'先付卡按充值月数计算，选择3个月时会自动套用프리티电信申请表；1/2个月请另外选择对应模板','prepaid3m.editHint':'修改该客户当前套餐的完整信息（不会新增历史记录，仅更正当前记录）','postpaidEdit.hint':'编辑该客户当前后付套餐的完整信息','postpaid.hint':'后付卡为按月合约，保存时会用下方选择的模板生成申请表（请先在「打印模板」页面上传后付卡运营商表格）',
@@ -78,7 +78,7 @@ const I18N = {
     'type.prepaid':'先付卡','type.postpaid':'后付卡','type.porting':'号码移动','type.transfer':'过户 / 名义变更','type.topup':'充值 / 续费','type.cancel':'解约',
     'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.over_contract':'已超合约期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
     'pay.cash':'现金','pay.transfer':'银行转账','pay.card':'刷卡','pay.kakaopay':'KakaoPay','pay.other':'其他',
-    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期','rem.tab.postpaidContract':'后付合约状态','rem.postpaidContract.desc':'合约期已过不代表服务有问题——客户可以选择更换套餐，也可以维持原套餐不变。','rem.status.overContract':'合约期已过','rem.status.contractEndingSoon':'合约即将期满','rem.status.inContract':'合约期内','rem.status.overContractNote':'客户现在可以自由更换套餐，但并非必须——继续使用原套餐也完全没问题。','rem.status.contractEndingSoonNote':'合约期即将结束，届时客户将可以自由选择是否更换套餐。',
+    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期','rem.tab.postpaidContract':'后付合约状态','rem.postpaidContract.desc':'合约期已过不代表服务有问题——客户可以选择更换套餐，也可以维持原套餐不变。','rem.status.overContract':'合约期已过','rem.status.contractEndingSoon':'合约即将期满','rem.status.inContract':'合约期内','rem.status.overContractNote':'客户现在可以自由更换套餐，但并非必须——继续使用原套餐也完全没问题。','rem.status.contractEndingSoonNote':'合约期即将结束，届时客户将可以自由选择是否更换套餐。','rem.idChange.pendingTitle':'待处理：证件变更申请（护照 → 外国人登记证）','rem.idChange.requestedOn':'申请日期','rem.idChange.handledBy':'经办人','rem.idChange.modalTitle':'申请护照转外国人登记证','rem.idChange.modalDesc':'用于记录客户希望将证件登记从护照改为外国人登记证（ARC），以便使用需要 ARC 的手机应用。','rem.tab.idChange':'证件变更申请','toast.idChangeSaved':'已记录证件变更申请','toast.idChangeCompleted':'证件变更已完成，客户证件类型已更新为外国人登记证',
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
@@ -131,7 +131,7 @@ const I18N = {
     'toast.subscriptionCancelled':'订阅已取消',
     'confirm.delete':'确定要删除吗？此操作无法撤销。',
     'io.rows':'行','io.detected':'检测到',
-    'tpl.title':'运营商纸质表格模板','tpl.desc':'上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印','tpl.upload':'上传新模板','tpl.editor.new':'新建模板','tpl.editor.edit':'编辑模板','tpl.name':'模板名称','tpl.carrier':'通信社','tpl.uploadHint':'点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）','tpl.canvasHint':'点击图片任意位置添加字段，拖动字段调整位置','tpl.changeImage':'更换图片','tpl.fieldsList':'已添加字段','tpl.noFields':'点击左侧图片添加第一个字段',
+    'tpl.title':'运营商纸质表格模板','tpl.desc':'上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印','tpl.upload':'上传新模板','tpl.editor.new':'新建模板','tpl.editor.edit':'编辑模板','tpl.name':'模板名称','tpl.carrier':'通信社','tpl.purpose':'用途','tpl.purpose.general':'一般（运营商申请表）','tpl.purpose.idChange1':'证件变更申请表 — 第1页','tpl.purpose.idChange2':'证件变更申请表 — 第2页','tpl.uploadHint':'点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）','tpl.canvasHint':'点击图片任意位置添加字段，拖动字段调整位置','tpl.changeImage':'更换图片','tpl.fieldsList':'已添加字段','tpl.noFields':'点击左侧图片添加第一个字段',
     'print.preview':'打印预览','print.template':'选择模板','print.includeBg':'预览显示底图（打印在空白纸上勾选此项）','print.bgHint':'如果打印出来没有底图，请在浏览器打印对话框中开启「背景图形 / Background graphics」选项后再打印，否则底图不会被打印出来。',
     'prepaid3m.toggle':'同时开通「3个月先付卡」并打印申请表',
   },
@@ -141,7 +141,7 @@ const I18N = {
     'sub.sheet':'Edit customer & plan info directly, like a spreadsheet',
     'sheet.hint':'💡 Click a colored tag to pick a new value; click text/numbers/dates to edit directly — press Enter or click away to save',
     'sub.dashboard':'Store operations overview','sub.customers':'Customer profiles & plan management','sub.ai':'Find who\'s ready for postpaid, due for a recharge, or worth a contract upgrade','sub.reminders':'Expiry, contract & info-change reminders','sub.orders':'Prepaid, postpaid, porting and other service records','sub.reports':'Revenue, profit and customer breakdowns','sub.templates':'Auto-fill and print carrier application forms','sub.io':'Excel import and data backup',
-    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge','btn.copyName':'Copy name',
+    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge','btn.copyName':'Copy name','btn.save':'Save','btn.requestIdChange':'Request ID change','btn.markComplete':'Mark complete',
     'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back','btn.undoCancel':'Reactivate',
     'btn.recharge':'Recharge','btn.changeToPrepaid':'Change to Prepaid','btn.confirmRecharge':'Confirm Recharge',
     'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source','dash.paymentToday.title':"Today's payment method breakdown (prepaid)",'dash.paymentToday.desc':'Customer count and income total per payment method today',
@@ -160,7 +160,7 @@ const I18N = {
     'modal.newCustomer':'New customer','modal.editCustomer':'Edit customer','modal.customerProfile':'Customer profile','modal.newOrder':'New order','modal.editOrder':'Edit order','modal.importPreview':'Import preview','modal.changeToPostpaid':'Change to Postpaid','modal.changePlan':'Change Plan','modal.cancelSubscription':'Cancel Subscription',
     'cs.autofillHint':'Name / phone / nationality / occupation / ID number are auto-filled from the existing customer record — edit directly if needed','cs.idNumberArc':'ID number (ARC)',
     'modal.chooseType':'New customer','modal.chooseTypeDesc':'Choose the customer type first — the two forms have different fields','modal.prepaidDesc':'Fixed 3-month recharge plan','modal.postpaidDesc':'Monthly contract, pick carrier & plan','modal.newPostpaidCustomer':'New postpaid customer',
-    'f.contactHandle':'Contact account / ID','f.workType':'Work type','f.handlerName':'Handled by','f.referralFriend':'Referred by (friend\'s name)',
+    'f.contactHandle':'Contact account / ID','f.workType':'Work type','f.handlerName':'Handled by','f.referralFriend':'Referred by (friend\'s name)','f.date':'Date',
     'f.profitSection':'Company price & discount','f.expectedProfit':'Company price','f.actualProfit':'Real company price','f.usimFee':'USIM fee','f.discountPerMonth':'Discount / month','f.discountMonths':'Discount months','f.netExpectedProfit':'Expected income','f.expectedIncome':'Expected income','f.actualIncome':'Actual income','f.discountTotal':'Total discount','f.actualProfitHint':'💡 "Real company price" gets filled in later once the carrier settles at month-end, used to calculate actual income and compare it against your estimate — you can fill it in anytime from Sheet View after saving.',
     'f.name':'Customer name','f.phone':'Phone number','f.nationality':'Nationality / Country','f.nationalityPh':'e.g. CHINA / VIETNAM','f.dob':'Date of birth','f.kakao':'KakaoTalk ID','f.wechat':'WeChat ID','f.idType':'ID type','f.idNumber':'ID number (ARC/Passport)','f.idExpiry':'ID expiry date','f.occupation':'Occupation','f.workplace':'Workplace','f.years':'Years in Korea','f.referral':'Referral source','f.carrierType':'Carrier network','f.planType':'Plan type','f.branchOffice':'Branch office code','f.subType':'Subscription type','f.address':'Address','f.addressPh':'Korean address (used for printing application forms)','f.rating':'Customer rating','f.notes':'Notes','f.notesPh':'Occupation, referral source, etc.',
     'opt.prepaid':'Prepaid (3-month recharge, fixed)','opt.postpaid':'Postpaid','opt.prepaidShort':'Prepaid','opt.postpaidShort':'Postpaid','prepaid3m.hint':'Prepaid is billed by recharge months — choosing 3 months auto-applies the Preeti Telecom form; 1/2-month plans use whichever other template you select','prepaid3m.editHint':'Editing this customer\'s current plan in full (this corrects the existing record — it does not add a new history entry)','postpaidEdit.hint':'Editing this customer\'s current postpaid plan in full','postpaid.hint':'Postpaid is a monthly contract — saving will generate the application form using the template selected below (upload your postpaid carrier form in Print Templates first)',
@@ -175,7 +175,7 @@ const I18N = {
     'type.prepaid':'Prepaid SIM','type.postpaid':'Postpaid SIM','type.porting':'Number porting','type.transfer':'Ownership transfer','type.topup':'Top-up / renewal','type.cancel':'Cancellation',
     'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.over_contract':'Over contract','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
     'pay.cash':'Cash','pay.transfer':'Bank transfer','pay.card':'Card','pay.kakaopay':'KakaoPay','pay.other':'Other',
-    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired','rem.tab.postpaidContract':'Postpaid contract status','rem.postpaidContract.desc':'Being over contract doesn\'t mean anything\'s wrong with the service — the customer is free to change plans if they want, but can just as easily keep the one they\'re on.','rem.status.overContract':'Over contract','rem.status.contractEndingSoon':'Contract ending soon','rem.status.inContract':'In contract','rem.status.overContractNote':'Free to change plans now, but doesn\'t have to — keeping the current plan is completely fine.','rem.status.contractEndingSoonNote':'Contract period ending soon — the customer will be free to change plans once it does.',
+    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired','rem.tab.postpaidContract':'Postpaid contract status','rem.postpaidContract.desc':'Being over contract doesn\'t mean anything\'s wrong with the service — the customer is free to change plans if they want, but can just as easily keep the one they\'re on.','rem.status.overContract':'Over contract','rem.status.contractEndingSoon':'Contract ending soon','rem.status.inContract':'In contract','rem.status.overContractNote':'Free to change plans now, but doesn\'t have to — keeping the current plan is completely fine.','rem.status.contractEndingSoonNote':'Contract period ending soon — the customer will be free to change plans once it does.','rem.idChange.pendingTitle':'Pending: ID change request (Passport → Resident Card)','rem.idChange.requestedOn':'Requested on','rem.idChange.handledBy':'Handled by','rem.idChange.modalTitle':'Request Passport → Resident Card change','rem.idChange.modalDesc':'Records that this customer wants their registered ID switched from Passport to a Resident Card (ARC), so they can use apps that require one.','rem.tab.idChange':'ID change requests','toast.idChangeSaved':'ID change request saved','toast.idChangeCompleted':'ID change marked complete — customer\'s ID type updated to Resident Card',
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
@@ -228,7 +228,7 @@ const I18N = {
     'toast.subscriptionCancelled':'Subscription cancelled',
     'confirm.delete':'Delete this record? This cannot be undone.',
     'io.rows':'rows','io.detected':'detected',
-    'tpl.title':'Carrier paper form templates','tpl.desc':'Upload a scan of the carrier application form and mark field positions — new customer data will auto-fill and print onto it','tpl.upload':'Upload new template','tpl.editor.new':'New template','tpl.editor.edit':'Edit template','tpl.name':'Template name','tpl.carrier':'Carrier','tpl.uploadHint':'Click or drag to upload a scan of the carrier form (JPG / PNG, A4 aspect ratio recommended)','tpl.canvasHint':'Click anywhere on the image to add a field, drag fields to reposition','tpl.changeImage':'Change image','tpl.fieldsList':'Fields added','tpl.noFields':'Click the image on the left to add your first field',
+    'tpl.title':'Carrier paper form templates','tpl.desc':'Upload a scan of the carrier application form and mark field positions — new customer data will auto-fill and print onto it','tpl.upload':'Upload new template','tpl.editor.new':'New template','tpl.editor.edit':'Edit template','tpl.name':'Template name','tpl.carrier':'Carrier','tpl.purpose':'Use for','tpl.purpose.general':'General (carrier application form)','tpl.purpose.idChange1':'ID change form — Page 1','tpl.purpose.idChange2':'ID change form — Page 2','tpl.uploadHint':'Click or drag to upload a scan of the carrier form (JPG / PNG, A4 aspect ratio recommended)','tpl.canvasHint':'Click anywhere on the image to add a field, drag fields to reposition','tpl.changeImage':'Change image','tpl.fieldsList':'Fields added','tpl.noFields':'Click the image on the left to add your first field',
     'print.preview':'Print preview','print.template':'Select template','print.includeBg':'Show background in preview (tick this if printing onto blank paper)','print.bgHint':'If the background form doesn\'t appear on paper, enable "Background graphics" in your browser\'s print dialog before printing — otherwise the background image will not be printed.',
     'prepaid3m.toggle':'Also activate a "3-month prepaid" service and print the application form',
   }
@@ -1853,6 +1853,12 @@ function getPostpaidContractList(){
     return {customer:c, service:svc, status, daysLeft: svc.expiryDate ? daysBetween(now, svc.expiryDate) : null};
   }).filter(Boolean);
 }
+function getPendingIdChangeRequests(){
+  return DB.customers
+    .filter(c=> c.idChangeRequest && c.idChangeRequest.status==='pending')
+    .map(c=> ({customer:c, request:c.idChangeRequest, daysPending: daysBetween(c.idChangeRequest.requestedDate, todayISO())}))
+    .sort((a,b)=> b.daysPending - a.daysPending); // longest-waiting first — those are most overdue for a follow-up
+}
 function buildReminders(){
   const list = [];
   const now = todayISO();
@@ -3257,6 +3263,7 @@ function openCustomerDetail(id){
     actionButtons = `
       <button class="btn btn-primary" id="btnRecharge">🔋 ${t('btn.recharge')}</button>
       <button class="btn btn-ghost" id="btnChangeToPostpaid">🔁 ${t('btn.changeToPostpaid')}</button>
+      ${c.idType==='Passport' && !c.idChangeRequest ? `<button class="btn btn-ghost" id="btnRequestIdChange">📄 ${t('btn.requestIdChange')}</button>` : ''}
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else if(active && active.type==='postpaid'){
     actionButtons = `
@@ -3273,6 +3280,24 @@ function openCustomerDetail(id){
       + (mostRecent ? ` <button class="btn btn-ghost" id="btnUndoCancel">↩️ ${t('btn.undoCancel')}</button>` : '');
   }
 
+  // Surfaces a pending Passport → Resident Card (ARC) change request right on the profile,
+  // similar to how duplicate-detection works below — so staff see it immediately when
+  // opening this customer, rather than needing to remember to check the Reminders tab.
+  let idChangeBannerHtml = '';
+  if(c.idChangeRequest && c.idChangeRequest.status==='pending'){
+    const req = c.idChangeRequest;
+    const daysPending = daysBetween(req.requestedDate, todayISO());
+    idChangeBannerHtml = `<div class="service-card" style="background:#EFF6FF;border-color:#BFDBFE;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-weight:800;color:#1D4ED8;">📄 ${t('rem.idChange.pendingTitle')}</div>
+          <div class="section-desc" style="margin-top:4px;">${t('rem.idChange.requestedOn')} ${fmtDate(req.requestedDate)} (${daysPending} ${LANG==='zh'?'天前':'days ago'}) · ${t('rem.idChange.handledBy')} ${escapeHtml(req.handledBy||'—')}</div>
+        </div>
+        <button class="btn btn-ghost" id="btnPrintIdChange" style="flex:none;">🖨 ${t('btn.print')}</button>
+        <button class="btn btn-primary" id="btnCompleteIdChange" style="flex:none;">✓ ${t('btn.markComplete')}</button>
+      </div>
+    </div>`;
+  }
   // surface duplicate-detection right on the profile too, not just the Duplicates tab —
   // if this customer is the newest in their group, offer to merge directly from here;
   // otherwise point at whichever record IS the newest, since that's the one merge targets
@@ -3317,6 +3342,7 @@ function openCustomerDetail(id){
     </div>`;
 
   document.getElementById('detailBody').innerHTML = `
+    ${idChangeBannerHtml}
     ${dupeBannerHtml}
     <div class="profile-head">
       <div class="profile-avatar">${initials(c.name)}</div>
@@ -3389,6 +3415,19 @@ function openCustomerDetail(id){
   if(btnStartNew) btnStartNew.addEventListener('click', ()=>{ closeAllModals(); openOrderModal(null, id); });
   const btnUndoCancel = document.getElementById('btnUndoCancel');
   if(btnUndoCancel) btnUndoCancel.addEventListener('click', ()=> undoCancellation(id));
+  const btnReqIdChange = document.getElementById('btnRequestIdChange');
+  if(btnReqIdChange) btnReqIdChange.addEventListener('click', ()=> openIdChangeModal(id));
+  const btnPrintIdChange = document.getElementById('btnPrintIdChange');
+  if(btnPrintIdChange) btnPrintIdChange.addEventListener('click', ()=> printIdChangeForm(id));
+  const btnCompleteIdChange = document.getElementById('btnCompleteIdChange');
+  if(btnCompleteIdChange) btnCompleteIdChange.addEventListener('click', ()=>{
+    const cust = getCustomer(id);
+    cust.idChangeRequest.status = 'completed';
+    cust.idType = 'ARC'; // the whole point of this request — reflect the actual outcome once it's done
+    saveDB(DB);
+    toast(t('toast.idChangeCompleted'));
+    openCustomerDetail(id);
+  });
   const btnMergeFromProfile = document.getElementById('btnMergeFromProfile');
   if(btnMergeFromProfile) btnMergeFromProfile.addEventListener('click', ()=>{
     const group = getDuplicateGroups().find(g=>g.some(x=>x.id===id));
@@ -3713,6 +3752,33 @@ function planLabel(svc){
   const typeLabel = svc.type==='postpaid' ? t('opt.postpaidShort') : t('opt.prepaidShort');
   return `${typeLabel}${svc.plan?' · '+escapeHtml(svc.plan):''}${svc.carrier?' · '+escapeHtml(svc.carrier):''}`;
 }
+/* Tracks a customer's request to switch their registered ID from Passport to a Korean
+   Resident Card (ARC) — needed for many everyday Korean apps (banking, delivery, etc.)
+   that require ARC rather than passport for verification. Kept as its own small, direct
+   flow — separate from the general "info_change" auto-signal — specifically so staff can
+   record exactly who's handling it and when it was asked for, and so it shows up as a
+   trackable task with an owner, not just a passive signal. */
+let idChangeCustomerId = null;
+function openIdChangeModal(customerId){
+  idChangeCustomerId = customerId;
+  document.getElementById('idc_date').value = todayISO();
+  renderTileRadioGroup('idc_handler_group', STAFF_MEMBERS, '');
+  document.getElementById('idChangeModalOverlay').classList.add('show');
+}
+document.getElementById('idChangeModalClose').addEventListener('click', closeAllModals);
+document.getElementById('idChangeModalCancel').addEventListener('click', closeAllModals);
+document.getElementById('idChangeModalSave').addEventListener('click', ()=>{
+  const date = document.getElementById('idc_date').value || todayISO();
+  const handledBy = document.getElementById('idc_handler_group').dataset.selected;
+  if(!handledBy){ toast(LANG==='zh'?'请选择经办人':'Please select who is handling this'); return; }
+  const cust = getCustomer(idChangeCustomerId);
+  cust.idChangeRequest = {requestedDate: date, handledBy, status:'pending'};
+  saveDB(DB);
+  closeAllModals();
+  toast(t('toast.idChangeSaved'));
+  openCustomerDetail(idChangeCustomerId);
+  renderNav();
+});
 function openChangeSubModal(customerId, mode){
   const cust = getCustomer(customerId);
   const current = activeSubscriptionFor(customerId);
@@ -3931,12 +3997,14 @@ function renderReminders(){
   const all = buildReminders().filter(r=>r.type!=='contract_end'); // postpaid contract status gets its own tab below — see why there
   const cohortAll = getPrepaidCohortList(); // unfiltered — used only for the tab's count badge
   const postpaidContractAll = getPostpaidContractList();
+  const idChangeAll = getPendingIdChangeRequests();
   const tabs = [
     {key:'all', label:'rem.tab.all', n:all.filter(r=>r.uiStatus!=='completed').length},
     {key:'today', label:'rem.tab.today', n:all.filter(r=>r.daysLeft<=0 && r.uiStatus!=='completed').length},
     {key:'week', label:'rem.tab.week', n:all.filter(r=>r.daysLeft>0 && r.daysLeft<=7 && r.uiStatus!=='completed').length},
     {key:'expiring', label:'rem.tab.expiring', n:cohortAll.length},
     {key:'postpaidContract', label:'rem.tab.postpaidContract', n:postpaidContractAll.length},
+    {key:'idChange', label:'rem.tab.idChange', n:idChangeAll.length},
     {key:'infochange', label:'rem.tab.infochange', n:all.filter(r=>r.type==='info_change' && r.uiStatus!=='completed').length},
     {key:'done', label:'rem.tab.done', n:all.filter(r=>r.uiStatus==='completed').length},
   ];
@@ -3948,6 +4016,7 @@ function renderReminders(){
 
   if(reminderTab==='expiring'){ renderExpiringCohortTab(cohortAll); return; }
   if(reminderTab==='postpaidContract'){ renderPostpaidContractTab(postpaidContractAll); return; }
+  if(reminderTab==='idChange'){ renderIdChangeTab(idChangeAll); return; }
 
   let list = all;
   if(reminderTab==='today') list = all.filter(r=>r.daysLeft<=0 && r.uiStatus!=='completed');
@@ -4090,6 +4159,48 @@ function renderPostpaidContractTab(list){
       </div>`;
     }).join('') : emptyState()}`;
   bindRowOpens();
+}
+/* Same list-row pattern as the other Reminders tabs, but for pending Passport -> Resident
+   Card (ARC) change requests — shows who's handling each one and how long it's been
+   waiting, with a direct "Mark complete" action right in the list so staff don't need to
+   open each customer's profile individually to close these out. */
+function renderIdChangeTab(list){
+  document.getElementById('reminderList').innerHTML = `
+    <div class="section-desc" style="margin-bottom:12px;">${t('rem.idChange.modalDesc')}</div>
+    ${list.length ? list.map(({customer:c, request, daysPending})=>{
+      const accent = daysPending>=7 ? '#DC2626' : (daysPending>=3 ? '#EA580C' : '#2563EB');
+      return `<div class="rem-row" style="--accent:${accent};align-items:flex-start;">
+        <span class="avatar">${initials(c.name)}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;cursor:pointer;" data-open-customer="${c.id}">${escapeHtml(c.name)} <span class="pill pill-blue" style="margin-left:4px;">${escapeHtml(c.nationality||'')}</span></div>
+          <div class="muted" style="font-size:12px;">${t('rem.idChange.requestedOn')} ${fmtDate(request.requestedDate)} · ${t('rem.idChange.handledBy')} ${escapeHtml(request.handledBy||'—')}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto;">
+          <span class="pill ${daysPending>=7?'pill-red':(daysPending>=3?'pill-orange':'pill-blue')}">${daysPending} ${LANG==='zh'?'天':'days'}</span>
+          <button class="btn btn-sm btn-ghost" data-idchange-print="${c.id}">🖨 ${t('btn.print')}</button>
+          <button class="btn btn-sm btn-primary" data-idchange-complete="${c.id}">✓ ${t('btn.markComplete')}</button>
+        </div>
+      </div>`;
+    }).join('') : emptyState()}`;
+  bindRowOpens();
+  document.querySelectorAll('[data-idchange-print]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      printIdChangeForm(btn.getAttribute('data-idchange-print'));
+    });
+  });
+  document.querySelectorAll('[data-idchange-complete]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const cust = getCustomer(btn.getAttribute('data-idchange-complete'));
+      cust.idChangeRequest.status = 'completed';
+      cust.idType = 'ARC';
+      saveDB(DB);
+      toast(t('toast.idChangeCompleted'));
+      renderReminders();
+      renderNav();
+    });
+  });
 }
 
 
@@ -5122,6 +5233,7 @@ function openTemplateEditor(tpl){
   document.getElementById('templateEditorTitle').textContent = tpl ? t('tpl.editor.edit') : t('tpl.editor.new');
   document.getElementById('tpl_name').value = tpl?.name || '';
   document.getElementById('tpl_carrier').value = tpl?.carrier || '';
+  document.getElementById('tpl_purpose').value = tpl?.purpose || '';
   document.getElementById('tplDeleteBtn').style.display = tpl ? '' : 'none';
   if(editorImageDataUrl){
     document.getElementById('tplUploadZone').style.display = 'none';
@@ -5221,7 +5333,7 @@ document.getElementById('tplSaveBtn').addEventListener('click', ()=>{
   const name = document.getElementById('tpl_name').value.trim();
   if(!name){ toast(LANG==='zh'?'请输入模板名称':'Please enter a template name'); return; }
   if(!editorImageDataUrl){ toast(LANG==='zh'?'请先上传表格图片':'Please upload a form image first'); return; }
-  const data = { name, carrier:document.getElementById('tpl_carrier').value.trim(), imageDataUrl:editorImageDataUrl, fields:editorFields };
+  const data = { name, carrier:document.getElementById('tpl_carrier').value.trim(), purpose:document.getElementById('tpl_purpose').value, imageDataUrl:editorImageDataUrl, fields:editorFields };
   if(editingTemplateId){
     Object.assign(getTemplate(editingTemplateId), data);
   } else {
@@ -5316,6 +5428,26 @@ function quickPrintService(customerId, serviceId){
   }
   const carrierMatch = DB.templates.find(tp=> tp.carrier && svc.carrier && tp.carrier.trim()===svc.carrier.trim());
   openPrintPreview(customerId, serviceId, carrierMatch ? carrierMatch.id : DB.templates[0].id);
+}
+/* Prints the ID change (Passport -> Resident Card) form as one continuous 2-page job —
+   both pages use the same real, physical multi-page document, so they need to come out of
+   the printer together as a single job, not as two separate individually-triggered prints.
+   Reuses buildPrintPageHtml page-by-page and concatenates them into the same print job,
+   relying on the print-page:not(:last-child) page-break rule to keep them on separate
+   physical pages. Templates are matched by their "purpose" tag, set in Print Templates. */
+function printIdChangeForm(customerId){
+  const page1 = DB.templates.find(t=>t.purpose==='idChangePage1');
+  const page2 = DB.templates.find(t=>t.purpose==='idChangePage2');
+  if(!page1 || !page2){
+    toast(LANG==='zh'?'请先在「打印模板」页面上传证件变更申请表的第1页与第2页（在"用途"中选择对应页码）':'Please upload both Page 1 and Page 2 of the ID change form in Print Templates first (set "Use for" on each)');
+    goTo('templates');
+    return;
+  }
+  const customer = getCustomer(customerId);
+  const service = activeSubscriptionFor(customerId) || {};
+  const html = buildPrintPageHtml(page1, customer, service, true) + buildPrintPageHtml(page2, customer, service, true);
+  document.getElementById('printOverlay').innerHTML = html;
+  setTimeout(()=> window.print(), 80);
 }
 
 /* ---------------- modal plumbing ---------------- */
