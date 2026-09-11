@@ -78,7 +78,7 @@ const I18N = {
     'type.prepaid':'先付卡','type.postpaid':'后付卡','type.porting':'号码移动','type.transfer':'过户 / 名义变更','type.topup':'充值 / 续费','type.cancel':'解约',
     'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.over_contract':'已超合约期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
     'pay.cash':'现金','pay.transfer':'银行转账','pay.card':'刷卡','pay.kakaopay':'KakaoPay','pay.other':'其他',
-    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期','rem.tab.postpaidContract':'后付合约状态','rem.postpaidContract.desc':'合约期已过不代表服务有问题——客户可以选择更换套餐，也可以维持原套餐不变。','rem.status.overContract':'合约期已过','rem.status.contractEndingSoon':'合约即将期满','rem.status.inContract':'合约期内','rem.status.overContractNote':'客户现在可以自由更换套餐，但并非必须——继续使用原套餐也完全没问题。','rem.status.contractEndingSoonNote':'合约期即将结束，届时客户将可以自由选择是否更换套餐。','rem.idChange.pendingTitle':'待处理：证件变更申请（护照 → 外国人登记证）','rem.idChange.requestedOn':'申请日期','rem.idChange.handledBy':'经办人','rem.idChange.modalTitle':'申请护照转外国人登记证','rem.idChange.modalDesc':'用于记录客户希望将证件登记从护照改为外国人登记证（ARC），以便使用需要 ARC 的手机应用。','rem.tab.idChange':'证件变更申请','toast.idChangeSaved':'已记录证件变更申请','toast.idChangeCompleted':'证件变更已完成，客户证件类型已更新为外国人登记证',
+    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期','rem.tab.postpaidContract':'后付合约状态','rem.postpaidContract.desc':'合约期已过不代表服务有问题——客户可以选择更换套餐，也可以维持原套餐不变。','rem.status.overContract':'合约期已过','rem.status.contractEndingSoon':'合约即将期满','rem.status.inContract':'合约期内','rem.status.overContractNote':'客户现在可以自由更换套餐，但并非必须——继续使用原套餐也完全没问题。','rem.status.contractEndingSoonNote':'合约期即将结束，届时客户将可以自由选择是否更换套餐。','rem.idChange.pendingTitle':'待处理：证件变更申请（护照 → 外国人登记证）','rem.idChange.requestedOn':'申请日期','rem.idChange.handledBy':'经办人','rem.idChange.modalTitle':'申请护照转外国人登记证','rem.idChange.modalDesc':'用于记录客户希望将证件登记从护照改为外国人登记证（ARC），以便使用需要 ARC 的手机应用。','rem.idChange.pickCarrierTitle':'选择证件变更申请表（按通信社）','rem.idChange.pickCarrierDesc':'该客户的通信社有多份或未能自动匹配的证件变更申请表，请选择要打印的版本。','rem.tab.idChange':'证件变更申请','toast.idChangeSaved':'已记录证件变更申请','toast.idChangeCompleted':'证件变更已完成，客户证件类型已更新为外国人登记证',
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
@@ -175,7 +175,7 @@ const I18N = {
     'type.prepaid':'Prepaid SIM','type.postpaid':'Postpaid SIM','type.porting':'Number porting','type.transfer':'Ownership transfer','type.topup':'Top-up / renewal','type.cancel':'Cancellation',
     'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.over_contract':'Over contract','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
     'pay.cash':'Cash','pay.transfer':'Bank transfer','pay.card':'Card','pay.kakaopay':'KakaoPay','pay.other':'Other',
-    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired','rem.tab.postpaidContract':'Postpaid contract status','rem.postpaidContract.desc':'Being over contract doesn\'t mean anything\'s wrong with the service — the customer is free to change plans if they want, but can just as easily keep the one they\'re on.','rem.status.overContract':'Over contract','rem.status.contractEndingSoon':'Contract ending soon','rem.status.inContract':'In contract','rem.status.overContractNote':'Free to change plans now, but doesn\'t have to — keeping the current plan is completely fine.','rem.status.contractEndingSoonNote':'Contract period ending soon — the customer will be free to change plans once it does.','rem.idChange.pendingTitle':'Pending: ID change request (Passport → Resident Card)','rem.idChange.requestedOn':'Requested on','rem.idChange.handledBy':'Handled by','rem.idChange.modalTitle':'Request Passport → Resident Card change','rem.idChange.modalDesc':'Records that this customer wants their registered ID switched from Passport to a Resident Card (ARC), so they can use apps that require one.','rem.tab.idChange':'ID change requests','toast.idChangeSaved':'ID change request saved','toast.idChangeCompleted':'ID change marked complete — customer\'s ID type updated to Resident Card',
+    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired','rem.tab.postpaidContract':'Postpaid contract status','rem.postpaidContract.desc':'Being over contract doesn\'t mean anything\'s wrong with the service — the customer is free to change plans if they want, but can just as easily keep the one they\'re on.','rem.status.overContract':'Over contract','rem.status.contractEndingSoon':'Contract ending soon','rem.status.inContract':'In contract','rem.status.overContractNote':'Free to change plans now, but doesn\'t have to — keeping the current plan is completely fine.','rem.status.contractEndingSoonNote':'Contract period ending soon — the customer will be free to change plans once it does.','rem.idChange.pendingTitle':'Pending: ID change request (Passport → Resident Card)','rem.idChange.requestedOn':'Requested on','rem.idChange.handledBy':'Handled by','rem.idChange.modalTitle':'Request Passport → Resident Card change','rem.idChange.modalDesc':'Records that this customer wants their registered ID switched from Passport to a Resident Card (ARC), so they can use apps that require one.','rem.idChange.pickCarrierTitle':'Pick the ID change form (by carrier)','rem.idChange.pickCarrierDesc':'This customer\'s carrier has multiple forms on file, or couldn\'t be auto-matched — pick which version to print.','rem.tab.idChange':'ID change requests','toast.idChangeSaved':'ID change request saved','toast.idChangeCompleted':'ID change marked complete — customer\'s ID type updated to Resident Card',
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
@@ -5432,23 +5432,53 @@ function quickPrintService(customerId, serviceId){
 /* Prints the ID change (Passport -> Resident Card) form as one continuous 2-page job —
    both pages use the same real, physical multi-page document, so they need to come out of
    the printer together as a single job, not as two separate individually-triggered prints.
-   Reuses buildPrintPageHtml page-by-page and concatenates them into the same print job,
-   relying on the print-page:not(:last-child) page-break rule to keep them on separate
-   physical pages. Templates are matched by their "purpose" tag, set in Print Templates. */
+   Different carriers have their own separate 2-page form, so Page 1/Page 2 templates are
+   paired up BY carrier (reusing the same carrier field every other template already has),
+   rather than assuming there's only ever one global pair on file. */
+let idChangePrintCustomerId = null;
+function getIdChangeFormPairs(){
+  const page1s = DB.templates.filter(t=>t.purpose==='idChangePage1');
+  const page2s = DB.templates.filter(t=>t.purpose==='idChangePage2');
+  return page1s.map(p1=>{
+    const p2 = page2s.find(p=> (p.carrier||'').trim()===(p1.carrier||'').trim());
+    return p2 ? {carrier:p1.carrier||'', page1:p1, page2:p2} : null;
+  }).filter(Boolean);
+}
 function printIdChangeForm(customerId){
-  const page1 = DB.templates.find(t=>t.purpose==='idChangePage1');
-  const page2 = DB.templates.find(t=>t.purpose==='idChangePage2');
-  if(!page1 || !page2){
-    toast(LANG==='zh'?'请先在「打印模板」页面上传证件变更申请表的第1页与第2页（在"用途"中选择对应页码）':'Please upload both Page 1 and Page 2 of the ID change form in Print Templates first (set "Use for" on each)');
+  const pairs = getIdChangeFormPairs();
+  if(!pairs.length){
+    toast(LANG==='zh'?'请先在「打印模板」页面上传证件变更申请表的第1页与第2页（在"用途"中选择对应页码，并填写对应通信社）':'Please upload both Page 1 and Page 2 of the ID change form in Print Templates first (set "Use for" and the matching carrier on each)');
     goTo('templates');
     return;
   }
+  if(pairs.length===1){ doPrintIdChangePair(customerId, pairs[0]); return; }
+  // More than one carrier's form is on file — try an exact match against the customer's
+  // current service first, since that's almost always the right one without having to ask.
+  const svc = activeSubscriptionFor(customerId);
+  const autoMatch = svc && pairs.find(p=> p.carrier && svc.carrier && p.carrier.trim()===svc.carrier.trim());
+  if(autoMatch){ doPrintIdChangePair(customerId, autoMatch); return; }
+  // No confident match — let staff pick rather than silently guessing wrong and printing
+  // the wrong carrier's form.
+  idChangePrintCustomerId = customerId;
+  const sel = document.getElementById('idcp_carrier');
+  sel.innerHTML = pairs.map((p,i)=>`<option value="${i}">${escapeHtml(p.carrier || (LANG==='zh'?'（未填写通信社）':'(no carrier set)'))}</option>`).join('');
+  document.getElementById('idChangePrintPickerOverlay').classList.add('show');
+}
+function doPrintIdChangePair(customerId, pair){
   const customer = getCustomer(customerId);
   const service = activeSubscriptionFor(customerId) || {};
-  const html = buildPrintPageHtml(page1, customer, service, true) + buildPrintPageHtml(page2, customer, service, true);
+  const html = buildPrintPageHtml(pair.page1, customer, service, true) + buildPrintPageHtml(pair.page2, customer, service, true);
   document.getElementById('printOverlay').innerHTML = html;
   setTimeout(()=> window.print(), 80);
 }
+document.getElementById('idChangePrintPickerClose').addEventListener('click', closeAllModals);
+document.getElementById('idChangePrintPickerCancel').addEventListener('click', closeAllModals);
+document.getElementById('idChangePrintPickerPrint').addEventListener('click', ()=>{
+  const pairs = getIdChangeFormPairs();
+  const pair = pairs[Number(document.getElementById('idcp_carrier').value)];
+  closeAllModals();
+  if(pair) doPrintIdChangePair(idChangePrintCustomerId, pair);
+});
 
 /* ---------------- modal plumbing ---------------- */
 function closeAllModals(){ document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show')); }
