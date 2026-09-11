@@ -752,6 +752,25 @@
   </div>
 </div>
 
+<!-- ID change request modal: Passport -> Resident Card (ARC), so customers can use apps that require an ARC -->
+<div class="overlay" id="idChangeModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="rem.idChange.modalTitle">申请护照转外国人登记证</div>
+      <button class="modal-close" id="idChangeModalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" style="margin-bottom:14px;" data-i18n="rem.idChange.modalDesc">用于记录客户希望将证件登记从护照改为外国人登记证（ARC），以便使用需要 ARC 的手机应用。</div>
+      <div class="form-field"><label data-i18n="f.date">日期</label><input id="idc_date" type="date"></div>
+      <div class="form-field full"><label data-i18n="f.handlerName">经办人</label><div class="tile-radio-group" id="idc_handler_group" data-field="handledBy"></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="idChangeModalCancel" data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="idChangeModalSave" data-i18n="btn.save">保存</button>
+    </div>
+  </div>
+</div>
+
 <!-- change subscription modal (used for both "Change to Postpaid" and "Change Plan") -->
 <div class="overlay" id="changeSubModalOverlay">
   <div class="modal wide">
@@ -935,6 +954,14 @@
       <div class="form-grid" style="margin-bottom:14px;">
         <div class="form-field"><label data-i18n="tpl.name">模板名称</label><input id="tpl_name" placeholder="例如：LG U+ 알뜰폰 3个月先付卡申请表"></div>
         <div class="form-field"><label data-i18n="tpl.carrier">通信社</label><input id="tpl_carrier" placeholder="LG U+ 알뜰폰"></div>
+        <div class="form-field full">
+          <label data-i18n="tpl.purpose">用途</label>
+          <select id="tpl_purpose">
+            <option value="" data-i18n="tpl.purpose.general">一般（运营商申请表）</option>
+            <option value="idChangePage1" data-i18n="tpl.purpose.idChange1">证件变更申请表 — 第1页</option>
+            <option value="idChangePage2" data-i18n="tpl.purpose.idChange2">证件变更申请表 — 第2页</option>
+          </select>
+        </div>
       </div>
       <div id="tplUploadZone" class="dropzone" style="margin-bottom:14px;">
         <div style="font-size:26px;margin-bottom:8px;">🖼️</div>
