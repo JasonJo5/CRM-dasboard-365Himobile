@@ -1331,7 +1331,19 @@ async function pullFromServer(){
   const base = getServerUrl();
   if(!base) return {ok:false, error:'no server configured'};
   try{
-    const res = await fetch(base+'/api/snapshot', {method:'GET', headers: authHeaders()});
+    // Without an explicit timeout, an unreachable server (wrong network, server PC off,
+    // firewall) leaves fetch() hanging for a very long time with zero feedback — the
+    // unlock button just sits there disabled and nothing visibly happens. 10 seconds is
+    // long enough for a slow local network, short enough that a genuinely unreachable
+    // server surfaces a clear error instead of looking like the app has frozen.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=> controller.abort(), 10000);
+    let res;
+    try{
+      res = await fetch(base+'/api/snapshot', {method:'GET', headers: authHeaders(), signal: controller.signal});
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if(res.status===401) throw new Error(LANG==='zh'?'密钥不正确，请检查服务器同步设置':'Incorrect API key — check server sync settings');
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
@@ -1352,9 +1364,12 @@ async function pullFromServer(){
     checkServerSchema(); // don't block the pull on this — just surface a warning if it's stale
     return {ok:true};
   }catch(err){
-    console.warn('Could not reach server on load, using local data:', err.message);
-    setOfflineBanner(true, err.message);
-    return {ok:false, error: err.message};
+    const message = err.name==='AbortError'
+      ? (LANG==='zh'?'连接超时——请确认设备已连接到店内网络，且服务器电脑已开机':'Connection timed out — check that this device is on the store\'s network and the server computer is turned on')
+      : err.message;
+    console.warn('Could not reach server on load, using local data:', message);
+    setOfflineBanner(true, message);
+    return {ok:false, error: message};
   }
 }
 // Deletes a customer on the server too (cascades to their services automatically, via the
