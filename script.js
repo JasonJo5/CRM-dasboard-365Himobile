@@ -44,7 +44,8 @@ const I18N = {
     'sub.sheet':'像表格一样直接编辑客户与套餐信息',
     'sheet.hint':'💡 点击彩色标签可直接选择新值；点击文字/数字/日期可直接编辑，回车或点击其他地方即保存',
     'sub.dashboard':'门店运营总览','sub.customers':'客户资料与套餐管理','sub.ai':'找出适合转后付、需要续费、或适合升级合约的客户','sub.reminders':'到期、合同与信息变更提醒','sub.orders':'先付、后付、号码移动等业务记录','sub.reports':'营收、利润与客户结构报表','sub.templates':'运营商申请表自动填写与打印','sub.io':'Excel 导入与数据备份',
-    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并','btn.copyName':'复制姓名','btn.save':'保存','btn.requestIdChange':'申请证件变更','btn.markComplete':'标记已完成',
+    'btn.newCustomer':'新建客户','btn.exportExcel':'导出 Excel','btn.exportMonthExcel':'导出该月份 Excel','btn.addFollowup':'＋ 添加跟进','btn.newOrder':'＋ 新增业务','btn.cancel':'取消','btn.saveCustomer':'保存客户','btn.saveOrder':'保存业务','btn.edit':'编辑资料','btn.addService':'＋ 新增业务','btn.confirmImport':'确认导入','btn.view':'查看','btn.complete':'完成','btn.followUpAgain':'再次跟进','btn.delete':'删除','btn.deleteCustomer':'删除客户','btn.saveTemplate':'保存模板','btn.print':'打印','btn.savePrint':'保存并打印申请表','btn.merge':'合并','btn.copyName':'复制姓名','btn.save':'保存','btn.requestIdChange':'申请证件变更','btn.markComplete':'标记已完成','btn.freezeSim':'暂停卡号','btn.unfreezeSim':'解除暂停',
+    'freeze.modalTitle':'暂停卡号（Freeze SIM）','freeze.modalDesc':'暂停期间不计入合约期限，合约到期日将顺延相应天数。仅限后付卡客户使用。','freeze.byDays':'按天数','freeze.byRange':'按日期范围','freeze.startDate':'开始日期','freeze.endDate':'结束日期','freeze.days':'暂停天数','freeze.frozen':'暂停中','freeze.colHeader':'暂停状态','freeze.clickToUnfreeze':'点击解除暂停',
     'btn.changeToPostpaid':'转为后付卡','btn.changePlan':'变更套餐','btn.cancelSubscription':'取消订阅','btn.startNewSubscription':'开通新订阅','btn.confirmChange':'确认变更','btn.confirmCancel':'确认取消订阅','btn.back':'返回','btn.undoCancel':'恢复订阅 Reactivate',
     'btn.recharge':'充值续约','btn.changeToPrepaid':'转为先付卡','btn.confirmRecharge':'确认充值',
     'dash.greeting':'早上好，店长','dash.followup.title':'今天要跟进','dash.followup.desc':'优先联系即将到期的客户','dash.viewall':'查看全部 →','dash.overview.title':'业务概览','dash.overview.desc':'本月开通类型','dash.recent.title':'最近新增客户','dash.recent.desc':'快速确认新开的号码与套餐','dash.customerlist':'客户列表 →','dash.nationality.title':'客户国籍分布','dash.referral.title':'客户来源分布','dash.paymentToday.title':'今日付款方式汇总（先付）','dash.paymentToday.desc':'今日各付款方式的客户数与收入合计',
@@ -71,14 +72,14 @@ const I18N = {
     'f.customer':'客户','f.serviceInfo':'业务信息','f.serviceType':'业务类型','f.planDuration':'套餐期限（月）','f.contractLength':'合约期限','f.carrier':'通信社 / MVNO','f.plan':'套餐名称','f.number':'电话号码','f.simType':'SIM 类型','f.activationDate':'开通日期','f.durationDays':'合同时长（天）','f.expiryDate':'到期日期','f.status':'办理状态','f.feeInfo':'费用信息','f.monthlyFee':'月租费','f.discount':'折扣','f.firstMonthPayment':'首月费用','f.activationFee':'开通费','f.simFee':'SIM 卡费','f.paymentInfo':'收款与利润','f.sellingPrice':'销售价','f.cost':'成本','f.received':'已收金额','f.paymentMethod':'付款方式','f.commission':'返点 / 提成',
     'f.prepaidPlan':'充值套餐','f.price':'价格','f.discount':'折扣','f.finalPrice':'最终价格','f.usimNumber':'USIM 일련번호',
     'f.company':'가입회사 Company','f.partnerCompany':'파트너사 Partner company','f.svcCarrierType':'통신사 Carrier type','f.usedDays':'已使用天数 Used days','f.contactMethod':'联系方式','f.planOptions':'套餐选项',
-    'f.monthlyPayment':'客户每月缴费 Monthly payment','f.monthlyPaymentHint':'客户支付给运营商的金额 · 仅作记录，不计入本店收入','detail.planInfo':'套餐信息','detail.storeIncome':'本店收入',
+    'f.monthlyPayment':'客户每月缴费 Monthly payment','f.monthlyPaymentHint':'客户支付给运营商的金额 · 仅作记录，不计入本店收入','detail.planInfo':'套餐信息','detail.storeIncome':'本店收入','detail.planStarted':'开通日期','detail.planEnds':'到期日期',
     'opt.physical':'实体卡',
     'lang.zh':'中文','lang.en':'英文','lang.ko':'韩文',
     'idtype.ARC':'ARC','idtype.Passport':'护照',
     'type.prepaid':'先付卡','type.postpaid':'后付卡','type.porting':'号码移动','type.transfer':'过户 / 名义变更','type.topup':'充值 / 续费','type.cancel':'解约',
     'status.active':'正常','status.payment_pending':'待付款','status.docs_pending':'待补件','status.expiring_soon':'即将到期','status.expired':'已到期','status.over_contract':'已超合约期','status.cancelled':'已解约','status.completed':'已完成','status.waiting':'等待联系','status.superseded':'已变更（历史）',
     'pay.cash':'现金','pay.transfer':'银行转账','pay.card':'刷卡','pay.kakaopay':'KakaoPay','pay.other':'其他',
-    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期','rem.tab.postpaidContract':'后付合约状态','rem.postpaidContract.desc':'合约期已过不代表服务有问题——客户可以选择更换套餐，也可以维持原套餐不变。','rem.status.overContract':'合约期已过','rem.status.contractEndingSoon':'合约即将期满','rem.status.inContract':'合约期内','rem.status.overContractNote':'客户现在可以自由更换套餐，但并非必须——继续使用原套餐也完全没问题。','rem.status.contractEndingSoonNote':'合约期即将结束，届时客户将可以自由选择是否更换套餐。','rem.idChange.pendingTitle':'待处理：证件变更申请（护照 → 外国人登记证）','rem.idChange.requestedOn':'申请日期','rem.idChange.handledBy':'经办人','rem.idChange.modalTitle':'申请护照转外国人登记证','rem.idChange.modalDesc':'用于记录客户希望将证件登记从护照改为外国人登记证（ARC），以便使用需要 ARC 的手机应用。','rem.idChange.pickCarrierTitle':'选择证件变更申请表（按通信社）','rem.idChange.pickCarrierDesc':'该客户的通信社有多份或未能自动匹配的证件变更申请表，请选择要打印的版本。','rem.idChange.saveAndPrint':'保存并打印申请表','rem.tab.idChange':'证件变更申请','toast.idChangeSaved':'已记录证件变更申请','toast.idChangeCompleted':'证件变更已完成，客户证件类型已更新为外国人登记证',
+    'rem.title':'到期与跟进','rem.desc':'把有效期与合同自动转换为可执行的联系任务','rem.tab.all':'全部','rem.tab.today':'今日到期','rem.tab.week':'7天内','rem.tab.done':'已完成','rem.tab.infochange':'信息变更','rem.tab.expiring':'先付即将到期','rem.expiring.signedUpIn':'签约月份','rem.expiring.duration':'套餐时长','rem.status.all':'全部','rem.status.expired':'已过期','rem.status.expiringSoon':'即将到期','rem.status.active':'未到期','rem.tab.postpaidContract':'后付合约状态','rem.postpaidContract.desc':'合约期已过不代表服务有问题——客户可以选择更换套餐，也可以维持原套餐不变。','rem.status.overContract':'合约期已过','rem.status.contractEndingSoon':'合约即将期满','rem.status.inContract':'合约期内','rem.status.overContractNote':'客户现在可以自由更换套餐，但并非必须——继续使用原套餐也完全没问题。','rem.status.contractEndingSoonNote':'合约期即将结束，届时客户将可以自由选择是否更换套餐。','rem.idChange.pendingTitle':'待处理：证件变更申请（护照 → 外国人登记证）','rem.idChange.requestedOn':'申请日期','rem.idChange.handledBy':'经办人','rem.idChange.modalTitle':'申请护照转外国人登记证','rem.idChange.modalDesc':'用于记录客户希望将证件登记从护照改为外国人登记证（ARC），以便使用需要 ARC 的手机应用。','rem.idChange.pickCarrierTitle':'选择证件变更申请表（按通信社）','rem.idChange.pickCarrierDesc':'该客户的通信社有多份或未能自动匹配的证件变更申请表，请选择要打印的版本。','rem.idChange.saveAndPrint':'保存并打印申请表','rem.idChange.completedTitle':'证件变更已完成（护照 → 外国人登记证）','rem.idChange.completedOn':'完成日期','rem.tab.idChange':'证件变更申请','toast.idChangeSaved':'已记录证件变更申请','toast.idChangeCompleted':'证件变更已完成，客户证件类型已更新为外国人登记证','toast.freezeSaved':'已保存暂停记录，合约到期日已顺延','toast.unfreezeSaved':'已解除暂停',
     'rem.type.expiry':'有效期到期','rem.type.contract_end':'合同到期','rem.type.payment':'首付款提醒','rem.type.renewal':'折扣到期提醒','rem.type.info_change':'信息变更提醒',
     'rem.dueIn':'天后到期','rem.overdue':'天前已到期','rem.today':'今日到期','rem.auto':'自动生成','rem.empty.title':'暂无提醒','rem.empty.desc':'当有客户即将到期或需要跟进时，会显示在这里',
     'orders.title':'业务订单','orders.desc':'记录先付、后付、号码移动、充值和名义变更','orders.showHistory':'显示已变更的历史记录',
@@ -141,7 +142,8 @@ const I18N = {
     'sub.sheet':'Edit customer & plan info directly, like a spreadsheet',
     'sheet.hint':'💡 Click a colored tag to pick a new value; click text/numbers/dates to edit directly — press Enter or click away to save',
     'sub.dashboard':'Store operations overview','sub.customers':'Customer profiles & plan management','sub.ai':'Find who\'s ready for postpaid, due for a recharge, or worth a contract upgrade','sub.reminders':'Expiry, contract & info-change reminders','sub.orders':'Prepaid, postpaid, porting and other service records','sub.reports':'Revenue, profit and customer breakdowns','sub.templates':'Auto-fill and print carrier application forms','sub.io':'Excel import and data backup',
-    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge','btn.copyName':'Copy name','btn.save':'Save','btn.requestIdChange':'Request ID change','btn.markComplete':'Mark complete',
+    'btn.newCustomer':'New customer','btn.exportExcel':'Export Excel','btn.exportMonthExcel':'Export this month (Excel)','btn.addFollowup':'＋ Add reminder','btn.newOrder':'＋ New order','btn.cancel':'Cancel','btn.saveCustomer':'Save customer','btn.saveOrder':'Save order','btn.edit':'Edit profile','btn.addService':'＋ Add service','btn.confirmImport':'Confirm import','btn.view':'View','btn.complete':'Complete','btn.followUpAgain':'Follow up again','btn.delete':'Delete','btn.deleteCustomer':'Delete customer','btn.saveTemplate':'Save template','btn.print':'Print','btn.savePrint':'Save & print application form','btn.merge':'Merge','btn.copyName':'Copy name','btn.save':'Save','btn.requestIdChange':'Request ID change','btn.markComplete':'Mark complete','btn.freezeSim':'Freeze SIM','btn.unfreezeSim':'Unfreeze SIM',
+    'freeze.modalTitle':'Freeze SIM','freeze.modalDesc':'Frozen time doesn\'t count toward the contract — the end date pushes back by however many days are frozen. Postpaid only.','freeze.byDays':'By days','freeze.byRange':'By date range','freeze.startDate':'Start date','freeze.endDate':'End date','freeze.days':'Days to freeze','freeze.frozen':'Frozen','freeze.colHeader':'Freeze status','freeze.clickToUnfreeze':'Click to unfreeze',
     'btn.changeToPostpaid':'Change to Postpaid','btn.changePlan':'Change Plan','btn.cancelSubscription':'Cancel Subscription','btn.startNewSubscription':'＋ Start New Subscription','btn.confirmChange':'Confirm Change','btn.confirmCancel':'Confirm Cancellation','btn.back':'Back','btn.undoCancel':'Reactivate',
     'btn.recharge':'Recharge','btn.changeToPrepaid':'Change to Prepaid','btn.confirmRecharge':'Confirm Recharge',
     'dash.greeting':'Good morning, Manager','dash.followup.title':"Today's follow-ups",'dash.followup.desc':'Reach out to customers expiring soon','dash.viewall':'View all →','dash.overview.title':'Service overview','dash.overview.desc':'Activations this month','dash.recent.title':'Recently added customers','dash.recent.desc':'Confirm newly activated numbers and plans','dash.customerlist':'Customer list →','dash.nationality.title':'Customers by nationality','dash.referral.title':'Customers by referral source','dash.paymentToday.title':"Today's payment method breakdown (prepaid)",'dash.paymentToday.desc':'Customer count and income total per payment method today',
@@ -168,14 +170,14 @@ const I18N = {
     'f.customer':'Customer','f.serviceInfo':'Service details','f.serviceType':'Service type','f.planDuration':'Plan duration (months)','f.contractLength':'Contract length','f.carrier':'Carrier / MVNO','f.plan':'Plan name','f.number':'Phone number','f.simType':'SIM type','f.activationDate':'Activation date','f.durationDays':'Contract length (days)','f.expiryDate':'Expiry date','f.status':'Status','f.feeInfo':'Fee details','f.monthlyFee':'Monthly fee','f.discount':'Discount','f.firstMonthPayment':'First month payment','f.activationFee':'Activation fee','f.simFee':'SIM card fee','f.paymentInfo':'Payment & profit','f.sellingPrice':'Selling price','f.cost':'Cost','f.received':'Amount received','f.paymentMethod':'Payment method','f.commission':'Commission / rebate',
     'f.prepaidPlan':'Plan','f.price':'Price','f.discount':'Discount','f.finalPrice':'Final price','f.usimNumber':'USIM serial number',
     'f.company':'Company','f.partnerCompany':'Partner company','f.svcCarrierType':'Carrier type','f.usedDays':'Used days','f.contactMethod':'Contact method','f.planOptions':'Plan options',
-    'f.monthlyPayment':'Monthly payment','f.monthlyPaymentHint':'What the customer pays the carrier · display only, not counted as store income','detail.planInfo':'Plan info','detail.storeIncome':'Store income',
+    'f.monthlyPayment':'Monthly payment','f.monthlyPaymentHint':'What the customer pays the carrier · display only, not counted as store income','detail.planInfo':'Plan info','detail.storeIncome':'Store income','detail.planStarted':'Started','detail.planEnds':'Ends',
     'opt.physical':'Physical SIM',
     'lang.zh':'Chinese','lang.en':'English','lang.ko':'Korean',
     'idtype.ARC':'ARC','idtype.Passport':'Passport',
     'type.prepaid':'Prepaid SIM','type.postpaid':'Postpaid SIM','type.porting':'Number porting','type.transfer':'Ownership transfer','type.topup':'Top-up / renewal','type.cancel':'Cancellation',
     'status.active':'Active','status.payment_pending':'Payment pending','status.docs_pending':'Documents pending','status.expiring_soon':'Expiring soon','status.expired':'Expired','status.over_contract':'Over contract','status.cancelled':'Cancelled','status.completed':'Completed','status.waiting':'Awaiting contact','status.superseded':'Replaced (history)',
     'pay.cash':'Cash','pay.transfer':'Bank transfer','pay.card':'Card','pay.kakaopay':'KakaoPay','pay.other':'Other',
-    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired','rem.tab.postpaidContract':'Postpaid contract status','rem.postpaidContract.desc':'Being over contract doesn\'t mean anything\'s wrong with the service — the customer is free to change plans if they want, but can just as easily keep the one they\'re on.','rem.status.overContract':'Over contract','rem.status.contractEndingSoon':'Contract ending soon','rem.status.inContract':'In contract','rem.status.overContractNote':'Free to change plans now, but doesn\'t have to — keeping the current plan is completely fine.','rem.status.contractEndingSoonNote':'Contract period ending soon — the customer will be free to change plans once it does.','rem.idChange.pendingTitle':'Pending: ID change request (Passport → Resident Card)','rem.idChange.requestedOn':'Requested on','rem.idChange.handledBy':'Handled by','rem.idChange.modalTitle':'Request Passport → Resident Card change','rem.idChange.modalDesc':'Records that this customer wants their registered ID switched from Passport to a Resident Card (ARC), so they can use apps that require one.','rem.idChange.pickCarrierTitle':'Pick the ID change form (by carrier)','rem.idChange.pickCarrierDesc':'This customer\'s carrier has multiple forms on file, or couldn\'t be auto-matched — pick which version to print.','rem.idChange.saveAndPrint':'Save & print application form','rem.tab.idChange':'ID change requests','toast.idChangeSaved':'ID change request saved','toast.idChangeCompleted':'ID change marked complete — customer\'s ID type updated to Resident Card',
+    'rem.title':'Reminder centre','rem.desc':'Turns expiry dates and contracts into actionable follow-up tasks','rem.tab.all':'All','rem.tab.today':'Due today','rem.tab.week':'Within 7 days','rem.tab.done':'Completed','rem.tab.infochange':'Info change','rem.tab.expiring':'Prepaid expiring','rem.expiring.signedUpIn':'Signed up in','rem.expiring.duration':'Plan duration','rem.status.all':'All','rem.status.expired':'Expired','rem.status.expiringSoon':'Expiring soon','rem.status.active':'Not expired','rem.tab.postpaidContract':'Postpaid contract status','rem.postpaidContract.desc':'Being over contract doesn\'t mean anything\'s wrong with the service — the customer is free to change plans if they want, but can just as easily keep the one they\'re on.','rem.status.overContract':'Over contract','rem.status.contractEndingSoon':'Contract ending soon','rem.status.inContract':'In contract','rem.status.overContractNote':'Free to change plans now, but doesn\'t have to — keeping the current plan is completely fine.','rem.status.contractEndingSoonNote':'Contract period ending soon — the customer will be free to change plans once it does.','rem.idChange.pendingTitle':'Pending: ID change request (Passport → Resident Card)','rem.idChange.requestedOn':'Requested on','rem.idChange.handledBy':'Handled by','rem.idChange.modalTitle':'Request Passport → Resident Card change','rem.idChange.modalDesc':'Records that this customer wants their registered ID switched from Passport to a Resident Card (ARC), so they can use apps that require one.','rem.idChange.pickCarrierTitle':'Pick the ID change form (by carrier)','rem.idChange.pickCarrierDesc':'This customer\'s carrier has multiple forms on file, or couldn\'t be auto-matched — pick which version to print.','rem.idChange.saveAndPrint':'Save & print application form','rem.idChange.completedTitle':'ID change completed (Passport → Resident Card)','rem.idChange.completedOn':'Completed on','rem.tab.idChange':'ID change requests','toast.idChangeSaved':'ID change request saved','toast.idChangeCompleted':'ID change marked complete — customer\'s ID type updated to Resident Card','toast.freezeSaved':'Freeze saved — contract end date has been pushed back','toast.unfreezeSaved':'SIM unfrozen',
     'rem.type.expiry':'Expiry','rem.type.contract_end':'Contract end','rem.type.payment':'First payment','rem.type.renewal':'Discount ending','rem.type.info_change':'Information change',
     'rem.dueIn':'days left','rem.overdue':'days overdue','rem.today':'due today','rem.auto':'auto-generated','rem.empty.title':'No reminders','rem.empty.desc':'Reminders will appear here once customers are expiring or need follow-up',
     'orders.title':'Service orders','orders.desc':'Prepaid, postpaid, porting, top-up and ownership-transfer records','orders.showHistory':'Show replaced/history records',
@@ -801,7 +803,7 @@ function renderSheetPage(){
     <th>${t('col.customer')}</th><th>${t('f.activationDate')}</th><th>${t('f.expiryDate')}</th>
     <th>${t('f.planType')}</th><th>${t('f.svcCarrierType')}</th>`;
   const prepaidHead = `${commonHead}<th>${t('f.durationDays')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.price')}</th><th>${t('f.discount')}</th><th>${t('f.finalPrice')}</th><th>${t('f.company')}</th><th>${t('f.idType')}</th><th>${t('f.idNumber')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.paymentMethod')}</th><th>${t('f.simType')}</th>`;
-  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.simType')}</th>`;
+  const postpaidHead = `${commonHead}<th>${t('f.company')}</th><th>${t('f.partnerCompany')}</th><th>${t('f.contractLength')}</th><th>${t('f.usedDays')}</th><th>${t('col.contractStatus')}</th><th>${t('freeze.colHeader')}</th><th>${t('f.monthlyFee')}</th><th>${t('f.expectedProfit')}</th><th>${t('f.actualProfit')}</th><th>${t('f.usimFee')}</th><th>${t('f.discountPerMonth')}</th><th>${t('f.discountMonths')}</th><th>${t('f.netExpectedProfit')}</th><th>${t('f.actualIncome')}</th><th>${t('f.number')}</th><th>${t('f.dob')}</th><th>${t('f.nationality')}</th><th>${t('f.years')}</th><th>${t('f.occupation')}</th><th>${t('f.handlerName')}</th><th>${t('f.simType')}</th>`;
 
   document.getElementById('sheetTable').innerHTML = `<thead><tr>${sheetTypeTab==='prepaid'?prepaidHead:postpaidHead}</tr></thead><tbody>${
     rows.length ? rows.map(({c,svc})=>{
@@ -839,6 +841,7 @@ function renderSheetPage(){
         <td>${sheetPillCell('service',svc.id,'durationDays',svc.durationDays?String(svc.durationDays):'',POSTPAID_CONTRACT_DAYS.map(String), t('f.contractLength'))}</td>
         <td>${sheetReadonlyCell((usedDaysFor(svc)??'—')+(usedDaysFor(svc)!==null?(LANG==='zh'?' 天':' d'):''))}</td>
         <td>${sheetReadonlyCell(contractStatusTextFor(svc, true)||'—')}</td>
+        <td>${isServiceCurrentlyFrozen(svc) ? `<span class="pill" style="background:#DBEAFE;color:#1D4ED8;cursor:pointer;" data-freeze-toggle="${svc.customerId}" title="${t('freeze.clickToUnfreeze')}">🧊 ${t('freeze.frozen')}</span>` : sheetReadonlyCell('—')}</td>
         <td>${sheetTextCell('service',svc.id,'monthlyFee',svc.monthlyFee,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'expectedProfit',svc.expectedProfit,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'actualProfit',svc.actualProfit,'number')}</td>
@@ -855,7 +858,7 @@ function renderSheetPage(){
         <td>${sheetPillCell('customer',c.id,'handlerName',c.handlerName,STAFF_MEMBERS, t('f.handlerName'))}</td>
         <td>${sheetPillCell('service',svc.id,'simType',svc.simType,SIM_TYPES, t('f.simType'))}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="25">${emptyState()}</td></tr>`
+    }).join('') : `<tr><td colspan="26">${emptyState()}</td></tr>`
   }</tbody>`;
   document.getElementById('sheetTable').querySelectorAll('[data-open-customer]').forEach(el=>{
     el.addEventListener('click', ()=> openCustomerDetail(el.getAttribute('data-open-customer')));
@@ -864,6 +867,16 @@ function renderSheetPage(){
     btn.addEventListener('click', e=>{
       e.stopPropagation(); // otherwise this click also bubbles up and opens the customer's detail page
       copyCustomerNameToClipboard(btn.getAttribute('data-copy-name'), btn);
+    });
+  });
+  document.getElementById('sheetTable').querySelectorAll('[data-freeze-toggle]').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      const custId = el.getAttribute('data-freeze-toggle');
+      if(confirm(LANG==='zh'?`确定要为「${getCustomer(custId)?.name||''}」解除暂停吗？`:`Unfreeze this SIM for ${getCustomer(custId)?.name||'this customer'}?`)){
+        unfreezeSim(custId, false);
+        renderSheetPage();
+      }
     });
   });
   if(scrollWrap && savedScrollLeft!==undefined){
@@ -1025,6 +1038,17 @@ function monthsSince(dateStr){
   return Math.max(0, months);
 }
 function fmtDate(d){ if(!d) return '—'; if(!isIsoDate(d)) return '—'; return d.slice(0,10); }
+/* Raw ISO dates ("2026-06-03") are fine in dense tables where quick scanning/sorting
+   matters, but on the customer profile — where someone is actually reading, not scanning
+   a spreadsheet — "Jun 3, 2026" is faster to actually parse at a glance. Kept as a
+   separate function rather than changing fmtDate everywhere, since Sheet View and other
+   dense table contexts are better served by the compact ISO form. */
+function fmtDateHuman(d){
+  if(!d || !isIsoDate(d)) return '—';
+  const dt = new Date(d+'T00:00:00');
+  if(isNaN(dt.getTime())) return '—';
+  return dt.toLocaleDateString(LANG==='zh'?'zh-CN':'en-US', {year:'numeric', month:'short', day:'numeric'});
+}
 function fmtWon(n){ n = Math.round(Number(n)||0); return '₩'+n.toLocaleString('en-US'); }
 function calcAge(dob){ if(!dob || !isIsoDate(dob)) return null; const d=new Date(dob); if(isNaN(d.getTime())) return null; const now=new Date(); let age = now.getFullYear()-d.getFullYear(); const m = now.getMonth()-d.getMonth(); if(m<0 || (m===0 && now.getDate()<d.getDate())) age--; return age; }
 function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -1420,6 +1444,21 @@ function computeDelta(current, previous){
   if(!previous) return {pct:0, up:true, isNew:true, na:false};
   const pct = Math.round(((current-previous)/previous)*100);
   return {pct: Math.abs(pct), up: pct>=0, na:false};
+}
+/* SIM freeze — postpaid only. Korean carriers generally allow a customer to pause billing
+   and usage for up to a fixed cap per contract; 2 months 16 days is modeled as 76 days
+   (2×30 + 16) since that's how the limit is actually communicated, not as a precise
+   calendar calculation. Stored as an array (not a single freeze object) since a customer
+   can freeze more than once across a contract, as long as the total across all of them
+   stays within the cap. */
+const MAX_FREEZE_DAYS = 76; // 2 months 16 days
+function currentFreezeFor(svc){
+  const today = todayISO();
+  return (svc.freezes||[]).find(f=> f.startDate<=today && today<=f.endDate) || null;
+}
+function isServiceCurrentlyFrozen(svc){ return !!currentFreezeFor(svc); }
+function totalFrozenDaysUsed(svc){
+  return (svc.freezes||[]).reduce((sum,f)=> sum + (daysBetween(f.startDate, f.endDate)+1), 0);
 }
 function computedStatus(svc){
   // a subscription that's been explicitly superseded (via Change Plan / Change to Postpaid /
@@ -3269,6 +3308,17 @@ function openCustomerDetail(id){
   if(!c) return;
   const active = activeSubscriptionFor(id);
   const history = subscriptionHistoryFor(id);
+  // A completed ID change isn't a service/plan record, but it's still a real event in this
+  // customer's history — merging it into the same chronological timeline (rather than
+  // leaving it as a separate, disconnected box) is what actually makes it "part of their
+  // history" rather than just a status indicator that happens to sit near the history.
+  const idChangeHistoryEntries = (c.idChangeRequest && c.idChangeRequest.status==='completed')
+    ? [{sortDate: c.idChangeRequest.completedDate || c.idChangeRequest.requestedDate, html: idChangeHistoryItemHtml(c.idChangeRequest)}]
+    : [];
+  const combinedHistoryHtml = [
+    ...history.map(s=>({sortDate: s.endedAt||s.activationDate||'', html: historyItemHtml(s)})),
+    ...idChangeHistoryEntries,
+  ].sort((a,b)=> new Date(b.sortDate||0) - new Date(a.sortDate||0)).map(x=>x.html).join('');
   const otherRecords = customerServices(id).filter(s=> !isSubscriptionType(s.type));
   const age = calcAge(c.dob);
   const intel = computeCustomerIntelligence(c);
@@ -3281,9 +3331,13 @@ function openCustomerDetail(id){
       ${c.idType==='Passport' && !c.idChangeRequest ? `<button class="btn btn-ghost" id="btnRequestIdChange">📄 ${t('btn.requestIdChange')}</button>` : ''}
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else if(active && active.type==='postpaid'){
+    const frozen = isServiceCurrentlyFrozen(active);
     actionButtons = `
       <button class="btn btn-primary" id="btnChangePlan">🔁 ${t('btn.changePlan')}</button>
       <button class="btn btn-ghost" id="btnChangeToPrepaid">📶 ${t('btn.changeToPrepaid')}</button>
+      ${frozen
+        ? `<button class="btn btn-ghost" id="btnUnfreezeSim" style="color:#2563EB;">🧊 ${t('btn.unfreezeSim')}</button>`
+        : `<button class="btn btn-ghost" id="btnFreezeSim" style="color:#2563EB;">🧊 ${t('btn.freezeSim')}</button>`}
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else {
     // any inactive customer with at least one past plan can be reactivated — not just
@@ -3298,6 +3352,8 @@ function openCustomerDetail(id){
   // Surfaces a pending Passport → Resident Card (ARC) change request right on the profile,
   // similar to how duplicate-detection works below — so staff see it immediately when
   // opening this customer, rather than needing to remember to check the Reminders tab.
+  // Once completed, this banner intentionally disappears — the event still lives on, just
+  // down in Plan History below, where every other change to this customer's record lives.
   let idChangeBannerHtml = '';
   if(c.idChangeRequest && c.idChangeRequest.status==='pending'){
     const req = c.idChangeRequest;
@@ -3373,7 +3429,7 @@ function openCustomerDetail(id){
     </div>
     <div class="kv-grid">
       <div><div class="k">${t('f.phone')}</div><div class="v">${escapeHtml(c.phone||'—')}</div></div>
-      <div><div class="k">${t('f.idExpiry')}</div><div class="v">${fmtDate(c.idExpiry)}</div></div>
+      <div><div class="k">${t('f.idExpiry')}</div><div class="v">${fmtDateHuman(c.idExpiry)}</div></div>
       <div><div class="k">${t('f.occupation')}</div><div class="v">${escapeHtml(c.occupation||'—')}</div></div>
       <div><div class="k">${t('f.years')}</div><div class="v">${c.years||0} ${t('years.suffix')}</div></div>
       <div><div class="k">${t('f.carrierType')}</div><div class="v">${escapeHtml(c.carrierType||'—')}</div></div>
@@ -3394,7 +3450,7 @@ function openCustomerDetail(id){
 
     <div class="form-hr" style="margin:18px 0;"></div>
     <div class="section-title" style="margin-bottom:10px;">${t('detail.planHistory')}</div>
-    <div id="detailHistory">${history.length ? history.map(s=>historyItemHtml(s)).join('') : `<div class="muted">${t('detail.noHistory')}</div>`}</div>
+    <div id="detailHistory">${(history.length || idChangeHistoryEntries.length) ? combinedHistoryHtml : `<div class="muted">${t('detail.noHistory')}</div>`}</div>
 
     ${otherRecords.length ? `
     <div class="form-hr" style="margin:18px 0;"></div>
@@ -3430,6 +3486,10 @@ function openCustomerDetail(id){
   if(btnStartNew) btnStartNew.addEventListener('click', ()=>{ closeAllModals(); openOrderModal(null, id); });
   const btnUndoCancel = document.getElementById('btnUndoCancel');
   if(btnUndoCancel) btnUndoCancel.addEventListener('click', ()=> undoCancellation(id));
+  const btnFreezeSim = document.getElementById('btnFreezeSim');
+  if(btnFreezeSim) btnFreezeSim.addEventListener('click', ()=> openFreezeSimModal(id));
+  const btnUnfreezeSim = document.getElementById('btnUnfreezeSim');
+  if(btnUnfreezeSim) btnUnfreezeSim.addEventListener('click', ()=> unfreezeSim(id));
   const btnReqIdChange = document.getElementById('btnRequestIdChange');
   if(btnReqIdChange) btnReqIdChange.addEventListener('click', ()=> openIdChangeModal(id));
   const btnPrintIdChange = document.getElementById('btnPrintIdChange');
@@ -3438,6 +3498,7 @@ function openCustomerDetail(id){
   if(btnCompleteIdChange) btnCompleteIdChange.addEventListener('click', ()=>{
     const cust = getCustomer(id);
     cust.idChangeRequest.status = 'completed';
+    cust.idChangeRequest.completedDate = todayISO(); // so it's possible to actually answer "when did this happen" later, not just "when was it asked for"
     cust.idType = 'ARC'; // the whole point of this request — reflect the actual outcome once it's done
     saveDB(DB);
     toast(t('toast.idChangeCompleted'));
@@ -3504,7 +3565,7 @@ function serviceCardHtml(s, customer){
       <div class="profile-subcard-title">${t('detail.planInfo')}</div>
       <div class="kv-grid">
         <div><div class="k">${t('f.number')}</div><div class="v">${s.number||'—'}</div></div>
-        <div><div class="k">${t('f.dob')}</div><div class="v">${customer?.dob?fmtDate(customer.dob):'—'}</div></div>
+        <div><div class="k">${t('f.dob')}</div><div class="v">${customer?.dob?fmtDateHuman(customer.dob):'—'}</div></div>
         <div><div class="k">${t('f.plan')}</div><div class="v">${escapeHtml(s.plan||'—')}</div></div>
         <div><div class="k">${t('col.subType')}</div><div class="v">${s.type==='postpaid'?t('opt.postpaidShort'):t('opt.prepaidShort')}</div></div>
         ${customer?.planType?`<div><div class="k">${t('f.planType')}</div><div class="v">${escapeHtml(customer.planType)}</div></div>`:''}
@@ -3559,13 +3620,25 @@ function serviceCardHtml(s, customer){
       </div>
       <div style="text-align:right;">
         <span class="pill ${statusPillClass(st)}">${t('status.'+st)}</span>
+        ${isServiceCurrentlyFrozen(s) ? `<span class="pill" style="background:#DBEAFE;color:#1D4ED8;margin-left:4px;">🧊 ${t('freeze.frozen')}</span>` : ''}
         <div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end;">
           ${(s.type==='prepaid' && s.durationDays===90) ? `<button class="btn btn-sm btn-ghost" data-print-service="${s.id}" style="color:var(--orange);">🖨 ${t('btn.print')}</button>` : ''}
         </div>
       </div>
     </div>
-    ${s.expiryDate?`<div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
-    <div class="muted" style="font-size:11.5px;margin-top:6px;">${fmtDate(s.activationDate)} → ${fmtDate(s.expiryDate)} · ${contractStatusText}</div>`:''}
+    ${s.expiryDate?`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap;">
+      <div>
+        <div class="muted" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;">${t('detail.planStarted')}</div>
+        <div style="font-size:15px;font-weight:800;">${fmtDateHuman(s.activationDate)}</div>
+      </div>
+      <div style="flex:1;text-align:center;color:var(--text-soft);font-size:13px;">→</div>
+      <div style="text-align:right;">
+        <div class="muted" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;">${t('detail.planEnds')}</div>
+        <div style="font-size:15px;font-weight:800;">${fmtDateHuman(s.expiryDate)}</div>
+      </div>
+    </div>
+    <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+    <div class="muted" style="font-size:11.5px;margin-top:6px;">${contractStatusText}</div>`:''}
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
       ${identityCard}
       ${monthlyPaymentCard}
@@ -3587,11 +3660,27 @@ function historyItemHtml(s){
         <span class="pill pill-gray">${reasonLabel}</span>
       </div>
     </div>
-    <div class="muted" style="font-size:11.5px;margin-top:8px;">${fmtDate(s.activationDate)} → ${fmtDate(s.endedAt||s.expiryDate)}</div>
+    <div class="muted" style="font-size:12px;margin-top:8px;font-weight:600;">${fmtDateHuman(s.activationDate)} → ${fmtDateHuman(s.endedAt||s.expiryDate)}</div>
     <div class="kv-grid" style="margin-top:10px;">
       <div><div class="k">${t('f.sellingPrice')}</div><div class="v">${fmtWon(s.sellingPrice||s.monthlyFee)}</div></div>
       <div><div class="k">${t('f.cancelReason')}</div><div class="v">${reasonLabel}</div></div>
     </div>
+  </div>`;
+}
+/* Same visual language as historyItemHtml above, for the one non-service event type that
+   also belongs in this timeline: a completed ID change. */
+function idChangeHistoryItemHtml(req){
+  return `<div class="service-card" style="opacity:.88;">
+    <div class="service-card-head">
+      <div>
+        <div style="font-weight:800;">📄 ${t('rem.idChange.completedTitle')}</div>
+        <div class="muted" style="font-size:12px;margin-top:2px;">${t('rem.idChange.handledBy')} ${escapeHtml(req.handledBy||'—')}</div>
+      </div>
+      <div style="text-align:right;">
+        <span class="pill pill-gray">${t('status.completed')}</span>
+      </div>
+    </div>
+    <div class="muted" style="font-size:12px;margin-top:8px;font-weight:600;">${t('rem.idChange.requestedOn')} ${fmtDateHuman(req.requestedDate)} → ${t('rem.idChange.completedOn')} ${fmtDateHuman(req.completedDate||req.requestedDate)}</div>
   </div>`;
 }
 
@@ -3766,6 +3855,137 @@ function planLabel(svc){
   if(!svc) return '';
   const typeLabel = svc.type==='postpaid' ? t('opt.postpaidShort') : t('opt.prepaidShort');
   return `${typeLabel}${svc.plan?' · '+escapeHtml(svc.plan):''}${svc.carrier?' · '+escapeHtml(svc.carrier):''}`;
+}
+/* Freeze SIM (postpaid only) — pauses the contract clock for a chosen stretch of time.
+   The frozen period doesn't count toward the contract, so the expiry date pushes back by
+   exactly however many days end up frozen: an 8-month contract with a 2-month freeze in
+   the middle still delivers a full 8 months of actual active service, just spread across
+   10 real-world months instead of 8. */
+let freezeCustomerId = null;
+let freezeMode = 'days';
+function openFreezeSimModal(customerId){
+  freezeCustomerId = customerId;
+  freezeMode = 'days';
+  const svc = activeSubscriptionFor(customerId);
+  const usedDays = totalFrozenDaysUsed(svc);
+  const remaining = Math.max(0, MAX_FREEZE_DAYS - usedDays);
+  document.getElementById('freezeAllowanceNote').textContent =
+    (LANG==='zh'
+      ? `本合约可用暂停天数：${remaining} 天（上限 ${MAX_FREEZE_DAYS} 天，已使用 ${usedDays} 天）`
+      : `Freeze days available on this contract: ${remaining} (of ${MAX_FREEZE_DAYS} max, ${usedDays} already used)`);
+  document.getElementById('fz_startDate').value = todayISO();
+  document.getElementById('fz_days').value = '';
+  document.getElementById('fz_rangeStart').value = todayISO();
+  document.getElementById('fz_rangeEnd').value = '';
+  document.getElementById('freezeModeDays').classList.add('active');
+  document.getElementById('freezeModeRange').classList.remove('active');
+  document.getElementById('freezeDaysPane').style.display = '';
+  document.getElementById('freezeRangePane').style.display = 'none';
+  updateFreezePreview();
+  document.getElementById('freezeSimModalOverlay').classList.add('show');
+}
+function getFreezeModalDates(){
+  if(freezeMode==='days'){
+    const start = document.getElementById('fz_startDate').value;
+    const days = Number(document.getElementById('fz_days').value)||0;
+    if(!start || days<1) return null;
+    const end = new Date(start); end.setDate(end.getDate()+days-1);
+    return {startDate: start, endDate: end.toISOString().slice(0,10), days};
+  } else {
+    const start = document.getElementById('fz_rangeStart').value;
+    const end = document.getElementById('fz_rangeEnd').value;
+    if(!start || !end || end<start) return null;
+    return {startDate: start, endDate: end, days: daysBetween(start,end)+1};
+  }
+}
+function updateFreezePreview(){
+  const box = document.getElementById('freezePreview');
+  const svc = activeSubscriptionFor(freezeCustomerId);
+  const range = getFreezeModalDates();
+  if(!range){ box.textContent = ''; return; }
+  const usedDays = totalFrozenDaysUsed(svc);
+  const remaining = MAX_FREEZE_DAYS - usedDays;
+  if(range.days > remaining){
+    box.style.color = 'var(--red)';
+    box.textContent = LANG==='zh'
+      ? `超出可用天数（最多还可暂停 ${remaining} 天）`
+      : `Exceeds available freeze days (max ${remaining} more allowed)`;
+    return;
+  }
+  const newExpiry = new Date(svc.expiryDate); newExpiry.setDate(newExpiry.getDate()+range.days);
+  box.style.color = 'var(--text)';
+  box.textContent = LANG==='zh'
+    ? `${fmtDateHuman(range.startDate)} → ${fmtDateHuman(range.endDate)}（共 ${range.days} 天）。合约到期日将顺延至 ${fmtDateHuman(newExpiry.toISOString().slice(0,10))}`
+    : `${fmtDateHuman(range.startDate)} → ${fmtDateHuman(range.endDate)} (${range.days} days). Contract end date will push back to ${fmtDateHuman(newExpiry.toISOString().slice(0,10))}`;
+}
+document.querySelectorAll('[data-freeze-mode]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    freezeMode = btn.dataset.freezeMode;
+    document.getElementById('freezeModeDays').classList.toggle('active', freezeMode==='days');
+    document.getElementById('freezeModeRange').classList.toggle('active', freezeMode==='range');
+    document.getElementById('freezeDaysPane').style.display = freezeMode==='days' ? '' : 'none';
+    document.getElementById('freezeRangePane').style.display = freezeMode==='range' ? '' : 'none';
+    updateFreezePreview();
+  });
+});
+['fz_startDate','fz_days','fz_rangeStart','fz_rangeEnd'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateFreezePreview);
+});
+document.getElementById('freezeModalClose').addEventListener('click', closeAllModals);
+document.getElementById('freezeModalCancel').addEventListener('click', closeAllModals);
+document.getElementById('freezeModalSave').addEventListener('click', ()=>{
+  const svc = activeSubscriptionFor(freezeCustomerId);
+  const range = getFreezeModalDates();
+  if(!range){ toast(LANG==='zh'?'请填写有效的日期/天数':'Please enter valid dates/days'); return; }
+  const usedDays = totalFrozenDaysUsed(svc);
+  if(range.days > MAX_FREEZE_DAYS - usedDays){
+    toast(LANG==='zh'?'超出该合约的可用暂停天数':'This exceeds the freeze days available on this contract');
+    return;
+  }
+  svc.freezes = svc.freezes || [];
+  svc.freezes.push({startDate: range.startDate, endDate: range.endDate});
+  // the frozen stretch doesn't count toward the contract, so both the expiry date and the
+  // nominal contract length push back by exactly the number of days frozen
+  const newExpiry = new Date(svc.expiryDate); newExpiry.setDate(newExpiry.getDate()+range.days);
+  svc.expiryDate = newExpiry.toISOString().slice(0,10);
+  svc.durationDays = (Number(svc.durationDays)||0) + range.days;
+  saveDB(DB);
+  closeAllModals();
+  toast(t('toast.freezeSaved'));
+  openCustomerDetail(freezeCustomerId);
+  renderNav();
+});
+function unfreezeSim(customerId, refreshProfile){
+  const svc = activeSubscriptionFor(customerId);
+  const freeze = currentFreezeFor(svc);
+  if(!freeze) return;
+  const today = todayISO();
+  const originalDays = daysBetween(freeze.startDate, freeze.endDate)+1;
+  // Ending early means fewer days actually ended up frozen than planned — the contract
+  // extension has to shrink to match, or the customer would end up with extra "free" days
+  // added that they never actually lost.
+  if(today <= freeze.startDate){
+    // never actually started - remove entirely, nothing to shrink
+    svc.freezes = svc.freezes.filter(f=>f!==freeze);
+    const newExpiry = new Date(svc.expiryDate); newExpiry.setDate(newExpiry.getDate()-originalDays);
+    svc.expiryDate = newExpiry.toISOString().slice(0,10);
+    svc.durationDays = Math.max(0, (Number(svc.durationDays)||0) - originalDays);
+  } else {
+    const actualDays = daysBetween(freeze.startDate, today); // ends the day before today
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
+    freeze.endDate = yesterday.toISOString().slice(0,10);
+    const shrinkBy = originalDays - actualDays;
+    const newExpiry = new Date(svc.expiryDate); newExpiry.setDate(newExpiry.getDate()-shrinkBy);
+    svc.expiryDate = newExpiry.toISOString().slice(0,10);
+    svc.durationDays = Math.max(0, (Number(svc.durationDays)||0) - shrinkBy);
+  }
+  saveDB(DB);
+  toast(t('toast.unfreezeSaved'));
+  // Only reopens the profile modal when called FROM the profile (its default) — calling
+  // this from Sheet View with refreshProfile=false avoids popping the profile open over
+  // whatever the person was actually looking at, since they never asked to see it.
+  if(refreshProfile!==false) openCustomerDetail(customerId);
+  renderNav();
 }
 /* Tracks a customer's request to switch their registered ID from Passport to a Korean
    Resident Card (ARC) — needed for many everyday Korean apps (banking, delivery, etc.)
@@ -4223,6 +4443,7 @@ function renderIdChangeTab(list){
       e.stopPropagation();
       const cust = getCustomer(btn.getAttribute('data-idchange-complete'));
       cust.idChangeRequest.status = 'completed';
+      cust.idChangeRequest.completedDate = todayISO();
       cust.idType = 'ARC';
       saveDB(DB);
       toast(t('toast.idChangeCompleted'));
