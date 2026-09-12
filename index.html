@@ -791,6 +791,42 @@
   </div>
 </div>
 
+<!-- Freeze SIM (postpaid only) — pauses billing/usage; contract end date pushes back by
+     however many days are frozen, since frozen time doesn't count toward the contract -->
+<div class="overlay" id="freezeSimModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="freeze.modalTitle">暂停卡号（Freeze SIM）</div>
+      <button class="modal-close" id="freezeModalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-desc" style="margin-bottom:6px;" data-i18n="freeze.modalDesc">暂停期间不计入合约期限，合约到期日将顺延相应天数。仅限后付卡客户使用。</div>
+      <div class="section-desc" id="freezeAllowanceNote" style="margin-bottom:14px;font-weight:700;"></div>
+      <div class="chip-tabs" style="margin-bottom:14px;">
+        <button class="chip-tab active" id="freezeModeDays" data-freeze-mode="days" data-i18n="freeze.byDays">按天数</button>
+        <button class="chip-tab" id="freezeModeRange" data-freeze-mode="range" data-i18n="freeze.byRange">按日期范围</button>
+      </div>
+      <div id="freezeDaysPane">
+        <div class="form-grid">
+          <div class="form-field"><label data-i18n="freeze.startDate">开始日期</label><input id="fz_startDate" type="date"></div>
+          <div class="form-field"><label data-i18n="freeze.days">暂停天数</label><input id="fz_days" type="number" min="1"></div>
+        </div>
+      </div>
+      <div id="freezeRangePane" style="display:none;">
+        <div class="form-grid">
+          <div class="form-field"><label data-i18n="freeze.startDate">开始日期</label><input id="fz_rangeStart" type="date"></div>
+          <div class="form-field"><label data-i18n="freeze.endDate">结束日期</label><input id="fz_rangeEnd" type="date"></div>
+        </div>
+      </div>
+      <div class="section-desc" id="freezePreview" style="margin-top:10px;font-weight:700;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="freezeModalCancel" data-i18n="btn.cancel">取消</button>
+      <button class="btn btn-primary" id="freezeModalSave" data-i18n="btn.save">保存</button>
+    </div>
+  </div>
+</div>
+
 <!-- change subscription modal (used for both "Change to Postpaid" and "Change Plan") -->
 <div class="overlay" id="changeSubModalOverlay">
   <div class="modal wide">
