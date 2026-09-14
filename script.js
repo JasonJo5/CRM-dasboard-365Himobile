@@ -118,6 +118,7 @@ const I18N = {
     'ai.stay.readyForPostpaid':'可转后付','ai.stay.readyForPostpaidAction':'联系转后付事宜','ai.stay.readyForPostpaidDesc':'先付套餐已到期的客户——已满19岁、护照登记、预计在韩停留8个月以上的视为符合资格；未满19岁的也会列出，并显示距离19岁生日还有多少天','ai.stay.underage':'未满19岁','ai.stay.missing.summary':'位客户因资料不全，未能纳入上方统计','ai.stay.missing.both':'缺少证件类型与在韩年数','ai.stay.missing.idType':'证件类型非护照或未填写','ai.stay.missing.years':'缺少在韩年数','ai.stay.missing.dob':'缺少出生日期，无法判断年龄','btn.hide':'收起','btn.show':'展开',
     'ai.stay.prepaidRecharge':'先付续费','ai.stay.prepaidRechargeAction':'联系续费事宜','ai.stay.prepaidRechargeDesc':'1/2/3个月套餐即将到期，且仍有剩余在韩时间的先付客户',
     'ai.stay.postpaidUpgrade':'后付续约','ai.stay.postpaidUpgradeAction':'提供新合约','ai.stay.postpaidUpgradeDesc':'合约已到期，且预计还将在韩停留8个月以上的后付客户',
+    'ai.stay.finishedNeedsRecharge':'仅可续费','ai.stay.finishedNeedsRechargeAction':'发送续费提醒短信','ai.stay.finishedNeedsRechargeDesc':'先付套餐已到期，但因未满19岁或在韩停留不足8个月而无法转后付的客户——建议发送短信提醒其续费','btn.openSms':'发送短信','btn.copySms':'复制短信文字','toast.smsCopied':'短信文字已复制',
     'ai.stay.noYearsNote':'（结果基于客户档案中的「在韩年数」字段，代表预计剩余停留时长；未填写该字段的客户不会出现在此处）',
     'ai.ask.title':'💬 向 AI 商业分析师提问','ai.ask.desc':'用真实客户数据回答，并展示计算依据（点击下方问题试试看）','ai.ask.placeholder':'例如：本月有多少客户可以升级？','ai.ask.btn':'提问',
     'ai.opps.title':'客户商机列表','ai.opps.desc':'按优先级排序，点击客户可查看详细的 AI 洞察',
@@ -216,6 +217,7 @@ const I18N = {
     'ai.stay.readyForPostpaid':'Ready for postpaid','ai.stay.readyForPostpaidAction':'Contact about postpaid','ai.stay.readyForPostpaidDesc':'Prepaid customers whose current plan has finished — 19+, passport-verified, staying 8+ more months counts as eligible; under-19 customers are listed too, showing days until their 19th birthday','ai.stay.underage':'Under 19','ai.stay.missing.summary':'customers are missing data and aren\'t included in the counts above','ai.stay.missing.both':'Missing both ID type and Years in Korea','ai.stay.missing.idType':'ID type isn\'t Passport, or is blank','ai.stay.missing.years':'Missing Years in Korea','ai.stay.missing.dob':'Missing date of birth, so age can\'t be determined','btn.hide':'Hide','btn.show':'Show',
     'ai.stay.prepaidRecharge':'Prepaid recharge','ai.stay.prepaidRechargeAction':'Contact about recharge','ai.stay.prepaidRechargeDesc':'Prepaid customers on a 1/2/3-month plan ending soon who still have remaining stay time',
     'ai.stay.postpaidUpgrade':'Postpaid upgrade','ai.stay.postpaidUpgradeAction':'Offer new contract','ai.stay.postpaidUpgradeDesc':'Postpaid customers whose contract has ended, staying 8+ more months',
+    'ai.stay.finishedNeedsRecharge':'Recharge only','ai.stay.finishedNeedsRechargeAction':'Send recharge reminder SMS','ai.stay.finishedNeedsRechargeDesc':'Prepaid customers whose plan has ended but can\'t move to postpaid yet (under 19, or staying under 8 more months) — send a text reminding them to recharge','btn.openSms':'Open SMS','btn.copySms':'Copy SMS text','toast.smsCopied':'SMS text copied',
     'ai.stay.noYearsNote':'(based on the "Years in Korea" field on each customer profile, read as expected remaining stay — customers with that field left blank won\'t appear here)',
     'ai.ask.title':'💬 Ask the AI business analyst','ai.ask.desc':'Answered from real customer data, with the calculation shown (try a suggestion below)','ai.ask.placeholder':'e.g. How many customers can upgrade this month?','ai.ask.btn':'Ask',
     'ai.opps.title':'Customer opportunities','ai.opps.desc':'Sorted by priority — click a customer to see their full AI insight',
@@ -835,13 +837,14 @@ function renderSheetPage(){
           <td>${sheetPillCell('service',svc.id,'simType',svc.simType,SIM_TYPES, t('f.simType'))}</td>
         </tr>`;
       }
-      return `<tr>${commonCells}
+      const frozenNow = isServiceCurrentlyFrozen(svc);
+      return `<tr${frozenNow ? ' style="background:#EFF6FF;"' : ''}>${commonCells}
         <td>${sheetPillCell('service',svc.id,'company',svc.company,POSTPAID_COMPANIES, t('f.company'))}</td>
         <td>${sheetPillCell('service',svc.id,'partnerCompany',svc.partnerCompany,POSTPAID_PARTNER_COMPANIES, t('f.partnerCompany'))}</td>
         <td>${sheetPillCell('service',svc.id,'durationDays',svc.durationDays?String(svc.durationDays):'',POSTPAID_CONTRACT_DAYS.map(String), t('f.contractLength'))}</td>
         <td>${sheetReadonlyCell((usedDaysFor(svc)??'—')+(usedDaysFor(svc)!==null?(LANG==='zh'?' 天':' d'):''))}</td>
         <td>${sheetReadonlyCell(contractStatusTextFor(svc, true)||'—')}</td>
-        <td>${isServiceCurrentlyFrozen(svc) ? `<span class="pill" style="background:#DBEAFE;color:#1D4ED8;cursor:pointer;" data-freeze-toggle="${svc.customerId}" title="${t('freeze.clickToUnfreeze')}">🧊 ${t('freeze.frozen')}</span>` : sheetReadonlyCell('—')}</td>
+        <td>${frozenNow ? `<button class="btn btn-sm" style="background:#2563EB;color:#fff;border:none;" data-freeze-toggle="${svc.customerId}">🧊 ${t('btn.unfreezeSim')}</button>` : sheetReadonlyCell('—')}</td>
         <td>${sheetTextCell('service',svc.id,'monthlyFee',svc.monthlyFee,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'expectedProfit',svc.expectedProfit,'number')}</td>
         <td>${sheetTextCell('service',svc.id,'actualProfit',svc.actualProfit,'number')}</td>
@@ -1599,7 +1602,7 @@ const ELIGIBLE_SOON_DAYS = 90;
      🟣 postpaidUpgrade — customers whose postpaid contract already ended who are staying
         8+ more months, worth a fresh longer-term contract rather than lapsing. */
 function getStayBasedOpportunities(){
-  const readyForPostpaid = [], prepaidRecharge = [], postpaidUpgrade = [];
+  const readyForPostpaid = [], prepaidRecharge = [], postpaidUpgrade = [], finishedNeedsRecharge = [];
   DB.customers.forEach(c=>{
     const svc = activeSubscriptionFor(c.id);
     if(!svc) return;
@@ -1625,16 +1628,26 @@ function getStayBasedOpportunities(){
       // an action to take right now, so it shouldn't wait on plan status at all — someone
       // turning 19 in 3 months is worth knowing about whether their current plan still has
       // 80 days left or has already run out.
+      const eligibleForPostpaid = age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && remainingStayYears>=(8/12);
       if(age!==null && age<POSTPAID_MIN_AGE){
         const bday = new Date(c.dob);
         const nextBday = new Date(bday.getFullYear()+POSTPAID_MIN_AGE, bday.getMonth(), bday.getDate());
         const daysUntil19 = isNaN(nextBday.getTime()) ? null : daysBetween(todayISO(), nextBday.toISOString().slice(0,10));
         readyForPostpaid.push({customer:c, service:svc, subStatus:'underage', daysUntil19});
-      } else if(computedStatus(svc)==='expired' && age!==null && age>=POSTPAID_MIN_AGE && c.idType==='Passport' && hasYears && remainingStayYears>=(8/12)){
+      } else if(computedStatus(svc)==='expired' && eligibleForPostpaid){
         readyForPostpaid.push({customer:c, service:svc, subStatus:'eligible', remainingStayYears});
       }
       if([30,60,90].includes(Number(svc.durationDays)) && computedStatus(svc)==='expiring_soon' && hasYears && years>0){
         prepaidRecharge.push({customer:c, service:svc});
+      }
+      // Plan already ran out, and postpaid isn't an option for them — either they're under
+      // 19, or they simply won't be in Korea long enough to make postpaid worthwhile — but
+      // they still have SOME real time left, so recharging (not upgrading) is the only
+      // move that makes sense. Age-eligible-but-otherwise-excluded people still land here
+      // too (e.g. no passport on file) since the recommendation is the same either way:
+      // recharge, since postpaid isn't happening right now regardless of the reason.
+      if(computedStatus(svc)==='expired' && !eligibleForPostpaid && hasYears && remainingStayYears>0){
+        finishedNeedsRecharge.push({customer:c, service:svc, remainingStayYears});
       }
     } else if(svc.type==='postpaid'){
       if(computedStatus(svc)==='over_contract' && hasYears && remainingStayYears>=(8/12)){
@@ -1642,7 +1655,7 @@ function getStayBasedOpportunities(){
       }
     }
   });
-  return {readyForPostpaid, prepaidRecharge, postpaidUpgrade};
+  return {readyForPostpaid, prepaidRecharge, postpaidUpgrade, finishedNeedsRecharge};
 }
 /* All three categories above silently skip anyone missing the data they need to judge —
    there's no way to tell if someone's "ready" without knowing their ID type or expected
@@ -2483,10 +2496,11 @@ function renderAIStayMissingDataBanner(){
   bindRowOpens();
 }
 function renderAIStayCards(){
-  const {readyForPostpaid, prepaidRecharge, postpaidUpgrade} = getStayBasedOpportunities();
+  const {readyForPostpaid, prepaidRecharge, postpaidUpgrade, finishedNeedsRecharge} = getStayBasedOpportunities();
   const cats = [
     {key:'readyForPostpaid', icon:'✓', list:readyForPostpaid, color:'#16A34A', grad:'linear-gradient(135deg,#ECFDF5,#D1FAE5)'},
     {key:'prepaidRecharge', icon:'↻', list:prepaidRecharge, color:'#2563EB', grad:'linear-gradient(135deg,#EFF6FF,#DBEAFE)'},
+    {key:'finishedNeedsRecharge', icon:'✉', list:finishedNeedsRecharge, color:'#EA580C', grad:'linear-gradient(135deg,#FFF7ED,#FFEDD5)'},
     {key:'postpaidUpgrade', icon:'★', list:postpaidUpgrade, color:'#8B5CF6', grad:'linear-gradient(135deg,#F5F3FF,#EDE9FE)'},
   ];
   renderAIStayMissingDataBanner();
@@ -2568,7 +2582,12 @@ function renderAIStayExpandedList(cats){
     // needing to check their signup date and do the subtraction by hand.
     const remainingStayNote = (subStatus==='eligible' && remainingStayYears!=null)
       ? (LANG==='zh' ? `预计还剩 ${(remainingStayYears*12).toFixed(1)} 个月在韩` : `~${(remainingStayYears*12).toFixed(1)}mo stay left`)
+      : (cat.key==='finishedNeedsRecharge' && remainingStayYears!=null)
+      ? (LANG==='zh' ? `预计还剩 ${(remainingStayYears*12).toFixed(1)} 个月在韩` : `~${(remainingStayYears*12).toFixed(1)}mo stay left`)
       : '';
+    const smsButtons = (cat.key==='finishedNeedsRecharge' && c.phone) ? `
+      <a class="btn btn-sm btn-ghost" href="sms:${c.phone.replace(/[^0-9+]/g,'')}?body=${encodeURIComponent(buildRechargeSmsText(c, remainingStayYears))}" style="flex:0 0 auto;text-decoration:none;">📱 ${t('btn.openSms')}</a>
+      <button class="btn btn-sm btn-ghost" data-copy-sms="${c.id}" data-recharge-months="${remainingStayYears!=null?Math.max(1,Math.round(remainingStayYears*12)):1}" style="flex:0 0 auto;">📋 ${t('btn.copySms')}</button>` : '';
     return `<div class="ai-stay-row" style="--accent:${cat.color};${subStatus==='underage'?'opacity:.8;':''}">
       <span class="avatar">${initials(c.name)}</span>
       <div style="min-width:0;flex:1;">
@@ -2581,6 +2600,7 @@ function renderAIStayExpandedList(cats){
         </div>
         <div class="muted" style="font-size:12px;">${escapeHtml(svc.plan||'')} · ${escapeHtml(c.phone||'—')} · ${LANG==='zh'?'到期':'expiry'} ${fmtDate(svc.expiryDate)}${remainingStayNote?` · ${remainingStayNote}`:''}</div>
       </div>
+      ${smsButtons}
       ${dayLabel ? `<span class="pill ${dayPillClass}" style="flex:0 0 auto;font-weight:700;">${dayLabel}</span>` : ''}
     </div>`;
   }).join('') : emptyState();
@@ -2591,6 +2611,28 @@ function renderAIStayExpandedList(cats){
       copyCustomerNameToClipboard(btn.getAttribute('data-copy-name'), btn);
     });
   });
+  box.querySelectorAll('[data-copy-sms]').forEach(btn=>{
+    btn.addEventListener('click', async e=>{
+      e.stopPropagation();
+      const cust = getCustomer(btn.getAttribute('data-copy-sms'));
+      const months = Number(btn.getAttribute('data-recharge-months'))||1;
+      try{
+        await navigator.clipboard.writeText(buildRechargeSmsText(cust, months/12));
+        toast(t('toast.smsCopied'));
+      }catch(err){ toast(LANG==='zh'?'复制失败':'Copy failed'); }
+    });
+  });
+  box.querySelectorAll('a[href^="sms:"]').forEach(a=>{
+    a.addEventListener('click', e=> e.stopPropagation());
+  });
+}
+/* Builds the recharge-reminder SMS text for a customer whose prepaid plan has finished but
+   who isn't eligible for postpaid yet (under 19, or not staying long enough) — the only
+   real move left for them is recharging for whatever time they have left. Kept in English
+   since that's broadly understandable across this store's international customer base. */
+function buildRechargeSmsText(c, remainingStayYears){
+  const monthsLeft = remainingStayYears!=null ? Math.max(1, Math.round(remainingStayYears*12)) : 1;
+  return `Hi ${c.name}, this is 365 Hi Mobile. Your prepaid plan has ended. You can recharge for about ${monthsLeft} more month${monthsLeft>1?'s':''} to keep your number active. Please visit us or reply to renew. Thank you!`;
 }
 function renderCustomers(){
   populateStaticSelects();
