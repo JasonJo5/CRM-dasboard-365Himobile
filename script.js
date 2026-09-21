@@ -1157,6 +1157,31 @@ function repairMissingExpiryDates(db){
   });
   if(changed) saveDB(db);
 }
+/* One-time repair for prepaid services whose Expiry Date doesn't actually match Activation
+   Date + Duration — e.g. a customer showing "30 days" but an expiry date 3 months out.
+   Root cause: the general Excel importer used to trust the sheet's own "Expiry Date" column
+   whenever present, even when it disagreed with the sheet's Contract Days column (a very
+   common spreadsheet mistake — that cell left stale from an older plan or template). The
+   importer itself is now fixed to always compute from activation+duration, but customers
+   already imported before that fix still carry the bad expiry date, so this repairs them
+   retroactively. Frozen services are skipped — a freeze legitimately pushes expiryDate
+   beyond activation+duration on purpose, so a "mismatch" there isn't a bug. */
+function repairMismatchedPrepaidExpiry(db){
+  let changed = 0;
+  (db.services||[]).forEach(s=>{
+    if(s.type!=='prepaid') return;
+    if(!s.activationDate || !isIsoDate(s.activationDate) || !s.durationDays || !s.expiryDate) return;
+    if(s.freezes && s.freezes.length) return; // freezes legitimately shift expiry, don't touch
+    const d = new Date(s.activationDate); d.setDate(d.getDate()+Number(s.durationDays));
+    const correct = d.toISOString().slice(0,10);
+    if(s.expiryDate !== correct){
+      s.expiryDate = correct;
+      changed++;
+    }
+  });
+  if(changed) saveDB(db);
+  return changed;
+}
 
 function loadDB(){
   try{
@@ -1170,6 +1195,8 @@ function loadDB(){
       repairActiveSubscriptions(db);
       repairJoinDates(db);
       repairMissingExpiryDates(db);
+      const fixedExpiryCount = repairMismatchedPrepaidExpiry(db);
+      if(fixedExpiryCount) pendingExpiryRepairToast = fixedExpiryCount;
       return db;
     }
   }catch(e){}
@@ -1383,6 +1410,8 @@ async function pullFromServer(){
     repairActiveSubscriptions(DB);
     repairJoinDates(DB);
     repairMissingExpiryDates(DB);
+    const fixedExpiryCount = repairMismatchedPrepaidExpiry(DB);
+    if(fixedExpiryCount) pendingExpiryRepairToast = fixedExpiryCount;
     saveDBToLocalStorage(DB); // safe against storage-quota errors — a caching failure here
     // must never block the unlock/pull itself, since the real data was already successfully
     // retrieved from the server and is correctly sitting in memory at this point
@@ -5187,6 +5216,29 @@ function guessNumber(row, keys){
   const cleaned = String(raw).replace(/[^0-9.-]/g,'');
   return cleaned==='' ? 0 : (Number(cleaned)||0);
 }
+/* Parses a "contract length" cell into a day count, tolerating the unit-word formats real
+   spreadsheets actually use — "30일" (Korean "30 days"), "1개월"/"1달" (Korean "1 month"),
+   "3个月" (Chinese "3 months"), "30 days", "1 month" — not just a bare number. A plain
+   Number() on any of these returns NaN, which previously made the importer treat the whole
+   cell as "no duration info at all" and silently default to the longest (90-day) prepaid
+   tier — the worst possible guess, and the reason a customer who was actually sold a 30-day
+   plan (written in the sheet as "30일") could come out of import looking like a 3-month
+   customer. A bare number is still assumed to already be in days, exactly as before. */
+function parseDurationDaysFlexible(raw){
+  if(raw===''||raw==null) return NaN;
+  if(typeof raw==='number') return raw;
+  const s = String(raw).trim();
+  const bare = Number(s);
+  if(!isNaN(bare)) return bare; // plain "30" — already a day count, no unit text to strip
+  const m = s.match(/([0-9]+(?:\.[0-9]+)?)/);
+  if(!m) return NaN;
+  const n = Number(m[1]);
+  if(/개월|달|月|month/i.test(s)) return n*30;
+  if(/년|年|year/i.test(s)) return n*365;
+  if(/주|주일|week/i.test(s)) return n*7;
+  // "일"/"日"/"day(s)" or no recognizable unit at all — treat the number as already-days
+  return n;
+}
 function updateImportSkipDupesUI(){
   const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'merge';
   const skip = document.getElementById('importSkipDupes').checked;
@@ -5264,28 +5316,38 @@ function importRowsIntoDB(rows, sheetName, subTypeChoice, skipDupes){
     const carrier = guessField(row,['carrier','통신사','통신社','签约公司','开通社']);
     const rawDurationDays = guessField(row,['contractdays','合同天数','已使用天','계약일수','天数']);
     let durationDays;
+    // Was the duration actually read off the sheet, or did we have to fall back to a
+    // default because that column was blank/unparseable? This distinction matters below —
+    // a duration we genuinely parsed is more trustworthy than whatever the sheet's own
+    // "Expiry Date" column says, since that column is very often stale (left over from an
+    // old plan, copy-pasted from a template, or never updated when the plan tier changed).
+    const parsedDays = parseDurationDaysFlexible(rawDurationDays);
+    const parsedDurationOk = parsedDays > 0;
     if(resolvedSubType==='prepaid'){
       // real prepaid plans come in 15/30/60/90-day tiers — snap to the nearest one instead
       // of assuming every prepaid signup is 90 days regardless of what the sheet says
-      const parsedDays = Number(rawDurationDays);
       const tiers = PREPAID_PLANS.map(p=>p.days);
-      durationDays = parsedDays>0 ? tiers.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, tiers[0]) : tiers[tiers.length-1];
+      durationDays = parsedDurationOk ? tiers.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, tiers[0]) : tiers[tiers.length-1];
     } else {
-      const parsedDays = Number(rawDurationDays);
-      durationDays = parsedDays>0 ? POSTPAID_CONTRACT_DAYS.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, POSTPAID_CONTRACT_DAYS[0]) : POSTPAID_CONTRACT_DAYS[0];
+      durationDays = parsedDurationOk ? POSTPAID_CONTRACT_DAYS.reduce((best,v)=>Math.abs(v-parsedDays)<Math.abs(best-parsedDays)?v:best, POSTPAID_CONTRACT_DAYS[0]) : POSTPAID_CONTRACT_DAYS[0];
     }
     if(plan || carrier){
       const importedActivationDate = parseFlexibleDate(guessField(row,['activationdate','开通日期','开通日']))||todayISO();
       const importedExpiryDate = parseFlexibleDate(guessField(row,['expirydate','到期日期','有效使用期']));
-      // Most real spreadsheets track contract length + activation date as the source data —
-      // an explicit "expiry date" column often doesn't exist or doesn't match. Without this
-      // fallback, imported customers end up with a permanently blank expiry date, which then
-      // breaks every "days remaining / expired / over contract" calculation everywhere else
-      // in the app for that customer.
-      const computedExpiryDate = importedExpiryDate || (()=>{
+      const computedFromDuration = (()=>{
         const d = new Date(importedActivationDate); d.setDate(d.getDate()+durationDays);
         return d.toISOString().slice(0,10);
       })();
+      // BUG FIX: this used to trust the sheet's own "Expiry Date" column whenever one was
+      // present, and only computed activation+duration as a fallback for blank cells. That
+      // meant a row whose Contract Days column correctly said "30" but whose Expiry Date
+      // column still held a stale 3-month-out date (a very common spreadsheet mistake —
+      // that cell was never updated after the plan tier changed) imported BOTH values as-is,
+      // so the customer's profile showed a 30-day plan with a 90-day-out expiry.
+      // Now: whenever we genuinely parsed a duration from the sheet, activation date + that
+      // duration is treated as the source of truth and the Expiry Date column is ignored —
+      // it's only consulted when there's no usable duration to compute from at all.
+      const computedExpiryDate = parsedDurationOk ? computedFromDuration : (importedExpiryDate || computedFromDuration);
       const baseFields = {
         type:resolvedSubType, carrier:String(carrier||''), plan:String(plan||''),
         number:String(guessField(row,['number','号码','currentnumber','开通号码'])||''), simType:'physical',
@@ -6014,6 +6076,22 @@ function unlockApp(){
   document.getElementById('appRoot').style.display = '';
   boot();
   startBackgroundSyncPolling();
+  flushExpiryRepairToast();
+}
+/* Surfaces the one-time expiry-date repair (see repairMismatchedPrepaidExpiry) as a toast
+   so it isn't a silent, invisible data change — staff should know some old records just had
+   their expiry date corrected. Fires at most once per load, right after the app is unlocked
+   and rendered, whether the repair ran during the initial local load or the follow-up
+   server pull. */
+let pendingExpiryRepairToast = 0;
+function flushExpiryRepairToast(){
+  if(!pendingExpiryRepairToast) return;
+  const n = pendingExpiryRepairToast;
+  pendingExpiryRepairToast = 0;
+  setTimeout(()=> toast(LANG==='zh'
+    ? `已自动修正 ${n} 个套餐的到期日期（与合同天数不匹配）`
+    : `Auto-corrected the expiry date on ${n} plan(s) that didn't match their contract length`
+  ), 400);
 }
 // Silently pulls fresh data from the server every 15 seconds while the app is just sitting
 // open — without this, two computers only ever compared notes when someone happened to
