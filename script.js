@@ -3567,13 +3567,7 @@ function openCustomerDetail(id){
   if(btnPrintIdChange) btnPrintIdChange.addEventListener('click', ()=> printIdChangeForm(id));
   const btnCompleteIdChange = document.getElementById('btnCompleteIdChange');
   if(btnCompleteIdChange) btnCompleteIdChange.addEventListener('click', ()=>{
-    const cust = getCustomer(id);
-    cust.idChangeRequest.status = 'completed';
-    cust.idChangeRequest.completedDate = todayISO(); // so it's possible to actually answer "when did this happen" later, not just "when was it asked for"
-    cust.idType = 'ARC'; // the whole point of this request — reflect the actual outcome once it's done
-    saveDB(DB);
-    toast(t('toast.idChangeCompleted'));
-    openCustomerDetail(id);
+    completeIdChangeRequest(id, ()=> openCustomerDetail(id));
   });
   const btnMergeFromProfile = document.getElementById('btnMergeFromProfile');
   if(btnMergeFromProfile) btnMergeFromProfile.addEventListener('click', ()=>{
@@ -4087,6 +4081,32 @@ function saveIdChangeRequest(){
   renderNav();
   return idChangeCustomerId;
 }
+/* Shared by the profile banner's "Mark complete" and the Reminders tab's version of the same
+   button. Guards against cust.idChangeRequest having gone missing between when this button was
+   rendered and when it was clicked — which used to crash with "Cannot set properties of
+   undefined" and, worse, silently ate the click with no explanation. This can genuinely happen
+   if the on-screen banner/row is stale (e.g. a background sync refreshed the underlying data
+   without re-rendering an open modal) or if the request was never actually saved server-side
+   in the first place on a server whose database is missing the id_change_request column —
+   see schema.sql. Either way, failing loudly with a toast (and telling the person to re-open
+   the customer / retry) is far better than a dead click or a JS crash. */
+function completeIdChangeRequest(customerId, onDone){
+  const cust = getCustomer(customerId);
+  if(!cust || !cust.idChangeRequest){
+    toast(LANG==='zh'
+      ? '找不到该证件变更申请（可能已刷新丢失）— 请重新打开客户资料并重新申请'
+      : 'Could not find that ID change request (it may have been lost on refresh) — please reopen this customer and submit it again');
+    if(onDone) onDone();
+    return false;
+  }
+  cust.idChangeRequest.status = 'completed';
+  cust.idChangeRequest.completedDate = todayISO(); // so it's possible to actually answer "when did this happen" later, not just "when was it asked for"
+  cust.idType = 'ARC'; // the whole point of this request — reflect the actual outcome once it's done
+  saveDB(DB);
+  toast(t('toast.idChangeCompleted'));
+  if(onDone) onDone();
+  return true;
+}
 document.getElementById('idChangeModalSave').addEventListener('click', ()=>{
   const savedId = saveIdChangeRequest();
   if(!savedId) return;
@@ -4512,14 +4532,7 @@ function renderIdChangeTab(list){
   document.querySelectorAll('[data-idchange-complete]').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      const cust = getCustomer(btn.getAttribute('data-idchange-complete'));
-      cust.idChangeRequest.status = 'completed';
-      cust.idChangeRequest.completedDate = todayISO();
-      cust.idType = 'ARC';
-      saveDB(DB);
-      toast(t('toast.idChangeCompleted'));
-      renderReminders();
-      renderNav();
+      completeIdChangeRequest(btn.getAttribute('data-idchange-complete'), ()=>{ renderReminders(); renderNav(); });
     });
   });
 }
