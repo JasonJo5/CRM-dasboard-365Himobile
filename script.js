@@ -3395,11 +3395,20 @@ function openCustomerDetail(id){
   const intel = computeCustomerIntelligence(c);
 
   let actionButtons = '';
+  // Only a genuinely PENDING or COMPLETED request should hide the "Request ID change"
+  // button — checking truthiness of c.idChangeRequest alone used to hide it forever on any
+  // leftover/partial object too (e.g. one left behind by the sync bug where the database
+  // had no column to actually store this field: a request could get created locally, then
+  // get overwritten mid-flight by a background pull into a half-formed object that was
+  // neither pending nor completed). That left a customer with no banner, no history entry,
+  // AND no way to ever request again — permanently stuck. Checking the actual status makes
+  // the button reappear and self-heal whenever there's no real request in progress.
+  const hasRealIdChangeRequest = !!(c.idChangeRequest && (c.idChangeRequest.status==='pending' || c.idChangeRequest.status==='completed'));
   if(active && active.type==='prepaid'){
     actionButtons = `
       <button class="btn btn-primary" id="btnRecharge">🔋 ${t('btn.recharge')}</button>
       <button class="btn btn-ghost" id="btnChangeToPostpaid">🔁 ${t('btn.changeToPostpaid')}</button>
-      ${c.idType==='Passport' && !c.idChangeRequest ? `<button class="btn btn-ghost" id="btnRequestIdChange">📄 ${t('btn.requestIdChange')}</button>` : ''}
+      ${c.idType==='Passport' && !hasRealIdChangeRequest ? `<button class="btn btn-ghost" id="btnRequestIdChange">📄 ${t('btn.requestIdChange')}</button>` : ''}
       <button class="btn btn-danger" id="btnCancelSub">🚫 ${t('btn.cancelSubscription')}</button>`;
   } else if(active && active.type==='postpaid'){
     const frozen = isServiceCurrentlyFrozen(active);
