@@ -4541,7 +4541,16 @@ function renderIdChangeTab(list){
   document.querySelectorAll('[data-idchange-complete]').forEach(btn=>{
     btn.addEventListener('click', e=>{
       e.stopPropagation();
-      completeIdChangeRequest(btn.getAttribute('data-idchange-complete'), ()=>{ renderReminders(); renderNav(); });
+      const custId = btn.getAttribute('data-idchange-complete');
+      completeIdChangeRequest(custId, ()=>{
+        renderReminders();
+        renderNav();
+        // Take the user straight to this customer's profile so they can see the
+        // completed request land in Plan History right away — rather than just
+        // refreshing the Reminders list behind the scenes, which made it look like
+        // nothing happened.
+        openCustomerDetail(custId);
+      });
     });
   });
 }
