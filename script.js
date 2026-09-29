@@ -4080,13 +4080,18 @@ document.getElementById('idChangeModalCancel').addEventListener('click', closeAl
    request, returning the customer id on success (or null if validation failed) so the
    print button can chain straight into printIdChangeForm() without duplicating this logic. */
 function saveIdChangeRequest(){
+  // Previously this created a "pending" request that had to be separately marked complete
+  // later — a two-step flow that turned out to be more than staff actually needed. Now
+  // picking a date and saving immediately records the change as done on that date: no
+  // pending banner, no separate "Mark complete" step, no chance of it getting stuck pending.
   const date = document.getElementById('idc_date').value || todayISO();
   const handledBy = document.getElementById('idc_handler_group').dataset.selected;
   if(!handledBy){ toast(LANG==='zh'?'请选择经办人':'Please select who is handling this'); return null; }
   const cust = getCustomer(idChangeCustomerId);
-  cust.idChangeRequest = {requestedDate: date, handledBy, status:'pending'};
+  cust.idChangeRequest = {requestedDate: date, handledBy, status:'completed', completedDate: date};
+  cust.idType = 'ARC'; // the whole point of this — reflect the actual outcome right away
   saveDB(DB);
-  toast(t('toast.idChangeSaved'));
+  toast(t('toast.idChangeCompleted'));
   renderNav();
   return idChangeCustomerId;
 }
