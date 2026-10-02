@@ -5703,13 +5703,12 @@ function renderTemplates(){
   const cardHtml = tp => {
     // Information-change templates now hold both pages on one record — show a small
     // page-count note instead of the old "Page 1"/"Page 2" labels (those only existed
-    // because each page used to be its own separate template record).
+    // because each page used to be its own separate template record). Some carriers'
+    // forms are genuinely only 1 page, so a single-page template is normal, not an error.
     let purposeNote = '';
     if(isIdChangeTemplatePurpose(tp.purpose)){
       const pageCount = (tp.imageDataUrl?1:0) + (tp.imageDataUrl2?1:0);
-      purposeNote = pageCount<2
-        ? ` · ${LANG==='zh'?'⚠ 缺少第2页':'⚠ Missing page 2'}`
-        : ` · ${LANG==='zh'?'2页':'2 pages'}`;
+      purposeNote = ` · ${pageCount} ${LANG==='zh'?'页':(pageCount===1?'page':'pages')}`;
     }
     const fieldCount = (tp.fields?.length||0) + (tp.fields2?.length||0);
     return `<div class="tpl-card" data-open-tpl="${tp.id}">
@@ -6060,13 +6059,8 @@ document.getElementById('tplSaveBtn').addEventListener('click', ()=>{
   if(!editorImageDataUrl){ toast(LANG==='zh'?'请先上传表格图片':'Please upload a form image first'); return; }
   const purpose = document.getElementById('tpl_purpose').value;
   const isIdChange = purpose==='idChange';
-  // Both pages of the physical form are uploaded together into one template now, so both
-  // images are required before an Information-change template can be saved — a template
-  // missing page 2 can't actually be printed (doPrintIdChangePair always needs both).
-  if(isIdChange && !editorImageDataUrl2){
-    toast(LANG==='zh'?'请同时上传第2页图片':'Please also upload the page 2 image');
-    return;
-  }
+  // Page 2 is optional — some carriers' Information-change form really is only 1 page.
+  // doPrintIdChangePair / getIdChangeFormPairs below only print whichever pages exist.
   const data = {
     name, carrier:document.getElementById('tpl_carrier').value.trim(), purpose,
     imageDataUrl:editorImageDataUrl, fields:editorFields,
@@ -6181,19 +6175,21 @@ function quickPrintService(customerId, serviceId){
    redesign, both pages now live on that ONE template, so there's no more cross-record
    pairing-by-carrier-text to get out of sync. */
 let idChangePrintCustomerId = null;
+/* Carrier forms aren't all 2 pages — some are genuinely just 1 page — so a template only
+   needs page 1 to be printable here; page2 is included only when it was actually uploaded. */
 function getIdChangeFormPairs(){
   return getIdChangeTemplates()
-    .filter(tp=> tp.imageDataUrl && tp.imageDataUrl2) // skip any template still missing a page
+    .filter(tp=> tp.imageDataUrl) // page 1 is the only hard requirement
     .map(tp=> ({
       carrier: tp.carrier||'',
       page1: {imageDataUrl: tp.imageDataUrl, fields: tp.fields||[]},
-      page2: {imageDataUrl: tp.imageDataUrl2, fields: tp.fields2||[]},
+      page2: tp.imageDataUrl2 ? {imageDataUrl: tp.imageDataUrl2, fields: tp.fields2||[]} : null,
     }));
 }
 function printIdChangeForm(customerId){
   const pairs = getIdChangeFormPairs();
   if(!pairs.length){
-    toast(LANG==='zh'?'请先在「打印模板」页面上传信息变更申请表（第1页与第2页），并填写对应通信社':'Please upload the Information-change form (both pages) in Print Templates first, with the matching carrier set');
+    toast(LANG==='zh'?'请先在「打印模板」页面上传信息变更申请表，并填写对应通信社':'Please upload the Information-change form in Print Templates first, with the matching carrier set');
     goTo('templates');
     return;
   }
@@ -6212,11 +6208,14 @@ function printIdChangeForm(customerId){
 }
 /* Both pages go out as a single print job — the OfficeJet Pro 9010 has automatic duplex, so
    enabling "Two-sided" / "Print on both sides" in the print dialog puts Page 1 and Page 2 on
-   the front and back of one sheet automatically, with no manual flipping needed. */
+   the front and back of one sheet automatically, with no manual flipping needed. A template
+   with only page 1 on file (some carriers' forms really are just 1 page) simply prints that
+   single page — there's no page 2 to include. */
 function doPrintIdChangePair(customerId, pair){
   const customer = getCustomer(customerId);
   const service = activeSubscriptionFor(customerId) || {};
-  const html = buildPrintPageHtml(pair.page1, customer, service, true) + buildPrintPageHtml(pair.page2, customer, service, true);
+  const html = buildPrintPageHtml(pair.page1, customer, service, true)
+    + (pair.page2 ? buildPrintPageHtml(pair.page2, customer, service, true) : '');
   document.getElementById('printOverlay').innerHTML = html;
   setTimeout(()=> window.print(), 80);
 }
