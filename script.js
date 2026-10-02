@@ -133,7 +133,8 @@ const I18N = {
     'toast.subscriptionCancelled':'订阅已取消',
     'confirm.delete':'确定要删除吗？此操作无法撤销。',
     'io.rows':'行','io.detected':'检测到',
-    'tpl.title':'运营商纸质表格模板','tpl.desc':'上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印','tpl.upload':'上传新模板','tpl.editor.new':'新建模板','tpl.editor.edit':'编辑模板','tpl.name':'模板名称','tpl.carrier':'通信社','tpl.purpose':'用途','tpl.purpose.general':'一般（运营商申请表）','tpl.purpose.idChange1':'证件变更申请表 — 第1页','tpl.purpose.idChange2':'证件变更申请表 — 第2页','tpl.uploadHint':'点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）','tpl.canvasHint':'点击图片任意位置添加字段，拖动字段调整位置','tpl.changeImage':'更换图片','tpl.fieldsList':'已添加字段','tpl.noFields':'点击左侧图片添加第一个字段',
+    'tpl.title':'运营商纸质表格模板','tpl.desc':'上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印','tpl.upload':'上传新模板','tpl.editor.new':'新建模板','tpl.editor.edit':'编辑模板','tpl.name':'模板名称','tpl.carrier':'通信社','tpl.purpose':'用途','tpl.purpose.general':'一般（运营商申请表）','tpl.purpose.idChange1':'信息变更申请表 — 第1页','tpl.purpose.idChange2':'信息变更申请表 — 第2页','tpl.uploadHint':'点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）','tpl.canvasHint':'点击图片任意位置添加字段，拖动字段调整位置','tpl.changeImage':'更换图片','tpl.fieldsList':'已添加字段','tpl.noFields':'点击左侧图片添加第一个字段',
+    'tpl.section.general':'一般运营商申请表','tpl.section.generalDesc':'用于新客户开通、续约与变更套餐 — 会出现在「新建客户」等模板选择列表中','tpl.section.idChange':'信息变更申请表（护照 → 外国人登记证）','tpl.section.idChangeDesc':'每个通信社最多2页（第1页 + 第2页），仅用于「信息变更」打印 — 不会出现在新客户或一般打印的模板列表中',
     'print.preview':'打印预览','print.template':'选择模板','print.includeBg':'预览显示底图（打印在空白纸上勾选此项）','print.bgHint':'如果打印出来没有底图，请在浏览器打印对话框中开启「背景图形 / Background graphics」选项后再打印，否则底图不会被打印出来。',
     'prepaid3m.toggle':'同时开通「3个月先付卡」并打印申请表',
   },
@@ -232,7 +233,8 @@ const I18N = {
     'toast.subscriptionCancelled':'Subscription cancelled',
     'confirm.delete':'Delete this record? This cannot be undone.',
     'io.rows':'rows','io.detected':'detected',
-    'tpl.title':'Carrier paper form templates','tpl.desc':'Upload a scan of the carrier application form and mark field positions — new customer data will auto-fill and print onto it','tpl.upload':'Upload new template','tpl.editor.new':'New template','tpl.editor.edit':'Edit template','tpl.name':'Template name','tpl.carrier':'Carrier','tpl.purpose':'Use for','tpl.purpose.general':'General (carrier application form)','tpl.purpose.idChange1':'ID change form — Page 1','tpl.purpose.idChange2':'ID change form — Page 2','tpl.uploadHint':'Click or drag to upload a scan of the carrier form (JPG / PNG, A4 aspect ratio recommended)','tpl.canvasHint':'Click anywhere on the image to add a field, drag fields to reposition','tpl.changeImage':'Change image','tpl.fieldsList':'Fields added','tpl.noFields':'Click the image on the left to add your first field',
+    'tpl.title':'Carrier paper form templates','tpl.desc':'Upload a scan of the carrier application form and mark field positions — new customer data will auto-fill and print onto it','tpl.upload':'Upload new template','tpl.editor.new':'New template','tpl.editor.edit':'Edit template','tpl.name':'Template name','tpl.carrier':'Carrier','tpl.purpose':'Use for','tpl.purpose.general':'General (carrier application form)','tpl.purpose.idChange1':'Information change form — Page 1','tpl.purpose.idChange2':'Information change form — Page 2','tpl.uploadHint':'Click or drag to upload a scan of the carrier form (JPG / PNG, A4 aspect ratio recommended)','tpl.canvasHint':'Click anywhere on the image to add a field, drag fields to reposition','tpl.changeImage':'Change image','tpl.fieldsList':'Fields added','tpl.noFields':'Click the image on the left to add your first field',
+    'tpl.section.general':'General carrier forms','tpl.section.generalDesc':'Used for new signups, renewals and plan changes — these appear in template pickers like "New customer"','tpl.section.idChange':'Information change forms (Passport → Resident Card)','tpl.section.idChangeDesc':'Up to 2 pages per carrier (Page 1 + Page 2), used only for "Information change" printing — never shown in the new-customer or general-print template lists',
     'print.preview':'Print preview','print.template':'Select template','print.includeBg':'Show background in preview (tick this if printing onto blank paper)','print.bgHint':'If the background form doesn\'t appear on paper, enable "Background graphics" in your browser\'s print dialog before printing — otherwise the background image will not be printed.',
     'prepaid3m.toggle':'Also activate a "3-month prepaid" service and print the application form',
   }
@@ -3128,11 +3130,16 @@ function updatePeNetExpectedPreview(){
 function refreshP3TemplateOptions(){
   const days = Number(document.getElementById('p3_prepaidPlan_group').dataset.selected)||90;
   const p3tpl = document.getElementById('p3_template');
-  if(!DB.templates.length){
+  // General signups should only ever offer general carrier forms — Information-change
+  // templates (Passport → ARC) are a completely separate 2-page flow of their own and must
+  // never show up here, which used to be exactly the mix-up: uploading one made it appear as
+  // a choice when adding a brand new customer.
+  const generalTemplates = getGeneralTemplates();
+  if(!generalTemplates.length){
     p3tpl.innerHTML = `<option value="">${LANG==='zh'?'（尚未上传模板，请先在「打印模板」页面上传）':'(no templates yet — upload one in Print Templates)'}</option>`;
     return;
   }
-  p3tpl.innerHTML = DB.templates.map(tp=>`<option value="${tp.id}">${escapeHtml(tp.name)}</option>`).join('');
+  p3tpl.innerHTML = generalTemplates.map(tp=>`<option value="${tp.id}">${escapeHtml(tp.name)}</option>`).join('');
   const preeti = getTemplate('tpl_preeti_3m');
   if(days===90 && preeti){
     p3tpl.value = preeti.id;
@@ -3140,8 +3147,8 @@ function refreshP3TemplateOptions(){
     // the 15/30/60-day tiers use a different template than the fixed 90-day ("3-month
     // recharge") Preeti form — prefer a non-Preeti template if the store has uploaded one,
     // otherwise leave the first option selected and let staff pick manually
-    const nonPreeti = DB.templates.find(tp=>tp.id!=='tpl_preeti_3m');
-    p3tpl.value = nonPreeti ? nonPreeti.id : DB.templates[0].id;
+    const nonPreeti = generalTemplates.find(tp=>tp.id!=='tpl_preeti_3m');
+    p3tpl.value = nonPreeti ? nonPreeti.id : generalTemplates[0].id;
   }
 }
 /* populates the shared Company / Partner Company / Carrier Type dropdowns for a given
@@ -5633,19 +5640,52 @@ function ensurePreetiTemplate(db){
 }
 
 /* ---------------- templates: list page ---------------- */
+/* "idChangePage1" / "idChangePage2" templates are the Information-change form's own 2-page
+   pair (per carrier) — kept out of every GENERAL template picker (new customer signup, quick
+   print on a service card) so they never show up by accident there, which used to be exactly
+   the confusing mix-up: uploading an Information-change form made it appear as a choice when
+   adding a brand new customer, with no way to tell the two apart in that dropdown. */
+function isIdChangeTemplatePurpose(purpose){ return purpose==='idChangePage1' || purpose==='idChangePage2'; }
+function getGeneralTemplates(){ return DB.templates.filter(tp=>!isIdChangeTemplatePurpose(tp.purpose)); }
+function getIdChangeTemplates(){ return DB.templates.filter(tp=>isIdChangeTemplatePurpose(tp.purpose)); }
+/* Templates list page — split into two clearly separate sections so the two kinds of form
+   never look like one undifferentiated pile: general carrier application forms (used for
+   every new signup / recharge / plan change print) versus Information-change forms (the
+   Passport → ARC 2-page form, one pair per carrier, used only via "Information change" →
+   print and never offered as a signup template). */
 function renderTemplates(){
   const grid = document.getElementById('tplGrid');
-  const cards = DB.templates.map(tp=>`
-    <div class="tpl-card" data-open-tpl="${tp.id}">
+  const cardHtml = tp => {
+    const purposeNote = tp.purpose==='idChangePage1' ? ` · ${t('tpl.purpose.idChange1')}`
+      : tp.purpose==='idChangePage2' ? ` · ${t('tpl.purpose.idChange2')}` : '';
+    return `<div class="tpl-card" data-open-tpl="${tp.id}">
       <div class="tpl-thumb" style="background-image:url('${tp.imageDataUrl}')"></div>
       <div class="tpl-card-body">
         <div class="tpl-card-name">${escapeHtml(tp.name)}</div>
-        <div class="tpl-card-meta">${escapeHtml(tp.carrier||'—')} · ${tp.fields.length} ${LANG==='zh'?'个字段':'fields'}</div>
+        <div class="tpl-card-meta">${escapeHtml(tp.carrier||'—')} · ${tp.fields.length} ${LANG==='zh'?'个字段':'fields'}${purposeNote}</div>
       </div>
-    </div>`).join('');
-  grid.innerHTML = cards + `<div class="tpl-new-card" id="tplNewCard"><div style="font-size:28px;">＋</div><div data-i18n="tpl.upload">上传新模板</div></div>`;
-  applyStaticI18n();
-  document.getElementById('tplNewCard').addEventListener('click', ()=> openTemplateEditor(null));
+    </div>`;
+  };
+  const gridStyle = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;';
+  const generalCards = getGeneralTemplates().map(cardHtml).join('');
+  const idChangeCards = getIdChangeTemplates().map(cardHtml).join('');
+  grid.innerHTML = `
+    <div class="section-title" style="margin-bottom:4px;">${t('tpl.section.general')}</div>
+    <div class="section-desc" style="margin-bottom:12px;">${t('tpl.section.generalDesc')}</div>
+    <div style="${gridStyle}">
+      ${generalCards}
+      <div class="tpl-new-card" id="tplNewCardGeneral"><div style="font-size:28px;">＋</div><div>${t('tpl.upload')}</div></div>
+    </div>
+    <div class="form-hr" style="margin:24px 0;"></div>
+    <div class="section-title" style="margin-bottom:4px;">${t('tpl.section.idChange')}</div>
+    <div class="section-desc" style="margin-bottom:12px;">${t('tpl.section.idChangeDesc')}</div>
+    <div style="${gridStyle}">
+      ${idChangeCards}
+      <div class="tpl-new-card" id="tplNewCardIdChange"><div style="font-size:28px;">＋</div><div>${t('tpl.upload')}</div></div>
+    </div>
+  `;
+  document.getElementById('tplNewCardGeneral').addEventListener('click', ()=> openTemplateEditor(null));
+  document.getElementById('tplNewCardIdChange').addEventListener('click', ()=> openTemplateEditor(null, 'idChangePage1'));
   grid.querySelectorAll('[data-open-tpl]').forEach(el=> el.addEventListener('click', ()=> openTemplateEditor(getTemplate(el.getAttribute('data-open-tpl')))));
 }
 function getTemplate(id){ return DB.templates.find(t=>t.id===id); }
@@ -5657,7 +5697,7 @@ let editorImageDataUrl = '';
 let selectedFieldId = null;
 let draggingFieldId = null;
 
-function openTemplateEditor(tpl){
+function openTemplateEditor(tpl, defaultPurpose){
   editingTemplateId = tpl ? tpl.id : null;
   editorFields = tpl ? JSON.parse(JSON.stringify(tpl.fields)) : [];
   editorImageDataUrl = tpl ? tpl.imageDataUrl : '';
@@ -5665,7 +5705,9 @@ function openTemplateEditor(tpl){
   document.getElementById('templateEditorTitle').textContent = tpl ? t('tpl.editor.edit') : t('tpl.editor.new');
   document.getElementById('tpl_name').value = tpl?.name || '';
   document.getElementById('tpl_carrier').value = tpl?.carrier || '';
-  document.getElementById('tpl_purpose').value = tpl?.purpose || '';
+  // "+" from the Information-change section pre-selects Page 1 so staff don't have to
+  // remember to switch "Use for" away from the general-form default every single time.
+  document.getElementById('tpl_purpose').value = tpl?.purpose || defaultPurpose || '';
   document.getElementById('tplDeleteBtn').style.display = tpl ? '' : 'none';
   if(editorImageDataUrl){
     document.getElementById('tplUploadZone').style.display = 'none';
@@ -5805,15 +5847,19 @@ document.getElementById('tplDeleteBtn').addEventListener('click', async ()=>{
 /* ---------------- print preview & output ---------------- */
 let previewCustomerId = null, previewServiceId = null;
 function openPrintPreview(customerId, serviceId, preferredTemplateId){
-  if(!DB.templates.length){
+  // Same separation as the signup template picker — this is for general per-service prints
+  // (quick print, save & print on signup), never the Information-change pair.
+  const generalTemplates = getGeneralTemplates();
+  if(!generalTemplates.length){
     toast(LANG==='zh'?'请先在「打印模板」页面上传运营商表格':'Please upload a carrier form in Print Templates first');
     goTo('templates');
     return;
   }
   previewCustomerId = customerId; previewServiceId = serviceId;
   const sel = document.getElementById('pp_template');
-  sel.innerHTML = DB.templates.map(tp=>`<option value="${tp.id}">${escapeHtml(tp.name)}</option>`).join('');
-  sel.value = preferredTemplateId && getTemplate(preferredTemplateId) ? preferredTemplateId : DB.templates[0].id;
+  sel.innerHTML = generalTemplates.map(tp=>`<option value="${tp.id}">${escapeHtml(tp.name)}</option>`).join('');
+  sel.value = preferredTemplateId && getTemplate(preferredTemplateId) && !isIdChangeTemplatePurpose(getTemplate(preferredTemplateId).purpose)
+    ? preferredTemplateId : generalTemplates[0].id;
   document.getElementById('pp_showbg').checked = true;
   renderPrintPreviewArea();
   document.getElementById('printPreviewOverlay').classList.add('show');
@@ -5853,13 +5899,14 @@ document.getElementById('pp_printBtn').addEventListener('click', ()=>{
 function quickPrintService(customerId, serviceId){
   const svc = getService(serviceId);
   if(!svc) return;
-  if(!DB.templates.length){
+  const generalTemplates = getGeneralTemplates();
+  if(!generalTemplates.length){
     toast(LANG==='zh'?'请先在「打印模板」页面上传运营商表格':'Please upload a carrier form in Print Templates first');
     goTo('templates');
     return;
   }
-  const carrierMatch = DB.templates.find(tp=> tp.carrier && svc.carrier && tp.carrier.trim()===svc.carrier.trim());
-  openPrintPreview(customerId, serviceId, carrierMatch ? carrierMatch.id : DB.templates[0].id);
+  const carrierMatch = generalTemplates.find(tp=> tp.carrier && svc.carrier && tp.carrier.trim()===svc.carrier.trim());
+  openPrintPreview(customerId, serviceId, carrierMatch ? carrierMatch.id : generalTemplates[0].id);
 }
 /* Prints the ID change (Passport -> Resident Card) form as one continuous 2-page job —
    both pages use the same real, physical multi-page document, so they need to come out of
@@ -5896,6 +5943,9 @@ function printIdChangeForm(customerId){
   sel.innerHTML = pairs.map((p,i)=>`<option value="${i}">${escapeHtml(p.carrier || (LANG==='zh'?'（未填写通信社）':'(no carrier set)'))}</option>`).join('');
   document.getElementById('idChangePrintPickerOverlay').classList.add('show');
 }
+/* Both pages go out as a single print job — the OfficeJet Pro 9010 has automatic duplex, so
+   enabling "Two-sided" / "Print on both sides" in the print dialog puts Page 1 and Page 2 on
+   the front and back of one sheet automatically, with no manual flipping needed. */
 function doPrintIdChangePair(customerId, pair){
   const customer = getCustomer(customerId);
   const service = activeSubscriptionFor(customerId) || {};
