@@ -3761,6 +3761,7 @@ function idChangeHistoryItemHtml(req){
       </div>
     </div>
     <div class="muted" style="font-size:12px;margin-top:8px;font-weight:600;">${t('rem.idChange.completedOn')} ${fmtDateHuman(req.completedDate||req.requestedDate)}</div>
+    ${req.newIdNumber ? `<div class="muted" style="font-size:12px;margin-top:4px;">${req.previousIdNumber ? `${escapeHtml(req.previousIdNumber)} → ` : ''}<b>${escapeHtml(req.newIdNumber)}</b></div>` : ''}
   </div>`;
 }
 
@@ -4074,10 +4075,40 @@ function unfreezeSim(customerId, refreshProfile){
    record exactly who's handling it and when it was asked for, and so it shows up as a
    trackable task with an owner, not just a passive signal. */
 let idChangeCustomerId = null;
+/* The ID change modal's markup (idc_date, idc_handler_group) lives in index.html as a fixed
+   form — there's no ARC number field there yet, and adding one means touching the HTML file
+   directly, which isn't available to patch from here. Instead, this builds the field once at
+   runtime and inserts it right before the "handled by" picker, so it looks and behaves like a
+   normal part of the form without needing an index.html change. Safe to call every time the
+   modal opens — it's a no-op after the first call since it checks for the field first. */
+function ensureArcNumberField(){
+  if(document.getElementById('idc_arcNumber')) return;
+  const handlerGroup = document.getElementById('idc_handler_group');
+  if(!handlerGroup || !handlerGroup.parentElement) return;
+  const wrapper = document.createElement('div');
+  wrapper.style.marginBottom = '14px';
+  wrapper.innerHTML = `
+    <label style="display:block;font-weight:600;font-size:13px;margin-bottom:6px;">${t('f.idNumber')} (ARC)</label>
+    <input type="text" id="idc_arcNumber" placeholder="123456-1234567" maxlength="14"
+      style="width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;">
+  `;
+  handlerGroup.parentElement.insertBefore(wrapper, handlerGroup);
+  // Same auto-dash formatting as the main profile form's ARC number field (6 digits, dash, 7 digits)
+  document.getElementById('idc_arcNumber').addEventListener('input', e=>{
+    let digits = e.target.value.replace(/[^0-9]/g,'').slice(0,13);
+    e.target.value = digits.length>6 ? digits.slice(0,6)+'-'+digits.slice(6) : digits;
+  });
+}
 function openIdChangeModal(customerId){
   idChangeCustomerId = customerId;
   document.getElementById('idc_date').value = todayISO();
   renderTileRadioGroup('idc_handler_group', STAFF_MEMBERS, '');
+  ensureArcNumberField();
+  // Pre-fill with their current ID number only if they're already ARC (e.g. re-opening this
+  // after a correction) — for the normal Passport → ARC case this starts blank, since the new
+  // ARC number is genuinely new information staff need to type in from the card itself.
+  const cust = getCustomer(customerId);
+  document.getElementById('idc_arcNumber').value = (cust && cust.idType==='ARC') ? (cust.idNumber||'') : '';
   document.getElementById('idChangeModalOverlay').classList.add('show');
 }
 document.getElementById('idChangeModalClose').addEventListener('click', closeAllModals);
@@ -4093,9 +4124,14 @@ function saveIdChangeRequest(){
   const date = document.getElementById('idc_date').value || todayISO();
   const handledBy = document.getElementById('idc_handler_group').dataset.selected;
   if(!handledBy){ toast(LANG==='zh'?'请选择经办人':'Please select who is handling this'); return null; }
+  const arcNumberEl = document.getElementById('idc_arcNumber');
+  const arcNumber = arcNumberEl ? arcNumberEl.value.trim().toUpperCase() : '';
+  if(!arcNumber){ toast(LANG==='zh'?'请输入外国人登记证（ARC）号码':'Please enter the ARC number'); return null; }
   const cust = getCustomer(idChangeCustomerId);
-  cust.idChangeRequest = {requestedDate: date, handledBy, status:'completed', completedDate: date};
+  const previousIdNumber = cust.idNumber || '';
+  cust.idChangeRequest = {requestedDate: date, handledBy, status:'completed', completedDate: date, previousIdNumber, newIdNumber: arcNumber};
   cust.idType = 'ARC'; // the whole point of this — reflect the actual outcome right away
+  cust.idNumber = arcNumber; // swap the stored ID number from the old passport number to the new ARC number
   saveDB(DB);
   toast(t('toast.idChangeCompleted'));
   renderNav();
