@@ -5655,6 +5655,12 @@ function getIdChangeTemplates(){ return DB.templates.filter(tp=>isIdChangeTempla
    print and never offered as a signup template). */
 function renderTemplates(){
   const grid = document.getElementById('tplGrid');
+  // Force #tplGrid itself into a plain vertical block layout. It was originally built to
+  // hold one flat row of cards (hence its own grid/flex CSS in style.css, which we can't
+  // edit here), but now holds whole sections stacked top to bottom instead, so its own
+  // layout mode needs to be a simple column, not a multi-column grid/row.
+  grid.style.display = 'block';
+  grid.style.gridTemplateColumns = 'none';
   const cardHtml = tp => {
     const purposeNote = tp.purpose==='idChangePage1' ? ` · ${t('tpl.purpose.idChange1')}`
       : tp.purpose==='idChangePage2' ? ` · ${t('tpl.purpose.idChange2')}` : '';
@@ -5666,19 +5672,29 @@ function renderTemplates(){
       </div>
     </div>`;
   };
-  const gridStyle = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;';
+  // #tplGrid itself may already carry a CSS grid/flex layout from style.css (we can't see
+  // or edit that file here). Since this innerHTML now inserts several top-level sibling
+  // blocks (title/desc/inner-grid, twice) instead of one flat list of cards, each of those
+  // siblings would otherwise be treated as a single item of #tplGrid's own layout — e.g.
+  // squeezed into one column if the parent is a multi-column grid. "grid-column:1/-1" makes
+  // a block span every column when the parent is a grid; "width:100%" + "flex:1 1 100%"
+  // covers the case where the parent is a flex row instead. display:block overrides either
+  // parent treating these as inline/flex items. Together this is defensive against whichever
+  // layout #tplGrid actually has.
+  const spanAll = 'display:block;width:100%;grid-column:1/-1;flex:1 1 100%;';
+  const gridStyle = `${spanAll}display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;`;
   const generalCards = getGeneralTemplates().map(cardHtml).join('');
   const idChangeCards = getIdChangeTemplates().map(cardHtml).join('');
   grid.innerHTML = `
-    <div class="section-title" style="margin-bottom:4px;">${t('tpl.section.general')}</div>
-    <div class="section-desc" style="margin-bottom:12px;">${t('tpl.section.generalDesc')}</div>
+    <div class="section-title" style="${spanAll}margin-bottom:4px;">${t('tpl.section.general')}</div>
+    <div class="section-desc" style="${spanAll}margin-bottom:12px;">${t('tpl.section.generalDesc')}</div>
     <div style="${gridStyle}">
       ${generalCards}
       <div class="tpl-new-card" id="tplNewCardGeneral"><div style="font-size:28px;">＋</div><div>${t('tpl.upload')}</div></div>
     </div>
-    <div class="form-hr" style="margin:24px 0;"></div>
-    <div class="section-title" style="margin-bottom:4px;">${t('tpl.section.idChange')}</div>
-    <div class="section-desc" style="margin-bottom:12px;">${t('tpl.section.idChangeDesc')}</div>
+    <div class="form-hr" style="${spanAll}margin:24px 0;"></div>
+    <div class="section-title" style="${spanAll}margin-bottom:4px;">${t('tpl.section.idChange')}</div>
+    <div class="section-desc" style="${spanAll}margin-bottom:12px;">${t('tpl.section.idChangeDesc')}</div>
     <div style="${gridStyle}">
       ${idChangeCards}
       <div class="tpl-new-card" id="tplNewCardIdChange"><div style="font-size:28px;">＋</div><div>${t('tpl.upload')}</div></div>
