@@ -133,8 +133,8 @@ const I18N = {
     'toast.subscriptionCancelled':'订阅已取消',
     'confirm.delete':'确定要删除吗？此操作无法撤销。',
     'io.rows':'行','io.detected':'检测到',
-    'tpl.title':'运营商纸质表格模板','tpl.desc':'上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印','tpl.upload':'上传新模板','tpl.editor.new':'新建模板','tpl.editor.edit':'编辑模板','tpl.name':'模板名称','tpl.carrier':'通信社','tpl.purpose':'用途','tpl.purpose.general':'一般（运营商申请表）','tpl.purpose.idChange1':'信息变更申请表 — 第1页','tpl.purpose.idChange2':'信息变更申请表 — 第2页','tpl.uploadHint':'点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）','tpl.canvasHint':'点击图片任意位置添加字段，拖动字段调整位置','tpl.changeImage':'更换图片','tpl.fieldsList':'已添加字段','tpl.noFields':'点击左侧图片添加第一个字段',
-    'tpl.section.general':'一般运营商申请表','tpl.section.generalDesc':'用于新客户开通、续约与变更套餐 — 会出现在「新建客户」等模板选择列表中','tpl.section.idChange':'信息变更申请表（护照 → 外国人登记证）','tpl.section.idChangeDesc':'每个通信社最多2页（第1页 + 第2页），仅用于「信息变更」打印 — 不会出现在新客户或一般打印的模板列表中',
+    'tpl.title':'运营商纸质表格模板','tpl.desc':'上传通信社的申请表底图，标记字段位置，即可用新客户信息自动打印','tpl.upload':'上传新模板','tpl.editor.new':'新建模板','tpl.editor.edit':'编辑模板','tpl.name':'模板名称','tpl.carrier':'通信社','tpl.purpose':'用途','tpl.purpose.general':'一般（运营商申请表）','tpl.purpose.idChange':'信息变更申请表（第1页 + 第2页）','tpl.page2Label':'第2页图片','tpl.uploadHint':'点击或拖拽上传运营商表格图片（JPG / PNG，建议 A4 比例扫描件）','tpl.canvasHint':'点击图片任意位置添加字段，拖动字段调整位置','tpl.changeImage':'更换图片','tpl.fieldsList':'已添加字段','tpl.noFields':'点击左侧图片添加第一个字段',
+    'tpl.section.general':'一般运营商申请表','tpl.section.generalDesc':'用于新客户开通、续约与变更套餐 — 会出现在「新建客户」等模板选择列表中','tpl.section.idChange':'信息变更申请表（护照 → 外国人登记证）','tpl.section.idChangeDesc':'每个通信社一个模板，第1页与第2页图片一起上传 — 仅用于「信息变更」打印，不会出现在新客户或一般打印的模板列表中',
     'print.preview':'打印预览','print.template':'选择模板','print.includeBg':'预览显示底图（打印在空白纸上勾选此项）','print.bgHint':'如果打印出来没有底图，请在浏览器打印对话框中开启「背景图形 / Background graphics」选项后再打印，否则底图不会被打印出来。',
     'prepaid3m.toggle':'同时开通「3个月先付卡」并打印申请表',
   },
@@ -233,8 +233,8 @@ const I18N = {
     'toast.subscriptionCancelled':'Subscription cancelled',
     'confirm.delete':'Delete this record? This cannot be undone.',
     'io.rows':'rows','io.detected':'detected',
-    'tpl.title':'Carrier paper form templates','tpl.desc':'Upload a scan of the carrier application form and mark field positions — new customer data will auto-fill and print onto it','tpl.upload':'Upload new template','tpl.editor.new':'New template','tpl.editor.edit':'Edit template','tpl.name':'Template name','tpl.carrier':'Carrier','tpl.purpose':'Use for','tpl.purpose.general':'General (carrier application form)','tpl.purpose.idChange1':'Information change form — Page 1','tpl.purpose.idChange2':'Information change form — Page 2','tpl.uploadHint':'Click or drag to upload a scan of the carrier form (JPG / PNG, A4 aspect ratio recommended)','tpl.canvasHint':'Click anywhere on the image to add a field, drag fields to reposition','tpl.changeImage':'Change image','tpl.fieldsList':'Fields added','tpl.noFields':'Click the image on the left to add your first field',
-    'tpl.section.general':'General carrier forms','tpl.section.generalDesc':'Used for new signups, renewals and plan changes — these appear in template pickers like "New customer"','tpl.section.idChange':'Information change forms (Passport → Resident Card)','tpl.section.idChangeDesc':'Up to 2 pages per carrier (Page 1 + Page 2), used only for "Information change" printing — never shown in the new-customer or general-print template lists',
+    'tpl.title':'Carrier paper form templates','tpl.desc':'Upload a scan of the carrier application form and mark field positions — new customer data will auto-fill and print onto it','tpl.upload':'Upload new template','tpl.editor.new':'New template','tpl.editor.edit':'Edit template','tpl.name':'Template name','tpl.carrier':'Carrier','tpl.purpose':'Use for','tpl.purpose.general':'General (carrier application form)','tpl.purpose.idChange':'Information change form (Page 1 + Page 2)','tpl.page2Label':'Page 2 image','tpl.uploadHint':'Click or drag to upload a scan of the carrier form (JPG / PNG, A4 aspect ratio recommended)','tpl.canvasHint':'Click anywhere on the image to add a field, drag fields to reposition','tpl.changeImage':'Change image','tpl.fieldsList':'Fields added','tpl.noFields':'Click the image on the left to add your first field',
+    'tpl.section.general':'General carrier forms','tpl.section.generalDesc':'Used for new signups, renewals and plan changes — these appear in template pickers like "New customer"','tpl.section.idChange':'Information change forms (Passport → Resident Card)','tpl.section.idChangeDesc':'One template per carrier — upload both the Page 1 and Page 2 images together here. Used only for "Information change" printing — never shown in the new-customer or general-print template lists',
     'print.preview':'Print preview','print.template':'Select template','print.includeBg':'Show background in preview (tick this if printing onto blank paper)','print.bgHint':'If the background form doesn\'t appear on paper, enable "Background graphics" in your browser\'s print dialog before printing — otherwise the background image will not be printed.',
     'prepaid3m.toggle':'Also activate a "3-month prepaid" service and print the application form',
   }
@@ -1193,6 +1193,7 @@ function loadDB(){
       if(!db.templates) db.templates = [];
       if(!db.reminderState) db.reminderState = {};
       ensurePreetiTemplate(db);
+      migrateIdChangeTemplatePairs(db);
       repairInvalidDates(db);
       repairActiveSubscriptions(db);
       repairJoinDates(db);
@@ -1408,6 +1409,7 @@ async function pullFromServer(){
     if(data.templates && data.templates.length) DB.templates = data.templates;
     if(data.reminderState) DB.reminderState = data.reminderState;
     ensurePreetiTemplate(DB);
+    migrateIdChangeTemplatePairs(DB);
     repairInvalidDates(DB);
     repairActiveSubscriptions(DB);
     repairJoinDates(DB);
@@ -5640,14 +5642,51 @@ function ensurePreetiTemplate(db){
 }
 
 /* ---------------- templates: list page ---------------- */
-/* "idChangePage1" / "idChangePage2" templates are the Information-change form's own 2-page
-   pair (per carrier) — kept out of every GENERAL template picker (new customer signup, quick
-   print on a service card) so they never show up by accident there, which used to be exactly
-   the confusing mix-up: uploading an Information-change form made it appear as a choice when
-   adding a brand new customer, with no way to tell the two apart in that dropdown. */
-function isIdChangeTemplatePurpose(purpose){ return purpose==='idChangePage1' || purpose==='idChangePage2'; }
+/* Information-change templates ("purpose"==='idChange') are the 2-page Passport → ARC form —
+   kept out of every GENERAL template picker (new customer signup, quick print on a service
+   card) so they never show up by accident there, which used to be exactly the confusing
+   mix-up: uploading an Information-change form made it appear as a choice when adding a
+   brand new customer, with no way to tell the two apart in that dropdown.
+   Each Information-change template is ONE record holding BOTH pages (imageDataUrl/fields for
+   page 1, imageDataUrl2/fields2 for page 2) uploaded together — originally this was two
+   separate template records (purpose 'idChangePage1' / 'idChangePage2') paired up by matching
+   carrier text, which was confusing and error-prone (e.g. uploading page 2 without carefully
+   re-picking "page 2" in the dropdown just left it as a general template). migrateIdChangeTemplatePairs()
+   below folds any old-style pair still on file into the new single-record shape. */
+function isIdChangeTemplatePurpose(purpose){ return purpose==='idChange' || purpose==='idChangePage1' || purpose==='idChangePage2'; }
 function getGeneralTemplates(){ return DB.templates.filter(tp=>!isIdChangeTemplatePurpose(tp.purpose)); }
 function getIdChangeTemplates(){ return DB.templates.filter(tp=>isIdChangeTemplatePurpose(tp.purpose)); }
+/* One-time, idempotent upgrade of old-style idChangePage1/idChangePage2 template pairs (two
+   separate records, matched by carrier) into the new single-record shape (one 'idChange'
+   template holding both pages). Safe to call on every load — once there are no more
+   'idChangePage1'/'idChangePage2' records left, it's a no-op. */
+function migrateIdChangeTemplatePairs(db){
+  if(!db.templates) return;
+  const page1s = db.templates.filter(t=>t.purpose==='idChangePage1');
+  const page2s = db.templates.filter(t=>t.purpose==='idChangePage2');
+  if(!page1s.length && !page2s.length) return;
+  const merged = [];
+  const usedPage2Ids = new Set();
+  page1s.forEach(p1=>{
+    const p2 = page2s.find(p=> !usedPage2Ids.has(p.id) && (p.carrier||'').trim()===(p1.carrier||'').trim());
+    if(p2) usedPage2Ids.add(p2.id);
+    merged.push({
+      id: p1.id, name: p1.name, carrier: p1.carrier||'', purpose:'idChange',
+      imageDataUrl: p1.imageDataUrl, fields: p1.fields||[],
+      imageDataUrl2: p2 ? p2.imageDataUrl : '', fields2: p2 ? (p2.fields||[]) : [],
+    });
+  });
+  // Any leftover page-2 records with no matching page-1 (shouldn't normally happen, but
+  // don't silently drop real uploaded data) become their own incomplete record missing page 1.
+  page2s.filter(p2=>!usedPage2Ids.has(p2.id)).forEach(p2=>{
+    merged.push({
+      id: p2.id, name: p2.name, carrier: p2.carrier||'', purpose:'idChange',
+      imageDataUrl:'', fields:[], imageDataUrl2: p2.imageDataUrl, fields2: p2.fields||[],
+    });
+  });
+  const mergedIds = new Set([...page1s.map(t=>t.id), ...page2s.map(t=>t.id)]);
+  db.templates = db.templates.filter(t=>!mergedIds.has(t.id)).concat(merged);
+}
 /* Templates list page — split into two clearly separate sections so the two kinds of form
    never look like one undifferentiated pile: general carrier application forms (used for
    every new signup / recharge / plan change print) versus Information-change forms (the
@@ -5662,13 +5701,22 @@ function renderTemplates(){
   grid.style.display = 'block';
   grid.style.gridTemplateColumns = 'none';
   const cardHtml = tp => {
-    const purposeNote = tp.purpose==='idChangePage1' ? ` · ${t('tpl.purpose.idChange1')}`
-      : tp.purpose==='idChangePage2' ? ` · ${t('tpl.purpose.idChange2')}` : '';
+    // Information-change templates now hold both pages on one record — show a small
+    // page-count note instead of the old "Page 1"/"Page 2" labels (those only existed
+    // because each page used to be its own separate template record).
+    let purposeNote = '';
+    if(isIdChangeTemplatePurpose(tp.purpose)){
+      const pageCount = (tp.imageDataUrl?1:0) + (tp.imageDataUrl2?1:0);
+      purposeNote = pageCount<2
+        ? ` · ${LANG==='zh'?'⚠ 缺少第2页':'⚠ Missing page 2'}`
+        : ` · ${LANG==='zh'?'2页':'2 pages'}`;
+    }
+    const fieldCount = (tp.fields?.length||0) + (tp.fields2?.length||0);
     return `<div class="tpl-card" data-open-tpl="${tp.id}">
       <div class="tpl-thumb" style="background-image:url('${tp.imageDataUrl}')"></div>
       <div class="tpl-card-body">
         <div class="tpl-card-name">${escapeHtml(tp.name)}</div>
-        <div class="tpl-card-meta">${escapeHtml(tp.carrier||'—')} · ${tp.fields.length} ${LANG==='zh'?'个字段':'fields'}${purposeNote}</div>
+        <div class="tpl-card-meta">${escapeHtml(tp.carrier||'—')} · ${fieldCount} ${LANG==='zh'?'个字段':'fields'}${purposeNote}</div>
       </div>
     </div>`;
   };
@@ -5701,30 +5749,139 @@ function renderTemplates(){
     </div>
   `;
   document.getElementById('tplNewCardGeneral').addEventListener('click', ()=> openTemplateEditor(null));
-  document.getElementById('tplNewCardIdChange').addEventListener('click', ()=> openTemplateEditor(null, 'idChangePage1'));
+  document.getElementById('tplNewCardIdChange').addEventListener('click', ()=> openTemplateEditor(null, 'idChange'));
   grid.querySelectorAll('[data-open-tpl]').forEach(el=> el.addEventListener('click', ()=> openTemplateEditor(getTemplate(el.getAttribute('data-open-tpl')))));
 }
 function getTemplate(id){ return DB.templates.find(t=>t.id===id); }
 
 /* ---------------- template editor ---------------- */
 let editingTemplateId = null;
-let editorFields = [];       // working copy of fields while editing
+let editorFields = [];       // working copy of fields while editing — page 1
 let editorImageDataUrl = '';
 let selectedFieldId = null;
 let draggingFieldId = null;
+// Page 2 — only used/visible when "Use for" = Information change. Kept as a second,
+// parallel set of state (rather than an array of pages) since there are always exactly
+// two pages for this form and it keeps every function below a direct mirror of the
+// page-1 version instead of a more abstract, harder-to-follow loop.
+let editorFields2 = [];
+let editorImageDataUrl2 = '';
+let selectedFieldId2 = null;
+let draggingFieldId2 = null;
+
+/* index.html only ships the single-page editor (upload zone + canvas + field list) since
+   that's all templates used to need. Since that file isn't editable in this environment, the
+   Page 2 editor is built once at runtime by cloning the page-1 editor's own DOM (so it always
+   matches its styling exactly) and renaming every cloned id with a "_p2" suffix, then wiring
+   fresh event listeners onto the clone. */
+function ensureIdChangePage2Editor(){
+  if(document.getElementById('tplPage2Section')) return;
+  const origUZ = document.getElementById('tplUploadZone');
+  const origEW = document.getElementById('tplEditorWrap');
+  if(!origUZ || !origEW) return;
+
+  const section = document.createElement('div');
+  section.id = 'tplPage2Section';
+  section.style.display = 'none';
+  section.innerHTML = `<div class="form-hr" style="margin:20px 0 14px;"></div>
+    <div id="tplPage2Label" style="font-weight:700;font-size:13px;margin-bottom:10px;"></div>`;
+
+  const uz2 = origUZ.cloneNode(true);
+  uz2.id = 'tplUploadZone_p2';
+  uz2.classList.remove('drag');
+  uz2.querySelectorAll('[id]').forEach(el=>{ el.id = el.id+'_p2'; });
+  section.appendChild(uz2);
+
+  const ew2 = origEW.cloneNode(true);
+  ew2.id = 'tplEditorWrap_p2';
+  ew2.style.display = 'none';
+  ew2.querySelectorAll('[id]').forEach(el=>{ el.id = el.id+'_p2'; });
+  const canvas2 = ew2.querySelector('#tplCanvas_p2');
+  if(canvas2) canvas2.innerHTML = '';
+  const list2 = ew2.querySelector('#tplFieldList_p2');
+  if(list2) list2.innerHTML = '';
+  section.appendChild(ew2);
+
+  origEW.insertAdjacentElement('afterend', section);
+
+  const input2 = uz2.querySelector('input[type="file"]') || (()=>{
+    const i = document.createElement('input');
+    i.type = 'file'; i.accept = 'image/*'; i.style.display = 'none'; i.id = 'tplImageInput_p2';
+    section.appendChild(i);
+    return i;
+  })();
+  input2.addEventListener('change', e=>{ if(e.target.files[0]) loadTplImage2(e.target.files[0]); });
+  uz2.addEventListener('click', ()=> input2.click());
+  uz2.addEventListener('dragover', e=>{ e.preventDefault(); uz2.classList.add('drag'); });
+  uz2.addEventListener('dragleave', ()=> uz2.classList.remove('drag'));
+  uz2.addEventListener('drop', e=>{ e.preventDefault(); uz2.classList.remove('drag'); if(e.dataTransfer.files[0]) loadTplImage2(e.dataTransfer.files[0]); });
+
+  const changeBtn2 = ew2.querySelector('#tplChangeImageBtn_p2');
+  if(changeBtn2){
+    changeBtn2.addEventListener('click', ()=>{
+      editorImageDataUrl2 = ''; editorFields2 = [];
+      uz2.style.display = '';
+      ew2.style.display = 'none';
+    });
+  }
+  if(canvas2){
+    document.addEventListener('mousemove', e=>{
+      if(!draggingFieldId2) return;
+      const rect = canvas2.getBoundingClientRect();
+      const f = editorFields2.find(f=>f.id===draggingFieldId2);
+      if(!f) return;
+      f.x = Math.min(100,Math.max(0, ((e.clientX-rect.left)/rect.width*100)));
+      f.y = Math.min(100,Math.max(0, ((e.clientY-rect.top)/rect.height*100)));
+      const chip = canvas2.querySelector(`[data-field-chip2="${draggingFieldId2}"]`);
+      if(chip){ chip.style.left = f.x+'%'; chip.style.top = f.y+'%'; }
+    });
+  }
+  document.addEventListener('mouseup', ()=>{ draggingFieldId2 = null; });
+}
+
+/* The "Use for" dropdown used to offer 3 choices (general / Information-change page 1 /
+   Information-change page 2) baked into index.html. Since an Information-change template is
+   now a single record holding both pages, it's simplified here to just 2 choices. */
+function ensureTplPurposeOptions(){
+  const sel = document.getElementById('tpl_purpose');
+  if(!sel) return;
+  // Rebuilding the two <option> labels every call keeps them correct after a language
+  // switch (they carry no data-i18n attribute of their own, since they replace index.html's
+  // original static 3-option list, so the normal data-i18n refresh loop never touches them).
+  const current = sel.value;
+  sel.innerHTML = `<option value="">${t('tpl.purpose.general')}</option><option value="idChange">${t('tpl.purpose.idChange')}</option>`;
+  sel.value = current==='idChange' ? 'idChange' : '';
+  if(sel.dataset.simplified==='1') return; // listener already attached — only re-done once
+  sel.dataset.simplified = '1';
+  sel.addEventListener('change', e=>{
+    const sec = document.getElementById('tplPage2Section');
+    if(sec) sec.style.display = e.target.value==='idChange' ? '' : 'none';
+  });
+}
 
 function openTemplateEditor(tpl, defaultPurpose){
+  ensureIdChangePage2Editor();
+  ensureTplPurposeOptions();
+  const label2 = document.getElementById('tplPage2Label');
+  if(label2) label2.textContent = t('tpl.page2Label');
+
   editingTemplateId = tpl ? tpl.id : null;
-  editorFields = tpl ? JSON.parse(JSON.stringify(tpl.fields)) : [];
-  editorImageDataUrl = tpl ? tpl.imageDataUrl : '';
+  editorFields = tpl ? JSON.parse(JSON.stringify(tpl.fields||[])) : [];
+  editorImageDataUrl = tpl ? (tpl.imageDataUrl||'') : '';
   selectedFieldId = null;
+  editorFields2 = tpl ? JSON.parse(JSON.stringify(tpl.fields2||[])) : [];
+  editorImageDataUrl2 = tpl ? (tpl.imageDataUrl2||'') : '';
+  selectedFieldId2 = null;
+
   document.getElementById('templateEditorTitle').textContent = tpl ? t('tpl.editor.edit') : t('tpl.editor.new');
   document.getElementById('tpl_name').value = tpl?.name || '';
   document.getElementById('tpl_carrier').value = tpl?.carrier || '';
-  // "+" from the Information-change section pre-selects Page 1 so staff don't have to
+  // "+" from the Information-change section pre-selects it so staff don't have to
   // remember to switch "Use for" away from the general-form default every single time.
-  document.getElementById('tpl_purpose').value = tpl?.purpose || defaultPurpose || '';
+  const purpose = tpl?.purpose || defaultPurpose || '';
+  document.getElementById('tpl_purpose').value = isIdChangeTemplatePurpose(purpose) ? 'idChange' : '';
   document.getElementById('tplDeleteBtn').style.display = tpl ? '' : 'none';
+
   if(editorImageDataUrl){
     document.getElementById('tplUploadZone').style.display = 'none';
     document.getElementById('tplEditorWrap').style.display = 'flex';
@@ -5733,6 +5890,19 @@ function openTemplateEditor(tpl, defaultPurpose){
     document.getElementById('tplUploadZone').style.display = '';
     document.getElementById('tplEditorWrap').style.display = 'none';
   }
+
+  const page2Section = document.getElementById('tplPage2Section');
+  const isIdChange = isIdChangeTemplatePurpose(purpose);
+  if(page2Section) page2Section.style.display = isIdChange ? '' : 'none';
+  if(editorImageDataUrl2){
+    document.getElementById('tplUploadZone_p2').style.display = 'none';
+    document.getElementById('tplEditorWrap_p2').style.display = 'flex';
+    renderTplCanvas2();
+  } else {
+    document.getElementById('tplUploadZone_p2').style.display = '';
+    document.getElementById('tplEditorWrap_p2').style.display = 'none';
+  }
+
   document.getElementById('templateEditorOverlay').classList.add('show');
 }
 function renderTplCanvas(){
@@ -5799,6 +5969,71 @@ function renderTplFieldList(){
   list.querySelectorAll('[data-del-field]').forEach(el=> el.addEventListener('click', e=>{ editorFields = editorFields.filter(f=>f.id!==el.getAttribute('data-del-field')); if(selectedFieldId===el.getAttribute('data-del-field')) selectedFieldId=null; renderTplCanvas(); }));
 }
 
+/* Page 2 mirrors of renderTplCanvas/renderTplFieldList/loadTplImage above — same behavior,
+   operating on the editorFields2/editorImageDataUrl2/selectedFieldId2 state and the cloned
+   "_p2" DOM elements built by ensureIdChangePage2Editor(). */
+function renderTplCanvas2(){
+  const canvas = document.getElementById('tplCanvas_p2');
+  if(!canvas) return;
+  canvas.style.backgroundImage = `url('${editorImageDataUrl2}')`;
+  canvas.innerHTML = `<img src="${editorImageDataUrl2}" id="tplCanvasImg_p2">` + editorFields2.map(f=>`
+    <div class="tpl-field-chip ${f.id===selectedFieldId2?'selected':''}" data-field-chip2="${f.id}" style="left:${f.x}%;top:${f.y}%;font-size:${(f.fontSize||11)}px;">${mergeFieldLabel(f.dataKey)}</div>
+  `).join('');
+  renderTplFieldList2();
+  canvas.onclick = (e)=>{
+    if(e.target.closest('[data-field-chip2]')) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = ((e.clientX-rect.left)/rect.width*100).toFixed(2);
+    const y = ((e.clientY-rect.top)/rect.height*100).toFixed(2);
+    const f = {id:uid('fld'), dataKey:'customer.name', x:Number(x), y:Number(y), fontSize:12, customText:''};
+    editorFields2.push(f);
+    selectedFieldId2 = f.id;
+    renderTplCanvas2();
+  };
+  canvas.querySelectorAll('[data-field-chip2]').forEach(chip=>{
+    chip.addEventListener('mousedown', e=>{
+      e.stopPropagation();
+      draggingFieldId2 = chip.getAttribute('data-field-chip2');
+      selectedFieldId2 = draggingFieldId2;
+      renderTplCanvas2();
+    });
+  });
+}
+function renderTplFieldList2(){
+  const list = document.getElementById('tplFieldList_p2');
+  if(!list) return;
+  if(!editorFields2.length){ list.innerHTML = `<div class="tpl-hint">${t('tpl.noFields')}</div>`; return; }
+  list.innerHTML = editorFields2.map(f=>`
+    <div class="tpl-field-list-item ${f.id===selectedFieldId2?'selected':''}" data-select-field="${f.id}">
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+        <select data-set-key="${f.id}" style="width:100%;padding:5px 6px;border-radius:6px;border:1px solid var(--border);font-size:12px;">
+          ${MERGE_FIELDS.map(([k,l])=>`<option value="${k}" ${f.dataKey===k?'selected':''}>${l[LANG]||l.zh}</option>`).join('')}
+        </select>
+        ${f.dataKey==='custom.text' ? `<input data-set-text="${f.id}" placeholder="${LANG==='zh'?'输入文字':'Enter text'}" value="${escapeHtml(f.customText||'')}" style="width:100%;padding:5px 6px;border-radius:6px;border:1px solid var(--border);font-size:12px;">` : ''}
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;color:var(--text-soft);">${LANG==='zh'?'字号':'Size'}</span>
+          <input type="number" data-set-size="${f.id}" value="${f.fontSize||12}" min="6" max="40" style="width:56px;padding:4px 6px;border-radius:6px;border:1px solid var(--border);font-size:12px;">
+          <button class="btn btn-sm btn-danger" data-del-field="${f.id}" style="margin-left:auto;">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('[data-select-field]').forEach(el=> el.addEventListener('click', (e)=>{ if(e.target.closest('select,input,button')) return; selectedFieldId2 = el.getAttribute('data-select-field'); renderTplCanvas2(); }));
+  list.querySelectorAll('[data-set-key]').forEach(el=> el.addEventListener('change', e=>{ const f=editorFields2.find(f=>f.id===el.getAttribute('data-set-key')); f.dataKey = el.value; renderTplCanvas2(); }));
+  list.querySelectorAll('[data-set-text]').forEach(el=> el.addEventListener('input', e=>{ const f=editorFields2.find(f=>f.id===el.getAttribute('data-set-text')); f.customText = el.value; }));
+  list.querySelectorAll('[data-set-size]').forEach(el=> el.addEventListener('input', e=>{ const f=editorFields2.find(f=>f.id===el.getAttribute('data-set-size')); f.fontSize = Number(el.value)||12; renderTplCanvas2(); }));
+  list.querySelectorAll('[data-del-field]').forEach(el=> el.addEventListener('click', e=>{ editorFields2 = editorFields2.filter(f=>f.id!==el.getAttribute('data-del-field')); if(selectedFieldId2===el.getAttribute('data-del-field')) selectedFieldId2=null; renderTplCanvas2(); }));
+}
+function loadTplImage2(file){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    editorImageDataUrl2 = e.target.result;
+    document.getElementById('tplUploadZone_p2').style.display = 'none';
+    document.getElementById('tplEditorWrap_p2').style.display = 'flex';
+    renderTplCanvas2();
+  };
+  reader.readAsDataURL(file);
+}
+
 document.getElementById('tplImageInput').addEventListener('change', e=>{ if(e.target.files[0]) loadTplImage(e.target.files[0]); });
 document.getElementById('tplUploadZone').addEventListener('click', ()=> document.getElementById('tplImageInput').click());
 document.getElementById('tplUploadZone').addEventListener('dragover', e=>{ e.preventDefault(); document.getElementById('tplUploadZone').classList.add('drag'); });
@@ -5823,7 +6058,21 @@ document.getElementById('tplSaveBtn').addEventListener('click', ()=>{
   const name = document.getElementById('tpl_name').value.trim();
   if(!name){ toast(LANG==='zh'?'请输入模板名称':'Please enter a template name'); return; }
   if(!editorImageDataUrl){ toast(LANG==='zh'?'请先上传表格图片':'Please upload a form image first'); return; }
-  const data = { name, carrier:document.getElementById('tpl_carrier').value.trim(), purpose:document.getElementById('tpl_purpose').value, imageDataUrl:editorImageDataUrl, fields:editorFields };
+  const purpose = document.getElementById('tpl_purpose').value;
+  const isIdChange = purpose==='idChange';
+  // Both pages of the physical form are uploaded together into one template now, so both
+  // images are required before an Information-change template can be saved — a template
+  // missing page 2 can't actually be printed (doPrintIdChangePair always needs both).
+  if(isIdChange && !editorImageDataUrl2){
+    toast(LANG==='zh'?'请同时上传第2页图片':'Please also upload the page 2 image');
+    return;
+  }
+  const data = {
+    name, carrier:document.getElementById('tpl_carrier').value.trim(), purpose,
+    imageDataUrl:editorImageDataUrl, fields:editorFields,
+    imageDataUrl2: isIdChange ? editorImageDataUrl2 : '',
+    fields2: isIdChange ? editorFields2 : [],
+  };
   if(editingTemplateId){
     Object.assign(getTemplate(editingTemplateId), data);
   } else {
@@ -5927,22 +6176,24 @@ function quickPrintService(customerId, serviceId){
 /* Prints the ID change (Passport -> Resident Card) form as one continuous 2-page job —
    both pages use the same real, physical multi-page document, so they need to come out of
    the printer together as a single job, not as two separate individually-triggered prints.
-   Different carriers have their own separate 2-page form, so Page 1/Page 2 templates are
-   paired up BY carrier (reusing the same carrier field every other template already has),
-   rather than assuming there's only ever one global pair on file. */
+   Different carriers have their own separate 2-page form, which is why each Information-
+   change template still carries its own "carrier" field — but as of the single-record
+   redesign, both pages now live on that ONE template, so there's no more cross-record
+   pairing-by-carrier-text to get out of sync. */
 let idChangePrintCustomerId = null;
 function getIdChangeFormPairs(){
-  const page1s = DB.templates.filter(t=>t.purpose==='idChangePage1');
-  const page2s = DB.templates.filter(t=>t.purpose==='idChangePage2');
-  return page1s.map(p1=>{
-    const p2 = page2s.find(p=> (p.carrier||'').trim()===(p1.carrier||'').trim());
-    return p2 ? {carrier:p1.carrier||'', page1:p1, page2:p2} : null;
-  }).filter(Boolean);
+  return getIdChangeTemplates()
+    .filter(tp=> tp.imageDataUrl && tp.imageDataUrl2) // skip any template still missing a page
+    .map(tp=> ({
+      carrier: tp.carrier||'',
+      page1: {imageDataUrl: tp.imageDataUrl, fields: tp.fields||[]},
+      page2: {imageDataUrl: tp.imageDataUrl2, fields: tp.fields2||[]},
+    }));
 }
 function printIdChangeForm(customerId){
   const pairs = getIdChangeFormPairs();
   if(!pairs.length){
-    toast(LANG==='zh'?'请先在「打印模板」页面上传证件变更申请表的第1页与第2页（在"用途"中选择对应页码，并填写对应通信社）':'Please upload both Page 1 and Page 2 of the ID change form in Print Templates first (set "Use for" and the matching carrier on each)');
+    toast(LANG==='zh'?'请先在「打印模板」页面上传信息变更申请表（第1页与第2页），并填写对应通信社':'Please upload the Information-change form (both pages) in Print Templates first, with the matching carrier set');
     goTo('templates');
     return;
   }
