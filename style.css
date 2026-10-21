@@ -1,5 +1,5 @@
 /* 365 Himobile CRM — Travel-SIM look (restyle only: same classes, same layout, same functions) */
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
 
 :root{
   /* names kept so script.js inline styles keep working */
@@ -28,12 +28,12 @@
   --shadow-md:0 10px 28px rgba(20,30,50,.10);
   --shadow-lg:0 24px 64px rgba(10,15,40,.28);
   --ease:cubic-bezier(.2,.8,.2,1);
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --mono:"Pretendard Variable",Pretendard,"IBM Plex Sans KR","PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
 }
 *{box-sizing:border-box;}
 body{margin:0;}
 body,input,select,textarea,button{
-  font-family:"IBM Plex Sans KR","PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-family:"Pretendard Variable",Pretendard,"IBM Plex Sans KR","PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
 }
 body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 a{text-decoration:none;color:inherit;}
@@ -567,3 +567,26 @@ html[data-theme="dark"] select.select-input,html[data-theme="dark"] .form-field 
 html[data-theme="dark"] select.select-input:hover,html[data-theme="dark"] .form-field select:hover,html[data-theme="dark"] .form-field input:hover,html[data-theme="dark"] .form-field textarea:hover,html[data-theme="dark"] .search-input:hover{border-color:#3d4858;}
 html[data-theme="dark"] .ai-stay-card-icon{color:var(--accent);}
 html[data-theme="dark"] #page-ai>.section-desc:first-child{color:var(--text-soft);}
+
+/* ===== Font: Pretendard (same sizes, clearer text and numbers) ===== */
+body{font-feature-settings:"tnum" 1;}
+
+/* ===== Blue sidebar ===== */
+.sidebar{background:#0f1d42;border-right:0;color:#fff;}
+html[data-theme="dark"] .sidebar{background:#0a1329;}
+.sidebar .brand-name{color:#fff;}
+.sidebar .brand-sub,.sidebar .store-sub{color:rgba(255,255,255,.72);}
+.sidebar .nav-item{color:rgba(255,255,255,.88);}
+.sidebar .nav-item svg{opacity:.85;}
+.sidebar .nav-item:hover{background:rgba(255,255,255,.14);color:#fff;}
+.sidebar .nav-item.active{background:#fff;color:#0f1d42;font-weight:700;}
+html[data-theme="dark"] .sidebar .nav-item.active{color:#0a1329;}
+.sidebar .nav-item.active svg{opacity:1;}
+.sidebar .nav-badge{background:#f26a21;color:#fff;}
+.sidebar .sidebar-foot{border-top-color:rgba(255,255,255,.22);}
+.sidebar .store-badge{background:rgba(255,255,255,.2);color:#fff;}
+.sidebar .store-name{color:#fff;}
+.sidebar #btnLogout{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3);}
+.sidebar #btnLogout:hover{background:#fff;color:#0f1d42;border-color:#fff;}
+.sidebar :focus-visible{outline-color:#fff;}
+.sidebar ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);}
