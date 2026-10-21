@@ -323,11 +323,9 @@
       }
     }
     if(incSub||monSub){
-      incCard=card('pf-income');var wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;gap:12px;flex:1;';
-      var top=document.createElement('div');top.style.cssText='display:flex;align-items:center;gap:12px;';var ib=document.createElement('span');ib.className='pf-ib g';ib.innerHTML=svg('cash');top.appendChild(ib);
-      if(monSub)wrap.appendChild(monSub);
-      if(incSub)wrap.appendChild(incSub);
-      top.appendChild(wrap);incCard.appendChild(top);incCard.style.display='block';
+      incCard=card('pf-income');incCard.appendChild(title('Income','cash','g'));
+      if(monSub){monSub.classList.add('pf-sub','pf-monthly');incCard.appendChild(monSub);}
+      if(incSub){incSub.classList.add('pf-sub','pf-store');incCard.appendChild(incSub);}
     }
     /* tiles */
     var pt=active.querySelector('.plan-tag');
