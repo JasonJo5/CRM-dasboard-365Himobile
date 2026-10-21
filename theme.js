@@ -228,3 +228,212 @@
   window.addEventListener('resize',close);
   document.addEventListener('scroll',function(e){if(menu&&!menu.contains(e.target))close();},true);
 })();
+
+/* ===== New customer profile: card layout, copy phone, print for all prepaid, under-19 rule ===== */
+(function(){
+  var ICON={
+    sub:'<path d="M8 3h7l4 4v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM10 12h6M10 16h6M13 9v10"/>',
+    list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+    hist:'<path d="M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>',
+    cash:'<path d="M12 6v12M9 9.5c0-1 1-1.8 3-1.8s3 .8 3 1.8-1 1.5-3 2-3 1-3 2 1 1.8 3 1.8 3-.8 3-1.8M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>',
+    user:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/>',
+    ai:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+    copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+    warn:'<path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>'
+  };
+  function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICON[n]+'</svg>';}
+  function title(txt,ic,cls){var d=document.createElement('div');d.className='pf-title';d.innerHTML='<span class="pf-ib '+(cls||'')+'">'+svg(ic)+'</span><span></span>';d.lastChild.textContent=txt;return d;}
+  function card(extra){var c=document.createElement('section');c.className='pf-card'+(extra?' '+extra:'');return c;}
+  function tt(e){return (e&&e.textContent||'').trim();}
+  function say(m){try{if(typeof toast==='function'){toast(m);return;}}catch(e){}}
+  function copyTxt(t,m){
+    function ok(){say(m||'Copied');}
+    try{navigator.clipboard.writeText(t).then(ok,function(){fb();});}catch(e){fb();}
+    function fb(){var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok();}catch(e){}a.remove();}
+  }
+  function addCopy(root){
+    root.querySelectorAll('.kv-grid>div').forEach(function(r){
+      var k=r.querySelector('.k'),v=r.querySelector('.v');
+      if(!k||!v||v.querySelector('.pf-copy'))return;
+      if(!/^phone number$|^电话/i.test(tt(k)))return;
+      var num=tt(v);if(!num||num==='—')return;
+      var b=document.createElement('button');b.type='button';b.className='pf-copy';b.title='Copy phone number';b.setAttribute('aria-label','Copy phone number');b.innerHTML=svg('copy');
+      b.addEventListener('click',function(e){e.stopPropagation();copyTxt(num,'Phone number copied');});
+      v.appendChild(b);
+    });
+  }
+  function rowVal(root,name){var out='';root.querySelectorAll('.kv-grid>div').forEach(function(r){var k=r.querySelector('.k');if(k&&tt(k).toLowerCase()===name)out=tt(r.querySelector('.v'));});return out;}
+  function custId(body){var b=body.querySelector('[data-copy-name]');return b?b.getAttribute('data-copy-name'):null;}
+  var BI={
+    btnRecharge:'<rect x="3" y="8" width="16" height="8" rx="2"/><path d="M21 11v2M10 10l-2 2h4l-2 2"/>',
+    btnChangeToPostpaid:'<path d="M4 8h14l-3-3M20 16H6l3 3"/>',
+    btnChangePlan:'<path d="M4 8h14l-3-3M20 16H6l3 3"/>',
+    btnChangeToPrepaid:'<path d="M4 8h14l-3-3M20 16H6l3 3"/>',
+    btnFreezeSim:'<path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/>',
+    btnUnfreezeSim:'<path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/>',
+    btnCancelSub:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+    btnRequestIdChange:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h4M7 14h6M15 10h2"/>',
+    btnStartNewSub:'<path d="M12 5v14M5 12h14"/>',
+    btnUndoCancel:'<path d="M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"/>',
+    btnPrintIdChange:'<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/>',
+    btnCompleteIdChange:'<path d="M5 12l5 5 9-10"/>',
+    btnMergeFromProfile:'<path d="M6 4v6a4 4 0 0 0 4 4h4a4 4 0 0 1 4 4v2M18 4v6"/>',
+    print:'<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/>'
+  };
+  function iconize(root){
+    root.querySelectorAll('button.btn').forEach(function(b){
+      if(b.dataset.pfi||b.classList.contains('pf-more')||b.querySelector('svg'))return;
+      var key=b.id&&BI[b.id]?b.id:(b.hasAttribute('data-print-service')?'print':null);
+      var t=b.textContent.replace(/^[^\p{L}\p{N}+＋]+/u,'').trim();
+      b.dataset.pfi='1';b.textContent='';
+      if(key){var sp=document.createElement('span');sp.className='pf-bi';sp.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+BI[key]+'</svg>';b.appendChild(sp);}
+      b.appendChild(document.createTextNode(t));
+    });
+  }
+  function enhance(body){
+    if(body.dataset.pf==='1')return;
+    var kids=[].slice.call(body.children);
+    var head=kids.filter(function(x){return x.classList.contains('profile-head');})[0];
+    var grid=kids.filter(function(x){return x.classList.contains('kv-grid');})[0];
+    var active=document.getElementById('detailActiveSub');
+    var hist=document.getElementById('detailHistory');
+    if(!head||!grid||!active||!hist||active.parentNode!==body)return;
+    var idxA=kids.indexOf(active),sh=kids[idxA-1];
+    var titles=kids.filter(function(x){return x.classList.contains('section-title');});
+    var hTitle=titles.filter(function(x){return x!==(sh&&sh.querySelector&&sh.querySelector('.section-title'))&&x.parentNode===body&&kids.indexOf(x)>idxA;})[0];
+    var ai=kids.filter(function(x){return x.classList.contains('service-card')&&kids.indexOf(x)>kids.indexOf(hist);})[0];
+    var frag=[];kids.forEach(function(x){if(x===head||x===grid||x===active||x===sh||x===hist||x===hTitle||x===ai||x.classList.contains('form-hr'))return;frag.push(x);});
+    body.dataset.pf='1';body.classList.add('pf');
+    var cid=custId(body);
+    var cust=null;try{cust=DB.customers.find(function(c){return c.id===cid;});}catch(e){}
+    var svcs=[];try{svcs=DB.services.filter(function(s){return s.customerId===cid;});}catch(e){}
+    var activeSvc=svcs.filter(function(s){return s.isActive;})[0]||null;
+    var planSub=null,incSub=null,monSub=null;
+    active.querySelectorAll('.profile-subcard').forEach(function(p){var t=tt(p.querySelector('.profile-subcard-title')).toLowerCase();if(/plan info/.test(t))planSub=p;else if(/monthly/.test(t))monSub=p;else incSub=p;});
+    var planCard=null,incCard=null;
+    if(planSub){planCard=card();planCard.appendChild(title('Plan info','list'));planCard.appendChild(planSub);}
+    if(monSub&&activeSvc&&activeSvc.type==='postpaid'){
+      var fee=Number(activeSvc.monthlyFee)||0,dis=Number(activeSvc.discountPerMonth)||0;
+      var amt=monSub.children[1];
+      if(amt&&dis>0&&fee>0){
+        var f=function(n){return '₩'+Math.max(0,Math.round(n)).toLocaleString('en-US');};
+        amt.textContent=f(fee-dis);
+        var note=document.createElement('div');note.className='muted';note.style.cssText='font-size:12.5px;margin-top:2px;font-weight:600;';note.textContent=f(fee)+' plan price − '+f(dis)+' monthly discount';
+        amt.insertAdjacentElement('afterend',note);
+      }
+    }
+    if(incSub||monSub){
+      incCard=card('pf-income');var wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;gap:12px;flex:1;';
+      var top=document.createElement('div');top.style.cssText='display:flex;align-items:center;gap:12px;';var ib=document.createElement('span');ib.className='pf-ib g';ib.innerHTML=svg('cash');top.appendChild(ib);
+      if(monSub)wrap.appendChild(monSub);
+      if(incSub)wrap.appendChild(incSub);
+      top.appendChild(wrap);incCard.appendChild(top);incCard.style.display='block';
+    }
+    /* tiles */
+    var pt=active.querySelector('.plan-tag');
+    var company=planCard?rowVal(planCard,'company'):'',carrier=planCard?rowVal(planCard,'carrier type'):'';
+    if((company||carrier||pt)){
+      var tiles=document.createElement('div');tiles.className='pf-tiles';
+      function tile(k,v,cls){var t=document.createElement('div');t.className='pf-tile'+(cls?' '+cls:'');var b=document.createElement('b');b.textContent=k;var s=document.createElement('span');s.textContent=v;t.appendChild(b);t.appendChild(s);tiles.appendChild(t);}
+      if(company)tile('Company',company);
+      if(carrier)tile('Carrier type',carrier);
+      if(pt){var m=(pt.className.match(/\b(m[123]|rc)\b/)||[])[1];tile('Plan length',tt(pt),m);}
+      var pb=active.querySelector('.progress-bar');
+      var startRow=pb&&pb.previousElementSibling;
+      if(startRow&&startRow.parentNode)startRow.parentNode.insertBefore(tiles,startRow);
+    }
+    /* active card */
+    var aCard=card();aCard.appendChild(title('Active subscription','sub'));
+    if(sh){sh.classList.add('section-head');aCard.appendChild(active);aCard.appendChild(sh);}else aCard.appendChild(active);
+    /* action buttons: first three visible, the rest under "More" */
+    if(sh){var br=sh.querySelector('.btn')&&sh.querySelector('.btn').parentElement;
+      if(br){var bs=[].slice.call(br.children).filter(function(x){return x.classList.contains('btn');});
+        if(bs.length>3){var rest=bs.slice(3);var wrapR=document.createElement('div');wrapR.className='pf-rest';wrapR.style.display='none';
+          rest.forEach(function(x){wrapR.appendChild(x);});
+          var mb=document.createElement('button');mb.type='button';mb.className='btn btn-ghost pf-more';mb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="width:16px;height:16px"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg><span>More</span>';
+          mb.addEventListener('click',function(){var o=wrapR.style.display==='none';wrapR.style.display=o?'flex':'none';mb.querySelector('span').textContent=o?'Less':'More';});
+          br.appendChild(mb);br.insertAdjacentElement('afterend',wrapR);}}}
+    /* print for every prepaid (old members too) */
+    if(activeSvc&&activeSvc.type==='prepaid'&&!active.querySelector('[data-print-service]')){
+      var pbtn=document.createElement('button');pbtn.className='btn btn-sm btn-ghost';pbtn.setAttribute('data-print-service',activeSvc.id);pbtn.textContent='🖨 Print';pbtn.style.marginLeft='8px';
+      pbtn.addEventListener('click',function(){quickPrintService(cid,activeSvc.id);});
+      var pill=active.querySelector('.service-card-head .pill');if(pill&&pill.parentNode)pill.parentNode.appendChild(pbtn);
+    }
+    /* history */
+    var hCard=card(),hRow=document.createElement('div');hRow.className='pf-head-row';
+    var n=/^no history/i.test(tt(hist))?0:hist.children.length;
+    var ht=title('Plan history ('+n+')','hist');ht.style.margin='0';
+    var link=document.createElement('span');link.className='pf-link';link.textContent='Show';
+    hRow.appendChild(ht);hRow.appendChild(link);hCard.appendChild(hRow);
+    hist.classList.add('pf-hist-body');hist.style.display='none';hCard.appendChild(hist);
+    hRow.addEventListener('click',function(){var o=hist.style.display==='none';hist.style.display=o?'':'none';link.textContent=o?'Hide':'Show';});
+    if(!n){link.textContent='';hRow.style.cursor='default';}
+    /* print on ended prepaid in history */
+    svcs.filter(function(s){return s.type==='prepaid'&&!s.isActive;}).forEach(function(s){
+      var dt='';try{dt=new Date(s.activationDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){}
+      [].slice.call(hist.children).some(function(h){
+        if(h.querySelector('[data-print-service]')||h.dataset.pfp)return false;
+        var tx=h.textContent;
+        if((s.number&&tx.indexOf(s.number)>-1)&&(!dt||tx.indexOf(dt)>-1)){
+          h.dataset.pfp='1';
+          var b=document.createElement('button');b.className='btn btn-sm btn-ghost';b.setAttribute('data-print-service',s.id);b.textContent='🖨 Print';b.style.marginTop='8px';
+          b.addEventListener('click',function(){quickPrintService(cid,s.id);});h.appendChild(b);return true;}
+        return false;});
+    });
+    /* customer */
+    var cCard=card();cCard.appendChild(title('Customer','user'));
+    [].slice.call(grid.children).forEach(function(r){var k=r.querySelector('.k');if(k&&/^id expiry date$/i.test(tt(k)))r.remove();});
+    [['Company',company],['Carrier type',carrier]].reverse().forEach(function(p){if(!p[1])return;var r=document.createElement('div');r.innerHTML='<div class="k"></div><div class="v"><span class="pill pill-blue"></span></div>';r.firstChild.textContent=p[0];r.querySelector('.pill').textContent=p[1];grid.insertBefore(r,grid.children[1]||null);});
+    var rows=[].slice.call(grid.children),extra=rows.slice(6);
+    cCard.appendChild(grid);
+    if(extra.length){
+      extra.forEach(function(r){r.style.display='none';});
+      var tg=document.createElement('button');tg.type='button';tg.className='btn btn-sm btn-ghost pf-toggle';tg.textContent='Show all details';
+      var open=false;tg.addEventListener('click',function(){open=!open;extra.forEach(function(r){r.style.display=open?'':'none';});tg.textContent=open?'Show fewer details':'Show all details';});
+      cCard.appendChild(tg);
+    }
+    addCopy(cCard);if(planCard)addCopy(planCard);
+    /* ai */
+    var aiCard=null;
+    if(ai){aiCard=card('pf-ai');var t=ai.querySelector('.service-card-head>div');if(t&&/✨/.test(tt(t))){t.textContent=t.textContent.replace('✨','').trim();t.className='pf-title';t.innerHTML='<span class="pf-ib o">'+svg('ai')+'</span><span>'+t.textContent+'</span>';}aiCard.appendChild(ai);}
+    /* rebuild */
+    while(body.firstChild)body.removeChild(body.firstChild);
+    body.appendChild(head);
+    frag.forEach(function(x){body.appendChild(x);});
+    [aCard,planCard,hCard,incCard,cCard,aiCard].forEach(function(c){if(c)body.appendChild(c);});
+    iconize(body);
+  }
+  function watch(){
+    var body=document.getElementById('detailBody');
+    if(!body||body.__pfw)return !!body;
+    body.__pfw=true;
+    var mo=new MutationObserver(function(){
+      if(!body.querySelector(':scope>.profile-head'))return;
+      mo.disconnect();
+      try{body.classList.remove('pf');delete body.dataset.pf;enhance(body);}catch(e){console.error('profile layer',e);}
+      mo.observe(body,{childList:true});
+    });
+    mo.observe(body,{childList:true});
+    return true;
+  }
+  var tries=0,iv=setInterval(function(){if(watch()||++tries>60)clearInterval(iv);},250);
+  /* ---- Information change: only customers who are 19 or older ---- */
+  function ageOk(){
+    try{var c=getCustomer(idChangeCustomerId);var a=c?calcAge(c.dob):null;return {age:a,ok:(a===null||a>=19)};}catch(e){return {age:null,ok:true};}
+  }
+  function warn(){
+    var inp=document.getElementById('idc_arcNumber');if(!inp)return false;
+    var w=document.getElementById('idc_ageWarn'),r=ageOk(),bad=!!inp.value.trim()&&!r.ok;
+    if(bad){
+      if(!w){w=document.createElement('div');w.id='idc_ageWarn';w.setAttribute('role','alert');inp.insertAdjacentElement('afterend',w);}
+      w.innerHTML=svg('warn')+'<span>Customer is '+r.age+' years old. An Information change to a Resident Card (ARC) is only accepted from age 19.</span>';
+      inp.style.borderColor='var(--red)';
+    }else{if(w)w.remove();inp.style.borderColor='';}
+    return bad;
+  }
+  document.addEventListener('input',function(e){if(e.target&&e.target.id==='idc_arcNumber')warn();},true);
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('#idChangeModalSave,#idChangeModalSavePrint');
+    if(b&&warn()){e.stopImmediatePropagation();e.preventDefault();say('Not accepted: customer is under 19');}
+  },true);
+})();
