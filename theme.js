@@ -365,7 +365,7 @@
     var ht=title('Plan history ('+n+')','hist');ht.style.margin='0';
     var link=document.createElement('span');link.className='pf-link';link.textContent='Show';
     hRow.appendChild(ht);hRow.appendChild(link);hCard.appendChild(hRow);
-    hist.classList.add('pf-hist-body');hist.style.display='none';hCard.appendChild(hist);
+    hist.classList.add('pf-hist-body');var openH=n>0&&n<=3;hist.style.display=openH?'':'none';if(openH)link.textContent='Hide';hCard.appendChild(hist);
     hRow.addEventListener('click',function(){var o=hist.style.display==='none';hist.style.display=o?'':'none';link.textContent=o?'Hide':'Show';});
     if(!n){link.textContent='';hRow.style.cursor='default';}
     /* print on ended prepaid in history */
@@ -381,18 +381,27 @@
         return false;});
     });
     /* customer */
-    var cCard=card();cCard.appendChild(title('Customer','user'));
-    [].slice.call(grid.children).forEach(function(r){var k=r.querySelector('.k');if(k&&/^id expiry date$/i.test(tt(k)))r.remove();});
-    [['Company',company],['Carrier type',carrier]].reverse().forEach(function(p){if(!p[1])return;var r=document.createElement('div');r.innerHTML='<div class="k"></div><div class="v"><span class="pill pill-blue"></span></div>';r.firstChild.textContent=p[0];r.querySelector('.pill').textContent=p[1];grid.insertBefore(r,grid.children[1]||null);});
-    var rows=[].slice.call(grid.children),extra=rows.slice(6);
-    cCard.appendChild(grid);
-    if(extra.length){
-      extra.forEach(function(r){r.style.display='none';});
-      var tg=document.createElement('button');tg.type='button';tg.className='btn btn-sm btn-ghost pf-toggle';tg.textContent='Show all details';
-      var open=false;tg.addEventListener('click',function(){open=!open;extra.forEach(function(r){r.style.display=open?'':'none';});tg.textContent=open?'Show fewer details':'Show all details';});
-      cCard.appendChild(tg);
+    /* one merged "Plan info" card: key rows first, everything else under "Show all details" */
+    var cCard=null;
+    if(!planCard){planCard=card();planCard.appendChild(title('Plan info','list'));}
+    var norm=function(k){k=k.toLowerCase();return k==='subscription type'?'subscription':k;};
+    var pool={},order=[];
+    [planSub&&planSub.querySelector('.kv-grid'),grid].forEach(function(g){if(!g)return;[].slice.call(g.children).forEach(function(r){var k=r.querySelector('.k');if(!k)return;var key=norm(tt(k));if(key==='id expiry date'||key==='used days'){if(key==='used days')pool.__used=tt(r.querySelector('.v'));return;}if(!pool[key]){pool[key]=r;order.push(key);}});});
+    var KEY=['phone number','date of birth','company','carrier type','subscription','years in korea'];
+    var mg=document.createElement('div');mg.className='kv-grid';
+    var extraRows=[];
+    KEY.forEach(function(k){if(pool[k])mg.appendChild(pool[k]);});
+    if(cust&&cust.nationality){var nr=document.createElement('div');nr.innerHTML='<div class="k">Nationality</div><div class="v"></div>';nr.lastChild.textContent=cust.nationality;mg.appendChild(nr);extraRows.push(nr);}
+    order.forEach(function(k){if(KEY.indexOf(k)>-1)return;mg.appendChild(pool[k]);extraRows.push(pool[k]);});
+    if(planSub){var og=planSub.querySelector('.kv-grid');if(og)og.replaceWith(mg);else planSub.appendChild(mg);}else planCard.appendChild(mg);
+    if(extraRows.length){
+      extraRows.forEach(function(r){r.style.display='none';});
+      var tg=document.createElement('button');tg.type='button';tg.className='btn btn-sm btn-ghost pf-toggle';tg.textContent='More';
+      var open=false;tg.addEventListener('click',function(){open=!open;extraRows.forEach(function(r){r.style.display=open?'':'none';});tg.textContent=open?'Less':'More';});
+      planCard.appendChild(tg);
     }
-    addCopy(cCard);if(planCard)addCopy(planCard);
+    if(pool.__used){var rem=active.querySelector('.progress-bar');rem=rem&&rem.nextElementSibling;if(rem)rem.textContent=rem.textContent.trim()+' · Used '+pool.__used;}
+    addCopy(planCard);
     /* ai */
     var aiCard=null;
     if(ai){aiCard=card('pf-ai');var t=ai.querySelector('.service-card-head>div');if(t&&/✨/.test(tt(t))){t.textContent=t.textContent.replace('✨','').trim();t.className='pf-title';t.innerHTML='<span class="pf-ib o">'+svg('ai')+'</span><span>'+t.textContent+'</span>';}aiCard.appendChild(ai);}
@@ -400,7 +409,7 @@
     while(body.firstChild)body.removeChild(body.firstChild);
     body.appendChild(head);
     frag.forEach(function(x){body.appendChild(x);});
-    [aCard,planCard,hCard,incCard,cCard,aiCard].forEach(function(c){if(c)body.appendChild(c);});
+    [aCard,planCard,hCard,incCard,aiCard].forEach(function(c){if(c)body.appendChild(c);});
     iconize(body);
   }
   function watch(){
