@@ -695,3 +695,6 @@ html[data-theme="dark"] .pf-ib{background:#1b2a4a;color:#8fb2ff}html[data-theme=
 .pf-bi{display:inline-flex;margin-right:7px;vertical-align:-3px;}
 .pf-bi svg{width:16px;height:16px;transition:transform .25s var(--ease);}
 .btn:hover .pf-bi svg{transform:translateY(-1px) rotate(-8deg) scale(1.12);}
+/* dropdown arrow must never tile (focus state used to reset it) */
+select.select-input,.form-field select,.date-range-pill select,
+select.select-input:focus,.form-field select:focus{background-repeat:no-repeat!important;background-position:right 14px center!important;background-size:16px 16px!important;}
