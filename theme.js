@@ -1,3 +1,14 @@
+/* Chinese / English helper shared by the blocks below (follows the CRM's own language switch) */
+(function(){
+  var Z={'+ New customer':'+ 新增客户','Average stay by nationality':'各国籍平均停留时间','Expected years in Korea, from each customer record':'按每位客户记录的预计在韩年数','All months':'全部月份','No data for this month.':'本月暂无数据。','yrs':'年',
+  'Switch to light mode':'切换到浅色模式','Switch to dark mode':'切换到深色模式','Active subscription':'当前订阅','Plan info':'套餐信息','Plan history':'套餐历史','Income':'收入','Show':'展开','Hide':'收起','More':'更多','Less':'收起',
+  'Company':'公司','Carrier type':'运营商类型','Plan length':'套餐时长','Nationality':'国籍','Used':'已使用','Print':'打印','Copy phone number':'复制电话号码','Phone number copied':'电话号码已复制',
+  'plan price':'套餐价','monthly discount':'每月优惠','Not accepted: customer is under 19':'不予受理：客户未满19岁','Month':'月份'};
+  function zh(){try{return LANG==='zh';}catch(e){return false;}}
+  window.__zh=zh;
+  window.__T=function(s){return zh()&&Z[s]?Z[s]:s;};
+})();
+
 /* Light / Dark toggle for the 365 Himobile CRM. Adds one round button to the top bar.
    Remembers the choice in this browser. Does not touch any CRM data or function. */
 (function(){
@@ -11,7 +22,7 @@
     var b=document.getElementById('themeToggle'); if(!b) return;
     var dark=current()==='dark';
     b.innerHTML = dark ? SUN : MOON;
-    b.title = b.ariaLabel = dark ? 'Switch to light mode' : 'Switch to dark mode';
+    b.title = b.ariaLabel = __T(dark ? 'Switch to light mode' : 'Switch to dark mode');
     b.setAttribute('aria-label', b.title);
   }
   function apply(t){ document.documentElement.setAttribute('data-theme',t); paint(); }
@@ -43,8 +54,8 @@
     if(d>=85&&d<=95)n=3;else if(d>=55&&d<=65)n=2;else if(d>=28&&d<=35)n=1;
     if(!n)return null;
     var rc=/recharge/i.test(s.changeReason||'');
-    var t=n+(n>1?' months':' month');
-    return rc?['rc','Recharge '+t]:['m'+n,t];}
+    var t=__zh()?n+'个月':n+(n>1?' months':' month');
+    return rc?['rc',__zh()?'充值'+t:'Recharge '+t]:['m'+n,t];}
   function install(){
     var o=window.serviceCardHtml;
     if(typeof o!=='function'||o.__planTag)return !!(o&&o.__planTag);
@@ -94,7 +105,7 @@
       card.insertBefore(box,card.firstChild);
       var row=document.createElement('div');row.className='dash-hero-row';
       card.insertBefore(row,box.nextSibling);row.appendChild(inp);
-      var nb=document.createElement('button');nb.type='button';nb.className='dash-hero-new';nb.textContent='+ New customer';
+      var nb=document.createElement('button');nb.type='button';nb.className='dash-hero-new';nb.textContent=__T('+ New customer');
       nb.onclick=function(){var b=document.getElementById('btnNewCustomerTop');if(b)b.click();};
       row.appendChild(nb);
       var res=document.getElementById('dashQuickSearchResults');if(res)card.appendChild(res);
@@ -102,9 +113,10 @@
     var pt=document.getElementById('pageTitle'),dt=document.querySelector('.page-sub,#pageSub');
     var g=(pt&&/Good|早|午|晚/.test(pt.textContent))?pt.textContent.trim():'';
     var n=(DB.customers||[]).length;
-    var dd=box.querySelector('.dh-date'),dtx=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});if(dd.textContent!==dtx)dd.textContent=dtx;
+    var dd=box.querySelector('.dh-date'),dtx=new Date().toLocaleDateString(__zh()?'zh-CN':'en-GB',{weekday:'long',day:'numeric',month:'long'});if(dd.textContent!==dtx)dd.textContent=dtx;
     var h=box.querySelector('.dh-h');
-    var html=(g?esc(g)+'.<br>':'')+n+' customers in your database.';
+    var html=(g?esc(g)+(__zh()?'。':'.')+'<br>':'')+(__zh()?'数据库中共有 '+n+' 位客户。':n+' customers in your database.');
+    var nbb=card.querySelector('.dash-hero-new');if(nbb&&nbb.textContent!==__T('+ New customer'))nbb.textContent=__T('+ New customer');
     if(h.innerHTML!==html)h.innerHTML=html;
   }
   function months(){
@@ -116,14 +128,15 @@
     var c=document.getElementById('aiNatStay');
     if(!c){
       c=document.createElement('div');c.id='aiNatStay';c.className='card';
-      c.innerHTML='<div class="ans-head"><div><div class="ans-title">Average stay by nationality</div><div class="ans-sub">Expected years in Korea, from each customer record</div></div><select id="ansMonth" aria-label="Month"></select></div><div id="ansBars"></div>';
+      c.innerHTML='<div class="ans-head"><div><div class="ans-title"></div><div class="ans-sub"></div></div><select id="ansMonth"></select></div><div id="ansBars"></div>';
       host.insertAdjacentElement('afterend',c);
       c.querySelector('select').onchange=function(){draw(true);};
     }
-    var sel=c.querySelector('select'),ms=months(),sig=ms.join(',');
+    c.querySelector('.ans-title').textContent=__T('Average stay by nationality');c.querySelector('.ans-sub').textContent=__T('Expected years in Korea, from each customer record');c.querySelector('select').setAttribute('aria-label',__T('Month'));
+    var sel=c.querySelector('select'),ms=months(),sig=ms.join(',')+'|'+(__zh()?'z':'e');
     if(sel.getAttribute('data-sig')!==sig){
       var cur=sel.value;
-      sel.innerHTML='<option value="">All months</option>'+ms.map(function(m){return'<option value="'+m+'">'+m+'</option>';}).join('');
+      sel.innerHTML='<option value="">'+__T('All months')+'</option>'+ms.map(function(m){return'<option value="'+m+'">'+m+'</option>';}).join('');
       sel.value=cur;sel.setAttribute('data-sig',sig);}
     draw(false);
   }
@@ -138,13 +151,13 @@
     var rows=Object.keys(agg).map(function(k){return{k:k,n:agg[k].n,v:agg[k].s/agg[k].n};})
       .sort(function(a,b){return b.n-a.n;}).slice(0,8);
     var max=Math.max.apply(null,rows.map(function(r){return r.v;}).concat([0.1]));
-    var sig=mo+'|'+rows.map(function(r){return r.k+r.n+r.v.toFixed(2);}).join();
+    var sig=(__zh()?'z':'e')+mo+'|'+rows.map(function(r){return r.k+r.n+r.v.toFixed(2);}).join();
     var bars=document.getElementById('ansBars');
     if(!force&&bars.getAttribute('data-sig')===sig)return;
     bars.setAttribute('data-sig',sig);
     bars.innerHTML=rows.length?rows.map(function(r,i){
-      return'<div class="ans-row"><span class="ans-name">'+esc(r.k)+'</span><span class="ans-track"><span class="ans-fill" style="display:block;width:0;background:'+COL[i%COL.length]+'" data-w="'+(r.v/max*100).toFixed(1)+'"></span></span><span class="ans-val">'+r.v.toFixed(1)+' yrs · '+r.n+'</span></div>';}).join('')
-      :'<div class="ans-sub">No data for this month.</div>';
+      return'<div class="ans-row"><span class="ans-name">'+esc(r.k)+'</span><span class="ans-track"><span class="ans-fill" style="display:block;width:0;background:'+COL[i%COL.length]+'" data-w="'+(r.v/max*100).toFixed(1)+'"></span></span><span class="ans-val">'+r.v.toFixed(1)+' '+__T('yrs')+' · '+r.n+'</span></div>';}).join('')
+      :'<div class="ans-sub">'+__T('No data for this month.')+'</div>';
     requestAnimationFrame(function(){requestAnimationFrame(function(){bars.querySelectorAll('.ans-fill').forEach(function(f){f.style.width=f.getAttribute('data-w')+'%';});});});
   }
   function tick(){if(document.hidden)return;try{hero();var p=document.getElementById('page-ai');if(p&&p.classList.contains('active'))ai();}catch(e){}}
@@ -257,8 +270,8 @@
       if(!k||!v||v.querySelector('.pf-copy'))return;
       if(!/^phone number$|^电话/i.test(tt(k)))return;
       var num=tt(v);if(!num||num==='—')return;
-      var b=document.createElement('button');b.type='button';b.className='pf-copy';b.title='Copy phone number';b.setAttribute('aria-label','Copy phone number');b.innerHTML=svg('copy');
-      b.addEventListener('click',function(e){e.stopPropagation();copyTxt(num,'Phone number copied');});
+      var b=document.createElement('button');b.type='button';b.className='pf-copy';b.title=__T('Copy phone number');b.setAttribute('aria-label',__T('Copy phone number'));b.innerHTML=svg('copy');
+      b.addEventListener('click',function(e){e.stopPropagation();copyTxt(num,__T('Phone number copied'));});
       v.appendChild(b);
     });
   }
@@ -310,20 +323,20 @@
     var activeSvc=svcs.filter(function(s){return s.isActive;})[0]||null;
     var planSub=null,incSub=null,monSub=null;
     active.querySelectorAll('.profile-subcard').forEach(function(p){var t=tt(p.querySelector('.profile-subcard-title')).toLowerCase();if(/plan info/.test(t))planSub=p;else if(/monthly/.test(t))monSub=p;else incSub=p;});
-    var planCard=null,incCard=null;
-    if(planSub){planCard=card();planCard.appendChild(title('Plan info','list'));planCard.appendChild(planSub);}
+    var planCard=null,incCard=null;var ptl=planSub&&planSub.querySelector('.profile-subcard-title'),planTitle=(ptl&&tt(ptl))||__T('Plan info');
+    if(planSub){planCard=card();planCard.appendChild(title(planTitle,'list'));planCard.appendChild(planSub);}
     if(monSub&&activeSvc&&activeSvc.type==='postpaid'){
       var fee=Number(activeSvc.monthlyFee)||0,dis=Number(activeSvc.discountPerMonth)||0;
       var amt=monSub.children[1];
       if(amt&&dis>0&&fee>0){
         var f=function(n){return '₩'+Math.max(0,Math.round(n)).toLocaleString('en-US');};
         amt.textContent=f(fee-dis);
-        var note=document.createElement('div');note.className='muted';note.style.cssText='font-size:12.5px;margin-top:2px;font-weight:600;';note.textContent=f(fee)+' plan price − '+f(dis)+' monthly discount';
+        var note=document.createElement('div');note.className='muted';note.style.cssText='font-size:12.5px;margin-top:2px;font-weight:600;';note.textContent=f(fee)+' '+__T('plan price')+' − '+f(dis)+' '+__T('monthly discount');
         amt.insertAdjacentElement('afterend',note);
       }
     }
     if(incSub||monSub){
-      incCard=card('pf-income');incCard.appendChild(title('Income','cash','g'));
+      incCard=card('pf-income');incCard.appendChild(title(__T('Income'),'cash','g'));
       if(monSub){monSub.classList.add('pf-sub','pf-monthly');incCard.appendChild(monSub);}
       if(incSub){incSub.classList.add('pf-sub','pf-store');incCard.appendChild(incSub);}
     }
@@ -333,38 +346,38 @@
     if((company||carrier||pt)){
       var tiles=document.createElement('div');tiles.className='pf-tiles';
       function tile(k,v,cls){var t=document.createElement('div');t.className='pf-tile'+(cls?' '+cls:'');var b=document.createElement('b');b.textContent=k;var s=document.createElement('span');s.textContent=v;t.appendChild(b);t.appendChild(s);tiles.appendChild(t);}
-      if(company)tile('Company',company);
-      if(carrier)tile('Carrier type',carrier);
-      if(pt){var m=(pt.className.match(/\b(m[123]|rc)\b/)||[])[1];tile('Plan length',tt(pt),m);}
+      if(company)tile(__T('Company'),company);
+      if(carrier)tile(__T('Carrier type'),carrier);
+      if(pt){var m=(pt.className.match(/\b(m[123]|rc)\b/)||[])[1];tile(__T('Plan length'),tt(pt),m);}
       var pb=active.querySelector('.progress-bar');
       var startRow=pb&&pb.previousElementSibling;
       if(startRow&&startRow.parentNode)startRow.parentNode.insertBefore(tiles,startRow);
     }
     /* active card */
-    var aCard=card();aCard.appendChild(title('Active subscription','sub'));
+    var aCard=card();aCard.appendChild(title(__T('Active subscription'),'sub'));
     if(sh){sh.classList.add('section-head');aCard.appendChild(active);aCard.appendChild(sh);}else aCard.appendChild(active);
     /* action buttons: first three visible, the rest under "More" */
     if(sh){var br=sh.querySelector('.btn')&&sh.querySelector('.btn').parentElement;
       if(br){var bs=[].slice.call(br.children).filter(function(x){return x.classList.contains('btn');});
         if(bs.length>3){var rest=bs.slice(3);var wrapR=document.createElement('div');wrapR.className='pf-rest';wrapR.style.display='none';
           rest.forEach(function(x){wrapR.appendChild(x);});
-          var mb=document.createElement('button');mb.type='button';mb.className='btn btn-ghost pf-more';mb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="width:16px;height:16px"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg><span>More</span>';
-          mb.addEventListener('click',function(){var o=wrapR.style.display==='none';wrapR.style.display=o?'flex':'none';mb.querySelector('span').textContent=o?'Less':'More';});
+          var mb=document.createElement('button');mb.type='button';mb.className='btn btn-ghost pf-more';mb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="width:16px;height:16px"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg><span>'+__T('More')+'</span>';
+          mb.addEventListener('click',function(){var o=wrapR.style.display==='none';wrapR.style.display=o?'flex':'none';mb.querySelector('span').textContent=__T(o?'Less':'More');});
           br.appendChild(mb);br.insertAdjacentElement('afterend',wrapR);}}}
     /* print for every prepaid (old members too) */
     if(activeSvc&&activeSvc.type==='prepaid'&&!active.querySelector('[data-print-service]')){
-      var pbtn=document.createElement('button');pbtn.className='btn btn-sm btn-ghost';pbtn.setAttribute('data-print-service',activeSvc.id);pbtn.textContent='🖨 Print';pbtn.style.marginLeft='8px';
+      var pbtn=document.createElement('button');pbtn.className='btn btn-sm btn-ghost';pbtn.setAttribute('data-print-service',activeSvc.id);pbtn.textContent='🖨 '+__T('Print');pbtn.style.marginLeft='8px';
       pbtn.addEventListener('click',function(){quickPrintService(cid,activeSvc.id);});
       var pill=active.querySelector('.service-card-head .pill');if(pill&&pill.parentNode)pill.parentNode.appendChild(pbtn);
     }
     /* history */
     var hCard=card(),hRow=document.createElement('div');hRow.className='pf-head-row';
     var n=/^no history/i.test(tt(hist))?0:hist.children.length;
-    var ht=title('Plan history ('+n+')','hist');ht.style.margin='0';
-    var link=document.createElement('span');link.className='pf-link';link.textContent='Show';
+    var ht=title(__T('Plan history')+' ('+n+')','hist');ht.style.margin='0';
+    var link=document.createElement('span');link.className='pf-link';link.textContent=__T('Show');
     hRow.appendChild(ht);hRow.appendChild(link);hCard.appendChild(hRow);
-    hist.classList.add('pf-hist-body');var openH=n>0&&n<=3;hist.style.display=openH?'':'none';if(openH)link.textContent='Hide';hCard.appendChild(hist);
-    hRow.addEventListener('click',function(){var o=hist.style.display==='none';hist.style.display=o?'':'none';link.textContent=o?'Hide':'Show';});
+    hist.classList.add('pf-hist-body');var openH=n>0&&n<=3;hist.style.display=openH?'':'none';if(openH)link.textContent=__T('Hide');hCard.appendChild(hist);
+    hRow.addEventListener('click',function(){var o=hist.style.display==='none';hist.style.display=o?'':'none';link.textContent=__T(o?'Hide':'Show');});
     if(!n){link.textContent='';hRow.style.cursor='default';}
     /* print on ended prepaid in history */
     svcs.filter(function(s){return s.type==='prepaid'&&!s.isActive;}).forEach(function(s){
@@ -374,14 +387,14 @@
         var tx=h.textContent;
         if((s.number&&tx.indexOf(s.number)>-1)&&(!dt||tx.indexOf(dt)>-1)){
           h.dataset.pfp='1';
-          var b=document.createElement('button');b.className='btn btn-sm btn-ghost';b.setAttribute('data-print-service',s.id);b.textContent='🖨 Print';b.style.marginTop='8px';
+          var b=document.createElement('button');b.className='btn btn-sm btn-ghost';b.setAttribute('data-print-service',s.id);b.textContent='🖨 '+__T('Print');b.style.marginTop='8px';
           b.addEventListener('click',function(){quickPrintService(cid,s.id);});h.appendChild(b);return true;}
         return false;});
     });
     /* customer */
     /* one merged "Plan info" card: key rows first, everything else under "Show all details" */
     var cCard=null;
-    if(!planCard){planCard=card();planCard.appendChild(title('Plan info','list'));}
+    if(!planCard){planCard=card();planCard.appendChild(title(planTitle,'list'));}
     var norm=function(k){k=k.toLowerCase();return k==='subscription type'?'subscription':k;};
     var pool={},order=[];
     [planSub&&planSub.querySelector('.kv-grid'),grid].forEach(function(g){if(!g)return;[].slice.call(g.children).forEach(function(r){var k=r.querySelector('.k');if(!k)return;var key=norm(tt(k));if(key==='id expiry date'||key==='used days'){if(key==='used days')pool.__used=tt(r.querySelector('.v'));return;}if(!pool[key]){pool[key]=r;order.push(key);}});});
@@ -389,16 +402,16 @@
     var mg=document.createElement('div');mg.className='kv-grid';
     var extraRows=[];
     KEY.forEach(function(k){if(pool[k])mg.appendChild(pool[k]);});
-    if(cust&&cust.nationality){var nr=document.createElement('div');nr.innerHTML='<div class="k">Nationality</div><div class="v"></div>';nr.lastChild.textContent=cust.nationality;mg.appendChild(nr);extraRows.push(nr);}
+    if(cust&&cust.nationality){var nr=document.createElement('div');nr.innerHTML='<div class="k"></div><div class="v"></div>';nr.firstChild.textContent=__T('Nationality');nr.lastChild.textContent=cust.nationality;mg.appendChild(nr);extraRows.push(nr);}
     order.forEach(function(k){if(KEY.indexOf(k)>-1)return;mg.appendChild(pool[k]);extraRows.push(pool[k]);});
     if(planSub){var og=planSub.querySelector('.kv-grid');if(og)og.replaceWith(mg);else planSub.appendChild(mg);}else planCard.appendChild(mg);
     if(extraRows.length){
       extraRows.forEach(function(r){r.style.display='none';});
-      var tg=document.createElement('button');tg.type='button';tg.className='btn btn-sm btn-ghost pf-toggle';tg.textContent='More';
-      var open=false;tg.addEventListener('click',function(){open=!open;extraRows.forEach(function(r){r.style.display=open?'':'none';});tg.textContent=open?'Less':'More';});
+      var tg=document.createElement('button');tg.type='button';tg.className='btn btn-sm btn-ghost pf-toggle';tg.textContent=__T('More');
+      var open=false;tg.addEventListener('click',function(){open=!open;extraRows.forEach(function(r){r.style.display=open?'':'none';});tg.textContent=__T(open?'Less':'More');});
       planCard.appendChild(tg);
     }
-    if(pool.__used){var rem=active.querySelector('.progress-bar');rem=rem&&rem.nextElementSibling;if(rem)rem.textContent=rem.textContent.trim()+' · Used '+pool.__used;}
+    if(pool.__used){var rem=active.querySelector('.progress-bar');rem=rem&&rem.nextElementSibling;if(rem)rem.textContent=rem.textContent.trim()+' · '+__T('Used')+' '+pool.__used;}
     addCopy(planCard);
     /* ai */
     var aiCard=null;
@@ -433,7 +446,7 @@
     var w=document.getElementById('idc_ageWarn'),r=ageOk(),bad=!!inp.value.trim()&&!r.ok;
     if(bad){
       if(!w){w=document.createElement('div');w.id='idc_ageWarn';w.setAttribute('role','alert');inp.insertAdjacentElement('afterend',w);}
-      w.innerHTML=svg('warn')+'<span>Customer is '+r.age+' years old. An Information change to a Resident Card (ARC) is only accepted from age 19.</span>';
+      w.innerHTML=svg('warn')+'<span></span>';w.lastChild.textContent=__zh()?'客户 '+r.age+' 岁。仅年满19岁方可办理变更为外国人登记证（ARC）。':'Customer is '+r.age+' years old. An Information change to a Resident Card (ARC) is only accepted from age 19.';
       inp.style.borderColor='var(--red)';
     }else{if(w)w.remove();inp.style.borderColor='';}
     return bad;
@@ -441,6 +454,6 @@
   document.addEventListener('input',function(e){if(e.target&&e.target.id==='idc_arcNumber')warn();},true);
   document.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('#idChangeModalSave,#idChangeModalSavePrint');
-    if(b&&warn()){e.stopImmediatePropagation();e.preventDefault();say('Not accepted: customer is under 19');}
+    if(b&&warn()){e.stopImmediatePropagation();e.preventDefault();say(__T('Not accepted: customer is under 19'));}
   },true);
 })();
