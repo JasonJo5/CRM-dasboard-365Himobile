@@ -590,3 +590,42 @@ html[data-theme="dark"] .sidebar .nav-item.active{color:#0a1329;}
 .sidebar #btnLogout:hover{background:#fff;color:#0f1d42;border-color:#fff;}
 .sidebar :focus-visible{outline-color:#fff;}
 .sidebar ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);}
+
+/* ===== Easier to read: bigger, bolder text ===== */
+body{font-size:15px;line-height:1.55;font-weight:500;}
+.brand-sub,.store-sub{font-size:12.5px;font-weight:500;}
+.brand-name{font-size:17px;}
+.nav-item{font-size:15.5px;font-weight:600;}
+.page-title{font-size:22px;font-weight:800;}
+.page-sub{font-size:14px;font-weight:500;}
+.lang-btn{font-size:14px;font-weight:700;}
+.btn{font-size:14.5px;font-weight:700;}
+.btn-sm{font-size:13.5px;}
+.stat-card .stat-label{font-size:14.5px;font-weight:600;}
+.stat-card .stat-value{font-weight:700;}
+.stat-card .stat-delta{font-size:13.5px;font-weight:700;}
+.section-title{font-size:17.5px;font-weight:800;}
+.section-desc{font-size:14px;font-weight:500;}
+.link{font-size:14px;font-weight:700;}
+table{font-size:14.5px;font-weight:500;}
+th{font-size:13.5px;font-weight:700;}
+td{font-weight:500;}
+.pill{font-size:13px;font-weight:700;}
+.search-input,select.select-input,.date-range-pill input[type="date"]{font-size:15px;font-weight:500;}
+.chip-tab{font-size:14.5px;font-weight:600;}
+.chip-tab .n{font-size:13.5px;font-weight:700;}
+.mini-row-name{font-size:15px;font-weight:700;}
+.mini-row-sub{font-size:13px;font-weight:500;}
+.legend{font-size:14px;font-weight:500;}
+.alert-banner-text{font-size:14.5px;}
+.empty-state{font-size:14.5px;}
+.modal-title{font-size:20px;font-weight:800;}
+.form-field label{font-size:13.5px;font-weight:700;}
+.form-field input,.form-field select,.form-field textarea{font-size:15px;font-weight:500;}
+.profile-name{font-size:22px;font-weight:800;}
+.kv-grid{font-size:15px;}
+.kv-grid .k{font-size:13px;font-weight:700;letter-spacing:.02em;}
+.kv-grid .v{font-weight:700;font-size:15.5px;}
+.profile-subcard-title{font-size:13px;font-weight:700;}
+.toast{font-size:14.5px;font-weight:600;}
+.cell-popover *{font-weight:600;}
