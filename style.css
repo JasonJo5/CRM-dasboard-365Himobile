@@ -678,7 +678,6 @@ html[data-theme="dark"] .pf-ib{background:#1b2a4a;color:#8fb2ff}html[data-theme=
 .pf-toggle{margin-top:10px;}
 .pf-income{display:flex;align-items:center;gap:12px;}
 .pf-income .profile-subcard-title{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-soft);font-weight:700;}
-.pf-income .profile-subcard>div:not(.profile-subcard-title){font-size:28px!important;font-weight:800!important;color:var(--blue);}
 .pf-head-row{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;}
 .pf-head-row .pf-link{font-size:14px;font-weight:700;color:var(--blue);}
 .pf-hist-body{margin-top:10px;}
@@ -698,3 +697,20 @@ html[data-theme="dark"] .pf-ib{background:#1b2a4a;color:#8fb2ff}html[data-theme=
 /* dropdown arrow must never tile (focus state used to reset it) */
 select.select-input,.form-field select,.date-range-pill select,
 select.select-input:focus,.form-field select:focus{background-repeat:no-repeat!important;background-position:right 14px center!important;background-size:16px 16px!important;}
+
+/* detail popup: the plan-length tag is already shown as a tile */
+#detailBody.pf .plan-tag{display:none!important;}
+/* income card: calm, neutral */
+.pf-income .pf-sub{border-radius:14px!important;padding:12px 14px!important;margin-top:10px;}
+.pf-income .pf-store{background:var(--bg)!important;border:0!important;}
+.pf-income .pf-store *{color:var(--text)!important;}
+.pf-income .pf-store .k,.pf-income .pf-store .profile-subcard-title,.pf-income .pf-store .muted{color:var(--text-soft)!important;}
+.pf-income .pf-store .profile-subcard-title,.pf-income .pf-monthly .profile-subcard-title{display:block!important;font-size:12px!important;letter-spacing:.04em;text-transform:uppercase;font-weight:700;}
+.pf-income .pf-monthly{background:var(--orange-light)!important;border:0!important;}
+.pf-income .pf-monthly>div:nth-child(2){font-size:24px!important;font-weight:800!important;}
+.pf-income .pf-monthly .muted{font-size:12.5px!important;font-weight:500!important;color:var(--text-soft)!important;margin-top:4px!important;}
+/* edit / new forms: calm neutral chips and boxes instead of rainbow + blue */
+.prepaid3m-box{background:var(--bg)!important;border:1px solid var(--border)!important;}
+.modal .tile-radio{background:var(--card)!important;color:var(--text)!important;border:1.5px solid var(--border)!important;}
+.modal .tile-radio:hover{border-color:var(--blue)!important;}
+.modal .tile-radio.selected{background:var(--blue)!important;color:#fff!important;border-color:var(--blue)!important;box-shadow:none;}
