@@ -102,7 +102,7 @@
     var pt=document.getElementById('pageTitle'),dt=document.querySelector('.page-sub,#pageSub');
     var g=(pt&&/Good|早|午|晚/.test(pt.textContent))?pt.textContent.trim():'';
     var n=(DB.customers||[]).length;
-    box.querySelector('.dh-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    var dd=box.querySelector('.dh-date'),dtx=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});if(dd.textContent!==dtx)dd.textContent=dtx;
     var h=box.querySelector('.dh-h');
     var html=(g?esc(g)+'.<br>':'')+n+' customers in your database.';
     if(h.innerHTML!==html)h.innerHTML=html;
@@ -147,6 +147,6 @@
       :'<div class="ans-sub">No data for this month.</div>';
     requestAnimationFrame(function(){requestAnimationFrame(function(){bars.querySelectorAll('.ans-fill').forEach(function(f){f.style.width=f.getAttribute('data-w')+'%';});});});
   }
-  function tick(){try{hero();var p=document.getElementById('page-ai');if(p&&p.classList.contains('active'))ai();}catch(e){}}
+  function tick(){if(document.hidden)return;try{hero();var p=document.getElementById('page-ai');if(p&&p.classList.contains('active'))ai();}catch(e){}}
   setInterval(tick,1200);setTimeout(tick,300);
 })();
