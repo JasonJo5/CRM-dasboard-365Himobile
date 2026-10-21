@@ -714,3 +714,7 @@ select.select-input:focus,.form-field select:focus{background-repeat:no-repeat!i
 .modal .tile-radio{background:var(--card)!important;color:var(--text)!important;border:1.5px solid var(--border)!important;}
 .modal .tile-radio:hover{border-color:var(--blue)!important;}
 .modal .tile-radio.selected{background:var(--blue)!important;color:#fff!important;border-color:var(--blue)!important;box-shadow:none;}
+/* Sheet View: no hint text, all tabs (incl. Duplicate) on one row */
+#page-sheet .section-head>.section-desc{display:none!important;}
+#page-sheet .section-head>div:first-child{flex:1 1 100%;}
+#sheetTypeTabs{flex-wrap:wrap;}
