@@ -224,7 +224,7 @@
   function ok(t){return t&&t.tagName==='SELECT'&&!t.multiple&&!t.disabled&&!(t.size>1)&&!t.hasAttribute('data-native');}
   document.addEventListener('mousedown',function(e){
     var t=e.target;
-    if(menu&&!menu.contains(t)&&t!==cur){close();return;}
+    if(menu&&!menu.contains(t)&&t!==cur){close();if(!ok(t))return;}
     if(ok(t)){e.preventDefault();if(cur===t){close();}else{t.focus();open(t);}}
   },true);
   document.addEventListener('keydown',function(e){
