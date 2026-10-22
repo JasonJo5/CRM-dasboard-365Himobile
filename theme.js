@@ -275,7 +275,18 @@
       v.appendChild(b);
     });
   }
-  function rowVal(root,name){var out='';root.querySelectorAll('.kv-grid>div').forEach(function(r){var k=r.querySelector('.k');if(k&&tt(k).toLowerCase()===name)out=tt(r.querySelector('.v'));});return out;}
+  function canon(l){l=String(l||'').trim().toLowerCase();
+    if(/^(phone number|电话号码|联系电话)$/.test(l))return 'phone';
+    if(/date of birth|出生日期/.test(l))return 'dob';
+    if(/^(가입회사 )?company$/.test(l))return 'company';
+    if(/carrier type$/.test(l))return 'carrier';
+    if(/^(subscription|subscription type|开通方式)$/.test(l))return 'subscription';
+    if(/years in korea|在韩年数/.test(l))return 'years';
+    if(/used days|已使用天数/.test(l))return 'used';
+    if(/id expiry|证件有效期/.test(l))return 'idexpiry';
+    if(/^(nationality|国籍)$/.test(l))return 'nationality';
+    return l;}
+  function rowVal(root,name){var out='';root.querySelectorAll('.kv-grid>div').forEach(function(r){var k=r.querySelector('.k');if(k&&canon(tt(k))===name)out=tt(r.querySelector('.v'));});return out;}
   function custId(body){var b=body.querySelector('[data-copy-name]');return b?b.getAttribute('data-copy-name'):null;}
   var BI={
     btnRecharge:'<rect x="3" y="8" width="16" height="8" rx="2"/><path d="M21 11v2M10 10l-2 2h4l-2 2"/>',
@@ -322,7 +333,7 @@
     var svcs=[];try{svcs=DB.services.filter(function(s){return s.customerId===cid;});}catch(e){}
     var activeSvc=svcs.filter(function(s){return s.isActive;})[0]||null;
     var planSub=null,incSub=null,monSub=null;
-    active.querySelectorAll('.profile-subcard').forEach(function(p){var t=tt(p.querySelector('.profile-subcard-title')).toLowerCase();if(/plan info/.test(t))planSub=p;else if(/monthly/.test(t))monSub=p;else incSub=p;});
+    [].slice.call(active.querySelectorAll('.profile-subcard')).forEach(function(p,i){if(i===0&&p.querySelector('.kv-grid'))planSub=p;else if(/fff8e8/i.test(p.getAttribute('style')||''))monSub=p;else incSub=p;});
     var planCard=null,incCard=null;var ptl=planSub&&planSub.querySelector('.profile-subcard-title'),planTitle=(ptl&&tt(ptl))||__T('Plan info');
     if(planSub){planCard=card();planCard.appendChild(title(planTitle,'list'));planCard.appendChild(planSub);}
     if(monSub&&activeSvc&&activeSvc.type==='postpaid'){
@@ -342,7 +353,7 @@
     }
     /* tiles */
     var pt=active.querySelector('.plan-tag');
-    var company=planCard?rowVal(planCard,'company'):'',carrier=planCard?rowVal(planCard,'carrier type'):'';
+    var company=planCard?rowVal(planCard,'company'):'',carrier=planCard?rowVal(planCard,'carrier'):'';
     if((company||carrier||pt)){
       var tiles=document.createElement('div');tiles.className='pf-tiles';
       function tile(k,v,cls){var t=document.createElement('div');t.className='pf-tile'+(cls?' '+cls:'');var b=document.createElement('b');b.textContent=k;var s=document.createElement('span');s.textContent=v;t.appendChild(b);t.appendChild(s);tiles.appendChild(t);}
@@ -372,7 +383,7 @@
     }
     /* history */
     var hCard=card(),hRow=document.createElement('div');hRow.className='pf-head-row';
-    var n=/^no history/i.test(tt(hist))?0:hist.children.length;
+    var n=[].slice.call(hist.children).filter(function(x){return !x.classList.contains('muted');}).length;
     var ht=title(__T('Plan history')+' ('+n+')','hist');ht.style.margin='0';
     var link=document.createElement('span');link.className='pf-link';link.textContent=__T('Show');
     hRow.appendChild(ht);hRow.appendChild(link);hCard.appendChild(hRow);
@@ -395,15 +406,15 @@
     /* one merged "Plan info" card: key rows first, everything else under "Show all details" */
     var cCard=null;
     if(!planCard){planCard=card();planCard.appendChild(title(planTitle,'list'));}
-    var norm=function(k){k=k.toLowerCase();return k==='subscription type'?'subscription':k;};
+    var norm=function(k){return canon(k);};
     var pool={},order=[];
-    [planSub&&planSub.querySelector('.kv-grid'),grid].forEach(function(g){if(!g)return;[].slice.call(g.children).forEach(function(r){var k=r.querySelector('.k');if(!k)return;var key=norm(tt(k));if(key==='id expiry date'||key==='used days'){if(key==='used days')pool.__used=tt(r.querySelector('.v'));return;}if(!pool[key]){pool[key]=r;order.push(key);}});});
-    var KEY=['phone number','date of birth','company','carrier type','subscription','years in korea'];
+    [planSub&&planSub.querySelector('.kv-grid'),grid].forEach(function(g){if(!g)return;[].slice.call(g.children).forEach(function(r){var k=r.querySelector('.k');if(!k)return;var key=norm(tt(k));if(key==='idexpiry'||key==='used'){if(key==='used'&&!pool.__used)pool.__used=tt(r.querySelector('.v'));return;}if(!pool[key]){pool[key]=r;order.push(key);}});});
+    var KEY=['phone','dob','company','carrier','subscription','years'];
     var mg=document.createElement('div');mg.className='kv-grid';
     var extraRows=[];
     KEY.forEach(function(k){if(pool[k])mg.appendChild(pool[k]);});
-    if(cust&&cust.nationality){var nr=document.createElement('div');nr.innerHTML='<div class="k"></div><div class="v"></div>';nr.firstChild.textContent=__T('Nationality');nr.lastChild.textContent=cust.nationality;mg.appendChild(nr);extraRows.push(nr);}
-    order.forEach(function(k){if(KEY.indexOf(k)>-1)return;mg.appendChild(pool[k]);extraRows.push(pool[k]);});
+    if(cust&&cust.nationality&&!pool.nationality){var nr=document.createElement('div');nr.innerHTML='<div class="k"></div><div class="v"></div>';nr.firstChild.textContent=__T('Nationality');nr.lastChild.textContent=cust.nationality;mg.appendChild(nr);extraRows.push(nr);}
+    order.forEach(function(k){if(KEY.indexOf(k)>-1)return;if(k==='nationality'){mg.appendChild(pool[k]);extraRows.push(pool[k]);return;}mg.appendChild(pool[k]);extraRows.push(pool[k]);});
     if(planSub){var og=planSub.querySelector('.kv-grid');if(og)og.replaceWith(mg);else planSub.appendChild(mg);}else planCard.appendChild(mg);
     if(extraRows.length){
       extraRows.forEach(function(r){r.style.display='none';});
