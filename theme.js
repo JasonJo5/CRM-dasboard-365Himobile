@@ -705,9 +705,60 @@
     });
   }
   document.addEventListener('mousedown',function(e){if(pop&&!pop.contains(e.target)&&!(pill&&pill.contains(e.target)))close();},true);
-  document.addEventListener('change',function(e){var x=e.target;if(x&&x.id==='sheetRecentFilter'&&x.value!==''){var i=inputs();if(i[0]&&(i[0].value||i[1].value)){i[0].value='';i[1].value='';label();}}},true);
+  function excl(e){var x=e.target;if(x&&x.id==='sheetRecentFilter'&&x.value!==''){var i=inputs();if(i[0]&&(i[0].value||i[1].value)){i[0].value='';i[1].value='';label();setTimeout(function(){try{renderSheetPage();}catch(er){}},0);}}}
+  document.addEventListener('input',excl,true);document.addEventListener('change',excl,true);
   document.addEventListener('keydown',function(e){if(pop&&e.key==='Escape')close();},true);
   document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('#sheetDateRangeClear');if(c)setTimeout(label,50);});
   window.addEventListener('resize',close);
   setInterval(function(){if(document.hidden)return;try{setup();label();}catch(e){}},600);
+})();
+
+/* ===== Sheet View: "All ratings" becomes Carrier type (prepaid) / Partner company (postpaid) ===== */
+(function(){
+  var TX={en:{pre:'All carrier types',post:'All partner companies'},zh:{pre:'全部运营商类型',post:'全部合作公司'},ko:{pre:'전체 통신사 유형',post:'전체 제휴사'}};
+  var COL={prepaid:4,postpaid:6},vals={prepaid:'',postpaid:''};
+  function lang(){try{return LANG;}catch(e){return 'en';}}
+  function tab(){try{return sheetTypeTab;}catch(e){return '';}}
+  function cellText(td){if(!td)return '';var i=td.querySelector('input,select');return ((i?i.value:td.textContent)||'').replace(/\s+/g,' ').trim();}
+  function options(tb){
+    var set={};(DB.services||[]).forEach(function(s){
+      if(s.type!==tb)return;var v=tb==='prepaid'?s.svcCarrierType:s.partnerCompany;if(v&&String(v).trim())set[String(v).trim()]=1;});
+    return Object.keys(set).sort(function(a,b){return a.localeCompare(b);});
+  }
+  function sync(){
+    var rs=document.getElementById('sheetRatingFilter');if(!rs)return;
+    var tb=tab(),on=tb==='prepaid'||tb==='postpaid',ex=document.getElementById('sheetExtraFilter');
+    if(!on){
+      if(ex)ex.style.display='none';rs.style.display='';
+      document.querySelectorAll('#sheetTable tbody tr[data-xf]').forEach(function(r){r.style.display='';r.removeAttribute('data-xf');});
+      return;
+    }
+    if(rs.value!==''){rs.value='';rs.dispatchEvent(new Event('change',{bubbles:true}));}
+    rs.style.display='none';
+    if(!ex){ex=document.createElement('select');ex.id='sheetExtraFilter';ex.className='select-input';rs.insertAdjacentElement('afterend',ex);
+      ex.addEventListener('change',function(){vals[ex.dataset.tab]=ex.value;apply();});}
+    ex.style.display='';
+    var sig=tb+'|'+lang()+'|'+options(tb).join('|');
+    if(ex.dataset.sig!==sig){
+      ex.dataset.sig=sig;ex.dataset.tab=tb;var T=TX[lang()]||TX.en;
+      ex.innerHTML='<option value="">'+(tb==='prepaid'?T.pre:T.post)+'</option>'+options(tb).map(function(o){return '<option value="'+o.replace(/"/g,'&quot;')+'">'+o+'</option>';}).join('');
+    }
+    ex.dataset.tab=tb;if(ex.value!==vals[tb])ex.value=vals[tb];
+    apply();
+  }
+  function apply(){
+    var tb=tab();if(tb!=='prepaid'&&tb!=='postpaid')return;
+    var v=vals[tb],rows=document.querySelectorAll('#sheetTable tbody tr'),n=0,idx=COL[tb];
+    rows.forEach(function(r){
+      var show=!v||cellText(r.children[idx])===v;
+      var hidden=r.getAttribute('data-xf')==='1';
+      if(!show&&!hidden){r.style.display='none';r.setAttribute('data-xf','1');}
+      else if(show&&hidden){r.style.display='';r.removeAttribute('data-xf');}
+      if(show)n++;
+    });
+    if(v||document.querySelector('#sheetTable tbody tr[data-xf]')){var c=document.getElementById('sheetCount');if(c){var m=c.textContent.replace(/^\d+/,n);if(c.textContent!==m)c.textContent=m;}}
+  }
+  var tbl=document.getElementById('sheetTable');
+  function bind(){tbl=document.getElementById('sheetTable');if(tbl&&!tbl.__xf){tbl.__xf=1;new MutationObserver(function(){try{sync();}catch(e){}}).observe(tbl,{childList:true});}}
+  setInterval(function(){if(document.hidden)return;try{bind();sync();}catch(e){}},500);
 })();
