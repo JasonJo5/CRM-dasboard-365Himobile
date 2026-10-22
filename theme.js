@@ -3,7 +3,7 @@
   var Z={'+ New customer':'+ 新增客户','Average stay by nationality':'各国籍平均停留时间','Expected years in Korea, from each customer record':'按每位客户记录的预计在韩年数','All months':'全部月份','No data for this month.':'本月暂无数据。','yrs':'年',
   'Switch to light mode':'切换到浅色模式','Switch to dark mode':'切换到深色模式','Active subscription':'当前订阅','Plan info':'套餐信息','Plan history':'套餐历史','Income':'收入','Show':'展开','Hide':'收起','More':'更多','Less':'收起',
   'Company':'公司','Carrier type':'运营商类型','Plan length':'套餐时长','Nationality':'国籍','Used':'已使用','Print':'打印','Copy phone number':'复制电话号码','Phone number copied':'电话号码已复制',
-  'plan price':'套餐价','monthly discount':'每月优惠','Not accepted: customer is under 19':'不予受理：客户未满19岁','Month':'月份'};
+  'plan price':'套餐价','monthly discount':'每月优惠','Not accepted: customer is under 19':'不予受理：客户未满19岁','Month':'月份','Previous plan':'上一个套餐'};
   function zh(){try{return LANG==='zh';}catch(e){return false;}}
   window.__zh=zh;
   window.__T=function(s){return zh()&&Z[s]?Z[s]:s;};
@@ -53,9 +53,11 @@
     var d=Number(s.durationDays),n=null;
     if(d>=85&&d<=95)n=3;else if(d>=55&&d<=65)n=2;else if(d>=28&&d<=35)n=1;
     if(!n)return null;
-    var rc=/recharge/i.test(s.changeReason||'');
+    var pr=Number(s.sellingPrice!=null?s.sellingPrice:s.price);
+    var rc=n===1&&(/recharge/i.test(s.changeReason||'')||pr===36000||pr===36300);
     var t=__zh()?n+'个月':n+(n>1?' months':' month');
     return rc?['rc',__zh()?'充值'+t:'Recharge '+t]:['m'+n,t];}
+  window.__planLab=lab;
   function install(){
     var o=window.serviceCardHtml;
     if(typeof o!=='function'||o.__planTag)return !!(o&&o.__planTag);
@@ -363,6 +365,23 @@
       var pb=active.querySelector('.progress-bar');
       var startRow=pb&&pb.previousElementSibling;
       if(startRow&&startRow.parentNode)startRow.parentNode.insertBefore(tiles,startRow);
+    }
+    /* recharge customers: show which plan they used before */
+    if(activeSvc&&activeSvc.type==='prepaid'&&window.__planLab){
+      var cl=window.__planLab(activeSvc);
+      if(cl&&cl[0]==='rc'){
+        var prevS=svcs.filter(function(x){return x.type==='prepaid'&&x.id!==activeSvc.id&&String(x.activationDate||'')<=String(activeSvc.activationDate||'9999');})
+          .sort(function(a,b){return String(b.activationDate||'').localeCompare(String(a.activationDate||''));})[0];
+        if(prevS){
+          var pl=window.__planLab(prevS);
+          var fmt=function(x){try{return new Date(x+'T00:00:00').toLocaleDateString(__zh()?'zh-CN':'en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return x||'';}};
+          var pv=document.createElement('div');pv.className='pf-prev';
+          pv.innerHTML='<span class="pf-prev-k"></span><span class="pf-prev-v"></span>';
+          pv.firstChild.textContent=__T('Previous plan');
+          pv.lastChild.textContent=(pl?pl[1]:(prevS.durationDays+' days'))+(prevS.plan?' · '+prevS.plan:'')+' · '+fmt(prevS.activationDate)+' → '+fmt(prevS.endedAt||prevS.expiryDate);
+          var tl=active.querySelector('.pf-tiles');if(tl)tl.insertAdjacentElement('afterend',pv);
+        }
+      }
     }
     /* active card */
     var aCard=card();aCard.appendChild(title(__T('Active subscription'),'sub'));
