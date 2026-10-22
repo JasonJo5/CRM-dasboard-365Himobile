@@ -427,7 +427,7 @@
     if(!planCard){planCard=card();planCard.appendChild(title(planTitle,'list'));}
     var norm=function(k){return canon(k);};
     var pool={},order=[];
-    [planSub&&planSub.querySelector('.kv-grid'),grid].forEach(function(g){if(!g)return;[].slice.call(g.children).forEach(function(r){var k=r.querySelector('.k');if(!k)return;var key=norm(tt(k));if(key==='idexpiry'||key==='used'){if(key==='used'&&!pool.__used)pool.__used=tt(r.querySelector('.v'));return;}if(!pool[key]){pool[key]=r;order.push(key);}});});
+    [planSub&&planSub.querySelector('.kv-grid'),grid].forEach(function(g){if(!g)return;[].slice.call(g.children).forEach(function(r){var k=r.querySelector('.k');if(!k)return;var key=norm(tt(k));if(key==='idexpiry'||key==='used'){if(key==='used'&&!pool.__used)pool.__used=tt(r.querySelector('.v'));return;}var nv=tt(r.querySelector('.v'));if(!pool[key]){pool[key]=r;order.push(key);}else if(/^(—|-|)$/.test(tt(pool[key].querySelector('.v')))&&!/^(—|-|)$/.test(nv)){pool[key]=r;}});});
     var KEY=['phone','dob','company','carrier','subscription','years'];
     var mg=document.createElement('div');mg.className='kv-grid';
     var extraRows=[];
