@@ -726,3 +726,13 @@ html[data-theme="dark"] .copy-name-btn{background-image:url("data:image/svg+xml,
 .pf-prev{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:8px 0 2px;padding:10px 14px;border-radius:12px;background:var(--orange-light);font-size:14px;}
 .pf-prev-k{font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#a8480f;}
 .pf-prev-v{font-weight:700;color:var(--text);}
+/* AI insight card: plain, same look as the other cards */
+.pf-card.pf-ai .service-card{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;}
+.pf-card.pf-ai .service-card-head{align-items:center;margin-bottom:4px;}
+.pf-card.pf-ai .service-card-head .pf-title{margin:0;}
+.pf-card.pf-ai .kv-grid{margin-top:4px;}
+.pf-card.pf-ai .section-desc{margin-top:10px;font-size:13.5px;color:var(--text-soft);}
+/* Active pill + Print: lift into the empty space beside the "Active subscription" title */
+#detailActiveSub .service-card-head{position:relative;}
+#detailActiveSub .service-card-head>div:last-child{margin-top:-46px;position:relative;z-index:1;}
+@media (max-width:560px){#detailActiveSub .service-card-head>div:last-child{margin-top:0;}}
