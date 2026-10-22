@@ -548,6 +548,8 @@
       else if(cur!==t){open(t);}
     }
   },true);
+  document.addEventListener('click',function(e){if(ok(e.target)){e.preventDefault();}},true);
+  document.addEventListener('keydown',function(e){var t=e.target;if(ok(t)&&(e.altKey&&e.key==='ArrowDown'||e.key==='F4')){e.preventDefault();if(!pop||cur!==t)open(t);}},true);
   document.addEventListener('keydown',function(e){if(pop&&e.key==='Escape'){close();}else if(pop&&e.key==='Tab'){close();}},true);
   window.addEventListener('resize',close);
   document.addEventListener('scroll',function(e){if(pop&&!pop.contains(e.target))close();},true);
@@ -631,6 +633,7 @@
   function setRange(a,b){
     var i=inputs();if(!i[0]||!i[1])return;
     i[0].value=a||'';i[1].value=b||'';
+    if(a||b){var rf=document.getElementById('sheetRecentFilter');if(rf&&rf.value!==''){rf.value='';rf.dispatchEvent(new Event('change',{bubbles:true}));}}
     [i[0],i[1]].forEach(function(x){x.dispatchEvent(new Event('input',{bubbles:true}));x.dispatchEvent(new Event('change',{bubbles:true}));});
     label();
   }
@@ -692,16 +695,17 @@
     pop.addEventListener('mouseover',function(e){var b=e.target.closest('.dr-day');if(b&&st&&!en&&b.dataset.d!==hov){hov=b.dataset.d;render();}});
     pop.addEventListener('click',function(e){
       var b=e.target.closest('button');if(!b)return;e.stopPropagation();
-      if(b.dataset.p){var p2=presets().filter(function(x){return x[0]===b.dataset.p;})[0];setRange(p2[1],p2[2]);close();return;}
+      if(b.dataset.p){var p2=presets().filter(function(x){return x[0]===b.dataset.p;})[0];setRange(p2[1],p2[2]);st=p2[1];en=p2[2];hov='';var bd=pd(st);if(bd){vy=bd.getFullYear();vm=bd.getMonth();}render();if(!st)close();return;}
       if(b.dataset.n){vm+=+b.dataset.n;if(vm<0){vm=11;vy--;}if(vm>11){vm=0;vy++;}render();return;}
       if(b.dataset.d){
         var d=b.dataset.d;
-        if(!st||(st&&en)){st=d;en='';hov='';render();}
+        if(!st||(st&&en)){st=d;en='';hov='';setRange(d,'');render();}
         else{var a=st<d?st:d,z=st<d?d:st;setRange(a,z);close();}
       }
     });
   }
   document.addEventListener('mousedown',function(e){if(pop&&!pop.contains(e.target)&&!(pill&&pill.contains(e.target)))close();},true);
+  document.addEventListener('change',function(e){var x=e.target;if(x&&x.id==='sheetRecentFilter'&&x.value!==''){var i=inputs();if(i[0]&&(i[0].value||i[1].value)){i[0].value='';i[1].value='';label();}}},true);
   document.addEventListener('keydown',function(e){if(pop&&e.key==='Escape')close();},true);
   document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('#sheetDateRangeClear');if(c)setTimeout(label,50);});
   window.addEventListener('resize',close);
