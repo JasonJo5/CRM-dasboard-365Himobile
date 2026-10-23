@@ -1010,9 +1010,43 @@
     planTiles();dobSetup('f_dob');dobInfo($('f_dob'));stepper('f_years');arcUI(true);
     var ad=$('p3_activationDate');if(ad&&!ad.value)ad.value=today();
   }
+  /* ---------- postpaid new-customer modal ---------- */
+  function ovP(){return $('newPostpaidModalOverlay');}
+  function buildPost(form){
+    if(form.dataset.nf==='post')return;
+    var groups=[
+      ['Customer','user',['pc_name','pc_nationality','pc_dob','pc_idType_group','pc_idNumber','pc_occupation','pc_years']],
+      ['Application','doc',['pc_workType_group','pc_handlerName_group']],
+      ['Postpaid plan','card',['pc_contractLength_group','pc_company_group','pc_partnerCompany_group','pc_svcCarrierType_group','pc_plan_group','pc_number','pc_activationDate','pc_monthlyFee','pc_simType_group']],
+      ['Company price & discount','coin',['pc_expectedProfit','pc_usimFee','pc_discountPerMonth','pc_discountMonths','pc_netExpectedPreview']],
+      ['Notes','note',['pc_referralFriend','pc_notes']]
+    ];
+    var made=groups.map(function(g){var c=card(g[0],g[1]);mv(c.querySelector('.nf-body'),g[2]);return c;});
+    made.forEach(function(c){form.appendChild(c);});
+    form.classList.add('nf','nf-post');form.dataset.nf='post';
+  }
+  function tickPost(){
+    var o=ovP();if(!o)return;
+    var form=o.querySelector('.modal-body > .form-grid');if(!form)return;
+    buildPost(form);
+    var w=$('pc_workType_group');
+    if(w){
+      var wo=[];try{wo=JSON.parse(w.dataset.options||'[]');}catch(e){}
+      var wl=ff('pc_workType_group');var lb=wl&&wl.querySelector('label');
+      if(wo.length!==2||!w.dataset.selected){var ws=w.dataset.selected;if(['신규가입','번호이동'].indexOf(ws)<0)ws='신규가입';renderCompactOptionField('pc_workType_group',['신규가입','번호이동'],ws,T('Plan type'));}
+      if(lb&&lb.textContent!==T('Plan type')){lb.removeAttribute('data-i18n');lb.textContent=T('Plan type');}
+    }
+    var cl=$('pc_contractLength_group');
+    if(cl){
+      var co=[];try{co=JSON.parse(cl.dataset.options||'[]');}catch(e){}
+      if(co.length!==2||co.indexOf('185')>=0){var cs=cl.dataset.selected;if(['245','365'].indexOf(cs)<0)cs='245';renderCompactOptionField('pc_contractLength_group',['245','365'],cs,cl.dataset.title||'Contract length');}
+    }
+    dobSetup('pc_dob');dobInfo($('pc_dob'));stepper('pc_years');
+  }
   function tick(){
+    var po=ovP();if(po&&shown(po)){tickPost();}
     var o=ov(),form=$('customerForm');if(!o||!form)return;
-    if(!shown(o)){wasOn=false;dpClose();return;}
+    if(!shown(o)){wasOn=false;if(!(ovP()&&shown(ovP())))dpClose();return;}
     if(!wasOn){wasOn=true;}
     tickPre(form);
   }
