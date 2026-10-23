@@ -878,3 +878,6 @@ html[data-theme="dark"] input[type="date"]{color-scheme:dark;}
 .nf-post .nf-body>.form-field:has(.tile-radio-group){grid-column:auto;}
 .nf-post .nf-body>.form-field:has(.tile-radio){grid-column:1/-1;}
 .nf-post .nf-body .option-field-btn{width:100%;justify-content:space-between;}
+.nf-post .nf-body .option-field-btn{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--border)!important;border-radius:12px!important;padding:11px 14px!important;min-height:42px;font-size:15px;font-weight:500;box-shadow:none!important;}
+.nf-post .nf-body .option-field-btn:hover{border-color:var(--blue)!important;}
+.nf-post .nf-body .option-field-btn .arrow{color:var(--text-soft);font-size:12px;}
