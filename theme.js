@@ -841,11 +841,12 @@
     var g=$(gid);if(!g)return;var fld=g.closest('.form-field');
     var m=$(gid+'_mirror'),vals=chipVals(g);
     if(!vals.length)return;
-    var sig=vals.join('|')+'|'+lg();
+    var labs=[].slice.call(g.querySelectorAll('.tile-radio')).map(function(c){return c.textContent.trim();});
+    var sig=vals.join('|')+'|'+labs.join('|')+'|'+lg();
     if(!m){m=document.createElement('select');m.id=gid+'_mirror';m.className='select-input nf-mirror';fld.appendChild(m);
       m.addEventListener('change',function(){var v=m.value;var c=[].slice.call(g.querySelectorAll('.tile-radio')).filter(function(x){return x.getAttribute('data-val')===v;})[0];if(c)c.click();});}
     g.style.display='none';
-    if(m.dataset.sig!==sig){m.dataset.sig=sig;m.innerHTML='<option value="">'+T('Choose…')+'</option>'+vals.map(function(v){return '<option value="'+String(v).replace(/"/g,'&quot;')+'">'+v+'</option>';}).join('');}
+    if(m.dataset.sig!==sig){m.dataset.sig=sig;m.innerHTML='<option value="">'+T('Choose…')+'</option>'+vals.map(function(v,i){return '<option value="'+String(v).replace(/"/g,'&quot;')+'">'+String(labs[i]||v).replace(/</g,'&lt;')+'</option>';}).join('');}
     var cur=g.dataset.selected||'';if(m.value!==cur)m.value=cur;
   }
   var PL={'15':{ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',t:'15 days',s:'Short stay',c:'o'},'30':{ic:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',t:'1 month',s:'30 days',c:'g'},'60':{ic:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/>',t:'2 months',s:'60 days',c:'b'},'90':{ic:'<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z"/>',t:'3 months',s:'90 days',c:'v'}};
@@ -1041,7 +1042,23 @@
       var co=[];try{co=JSON.parse(cl.dataset.options||'[]');}catch(e){}
       if(co.length!==2||co.indexOf('185')>=0){var cs=cl.dataset.selected;if(['245','365'].indexOf(cs)<0)cs='245';renderCompactOptionField('pc_contractLength_group',['245','365'],cs,cl.dataset.title||'Contract length');}
     }
+    chipsFor('pc_contractLength_group',' '+T('days'));
+    mirror('pc_plan_group');
     dobSetup('pc_dob');dobInfo($('pc_dob'));stepper('pc_years');
+  }
+  function chipsFor(gid,suffix){
+    var g=$(gid);if(!g)return;
+    var opts=[];try{opts=JSON.parse(g.dataset.options||'[]');}catch(e){}
+    if(!opts.length)return;
+    var cid=gid+'_chips',row=$(cid);
+    if(!row){row=document.createElement('div');row.id=cid;row.className='nf-chips';g.insertAdjacentElement('afterend',row);
+      row.addEventListener('click',function(e){var b=e.target.closest('.nf-chip');if(!b)return;var cur=$(gid);var o=[];try{o=JSON.parse(cur.dataset.options||'[]');}catch(x){}
+        renderCompactOptionField(gid,o,b.getAttribute('data-v'),cur.dataset.title);});}
+    g.style.display='none';
+    var sel=g.dataset.selected||'';var sig=opts.join('|')+'|'+sel+'|'+lg();
+    if(row.dataset.sig===sig)return;row.dataset.sig=sig;
+    row.innerHTML='';
+    opts.forEach(function(v){var b=document.createElement('button');b.type='button';b.className='nf-chip'+(v===sel?' on':'');b.setAttribute('data-v',v);b.textContent=v+suffix;row.appendChild(b);});
   }
   function tick(){
     var po=ovP();if(po&&shown(po)){tickPost();}
