@@ -781,3 +781,240 @@
     };
   }catch(e){}
 })();
+
+/* ===== New customer form: cards, dropdowns, plan rows, date-of-birth picker, ID-expiry rule ===== */
+(function(){
+  var TX={
+    zh:{'Customer':'客户信息','Application':'申请信息','Prepaid plan':'预付费套餐','Notes':'备注','Postpaid plan':'后付费套餐','Plan':'套餐','Company price & discount':'公司价格与折扣','Choose…':'请选择','Years':'年',
+      'Type 6 digits: year, month, day':'输入6位数字：年月日','years old':'岁','under 19':'未满19岁','Pick the year':'选择年份','Pick the month':'选择月份','Pick the day':'选择日期','Close':'关闭','Clear':'清除',
+      "Prepaid can't be made with this ARC":'此外国人登录证不能办理预付费','This ARC has already expired.':'此外国人登录证已过期。','A prepaid SIM needs at least 3 months of validity left. Ask the customer for a renewed ARC, or use a passport.':'预付费SIM要求证件至少还有3个月有效期。请客户更新证件，或改用护照。','days':'天','Plan type':'套餐类型','ID expiry date':'证件到期日','Fix the ID expiry date to save.':'请先处理证件到期日。','Not saved: ARC expires in less than 3 months':'未保存：外国人登录证有效期不足3个月'},
+    ko:{'Customer':'고객 정보','Application':'신청 정보','Prepaid plan':'선불 요금제','Notes':'메모','Postpaid plan':'후불 요금제','Plan':'요금제','Company price & discount':'회사 가격 및 할인','Choose…':'선택','Years':'년',
+      'Type 6 digits: year, month, day':'6자리 입력: 년월일','years old':'세','under 19':'19세 미만','Pick the year':'연도 선택','Pick the month':'월 선택','Pick the day':'일 선택','Close':'닫기','Clear':'지우기',
+      "Prepaid can't be made with this ARC":'이 외국인등록증으로는 선불 개통 불가','This ARC has already expired.':'외국인등록증이 이미 만료되었습니다.','A prepaid SIM needs at least 3 months of validity left. Ask the customer for a renewed ARC, or use a passport.':'선불 유심은 유효기간이 3개월 이상 남아 있어야 합니다. 갱신된 등록증이나 여권을 사용하세요.','days':'일','Plan type':'가입 유형','ID expiry date':'증명서 만료일','Fix the ID expiry date to save.':'만료일을 확인하세요.','Not saved: ARC expires in less than 3 months':'저장 안 됨: 등록증 만료 3개월 미만'}
+  };
+  function lg(){try{return LANG;}catch(e){return 'en';}}
+  function T(s){var d=TX[lg()];return (d&&d[s])||s;}
+  function $(id){return document.getElementById(id);}
+  function ov(){return $('customerModalOverlay');}
+  function shown(o){return o&&o.classList.contains('show');}
+  function isNew(){try{return editingCustomerId===null||editingCustomerId===undefined;}catch(e){return false;}}
+  function vis(el){return !!el&&el.getClientRects().length>0;}
+  function ico(d){return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>';}
+  var ICO={user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',doc:'<path d="M9 11l3 3 8-8M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>',card:'<rect x="3" y="6" width="18" height="12" rx="3"/><path d="M3 10h18"/>',bars:'<path d="M5 20V14M10 20V9M15 20V12M20 20V5"/>',coin:'<path d="M12 3v18M16 7.5c0-1.7-1.8-3-4-3s-4 1.3-4 3 1.8 2.6 4 3 4 1.3 4 3-1.8 3-4 3-4-1.3-4-3"/>',note:'<path d="M5 4h11l3 3v13H5z"/><path d="M8 11h8M8 15h5"/>'};
+  function card(title,ic,cls){
+    var c=document.createElement('section');c.className='nf-card '+(cls||'');
+    c.innerHTML='<div class="nf-head"><span class="nf-ib">'+ico(ICO[ic])+'</span><span class="nf-ttl"></span></div><div class="nf-body"></div>';
+    c.querySelector('.nf-ttl').textContent=T(title);c.dataset.t=title;return c;
+  }
+  function ff(id){var x=$(id);return x&&x.closest('.form-field');}
+  function mv(body,ids){ids.forEach(function(id){var f=ff(id);if(f)body.appendChild(f);});}
+  /* ---------- build / unbuild the card layout ---------- */
+  function unbuild(form){
+    if(!form||!form.dataset.nf)return;
+    (form.__nfOrig||[]).forEach(function(n){form.appendChild(n);});
+    [].slice.call(form.querySelectorAll(':scope > .nf-card')).forEach(function(c){c.remove();});
+    form.classList.remove('nf','nf-pre','nf-post');delete form.dataset.nf;
+    var p=$('prepaid3mFields');if(p){p.classList.remove('nf-card');var h=p.querySelector(':scope > .nf-head');if(h)h.remove();}
+    var sel=$('f_planType');if(sel&&sel.__all){sel.innerHTML='';sel.__all.forEach(function(o){sel.appendChild(o);});sel.__all=null;}
+    document.querySelectorAll('.nf-extra').forEach(function(x){x.remove();});
+    ['f_carrierType','p3_number'].forEach(function(id){var f=ff(id);if(f)f.style.display='';});
+    var nm=$('p3_company_group'),sc=$('p3_svcCarrierType_group');[nm,sc].forEach(function(g){if(g){g.style.display='';var m=$(g.id+'_mirror');if(m)m.remove();}});
+  }
+  function buildPre(form){
+    if(form.dataset.nf==='pre')return;
+    unbuild(form);
+    form.__nfOrig=[].slice.call(form.children);
+    var c1=card('Customer','user'),c2=card('Application','doc'),c4=card('Notes','note');
+    var b1=c1.querySelector('.nf-body'),b2=c2.querySelector('.nf-body'),b4=c4.querySelector('.nf-body');
+    mv(b1,['f_name','f_phone','f_nationality','f_dob','f_idType_group','f_idNumber','f_idExpiry','f_occupation_group','f_years','f_referral']);
+    mv(b2,['f_planType','f_branchOffice','f_handlerName','f_address','f_rating']);
+    mv(b4,['f_notes']);
+    var p=$('prepaid3mFields');
+    form.insertBefore(c1,form.firstChild);form.insertBefore(c2,c1.nextSibling);
+    if(p){p.classList.add('nf-card');var h=document.createElement('div');h.className='nf-head';h.innerHTML='<span class="nf-ib">'+ico(ICO.card)+'</span><span class="nf-ttl"></span>';h.querySelector('.nf-ttl').textContent=T('Prepaid plan');p.insertBefore(h,p.firstChild);form.insertBefore(p,c2.nextSibling);}
+    form.insertBefore(c4,(p&&p.nextSibling)||null);
+    form.classList.add('nf','nf-pre');form.dataset.nf='pre';
+  }
+  /* ---------- helpers ---------- */
+  function chipVals(g){return [].slice.call(g.querySelectorAll('.tile-radio')).map(function(c){return c.getAttribute('data-val');});}
+  function mirror(gid,label){
+    var g=$(gid);if(!g)return;var fld=g.closest('.form-field');
+    var m=$(gid+'_mirror'),vals=chipVals(g);
+    if(!vals.length)return;
+    var sig=vals.join('|')+'|'+lg();
+    if(!m){m=document.createElement('select');m.id=gid+'_mirror';m.className='select-input nf-mirror';fld.appendChild(m);
+      m.addEventListener('change',function(){var v=m.value;var c=[].slice.call(g.querySelectorAll('.tile-radio')).filter(function(x){return x.getAttribute('data-val')===v;})[0];if(c)c.click();});}
+    g.style.display='none';
+    if(m.dataset.sig!==sig){m.dataset.sig=sig;m.innerHTML='<option value="">'+T('Choose…')+'</option>'+vals.map(function(v){return '<option value="'+String(v).replace(/"/g,'&quot;')+'">'+v+'</option>';}).join('');}
+    var cur=g.dataset.selected||'';if(m.value!==cur)m.value=cur;
+  }
+  var PL={'15':{ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',t:'15 days',s:'Short stay',c:'o'},'30':{ic:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',t:'1 month',s:'30 days',c:'g'},'60':{ic:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/>',t:'2 months',s:'60 days',c:'b'},'90':{ic:'<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z"/>',t:'3 months',s:'90 days',c:'v'}};
+  var PLZ={zh:{'15 days':'15天','1 month':'1个月','2 months':'2个月','3 months':'3个月','Short stay':'短期','30 days':'30天','60 days':'60天','90 days':'90天'},ko:{'15 days':'15일','1 month':'1개월','2 months':'2개월','3 months':'3개월','Short stay':'단기','30 days':'30일','60 days':'60일','90 days':'90일'}};
+  function pz(s){var d=PLZ[lg()];return (d&&d[s])||s;}
+  function planTiles(){
+    var g=$('p3_prepaidPlan_group');if(!g)return;
+    [].slice.call(g.querySelectorAll('.tile-radio')).forEach(function(c){
+      var d=c.getAttribute('data-val'),P=PL[d];if(!P)return;
+      var price=((c.getAttribute('data-nfp'))||(c.textContent.split('·')[1]||'').trim());
+      var sig=d+'|'+price+'|'+lg();
+      if(c.dataset.nfs===sig)return;
+      c.dataset.nfs=sig;c.setAttribute('data-nfp',price);c.classList.add('nf-plan','nf-'+P.c);
+      c.innerHTML='<span class="nf-pb">'+ico(P.ic).replace('width="17" height="17"','width="26" height="26"')+'</span><span class="nf-pm"><b>'+pz(P.t)+'</b><i>'+pz(P.s==='Short stay'?'Short stay':P.s)+'</i></span><span class="nf-pc">'+price+'</span><span class="nf-pr"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>';
+    });
+  }
+  function carrierNet(v){v=String(v||'');if(/SKT/i.test(v))return 'SKT';if(/LGU|LG/i.test(v))return 'LG';if(/KT/i.test(v))return 'KT';return '';}
+  /* ---------- date-of-birth drill picker (year → month → day) ---------- */
+  var DP={pop:null,inp:null,view:'year',yp:1993,vy:2000,vm:0,fmt:'yymmdd'};
+  function pad(n){return (n<10?'0':'')+n;}
+  function parseDob(inp){
+    var v=(inp.value||'').trim();
+    if(inp.type==='date'){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v);return m?{y:+m[1],m:+m[2],d:+m[3]}:null;}
+    var dg=v.replace(/\D/g,'');var y,mo,d;
+    if(dg.length===6){var yy=+dg.slice(0,2);y=yy>(new Date().getFullYear()%100)?1900+yy:2000+yy;mo=+dg.slice(2,4);d=+dg.slice(4,6);}
+    else if(dg.length===8){y=+dg.slice(0,4);mo=+dg.slice(4,6);d=+dg.slice(6,8);}
+    else return null;
+    var t=new Date(y,mo-1,d);if(t.getFullYear()!==y||t.getMonth()!==mo-1||t.getDate()!==d)return null;
+    return {y:y,m:mo,d:d};
+  }
+  function ageOf(p){var n=new Date(),a=n.getFullYear()-p.y;if(n.getMonth()+1<p.m||(n.getMonth()+1===p.m&&n.getDate()<p.d))a--;return a;}
+  function dobInfo(inp){
+    var f=inp.closest('.form-field');if(!f)return;var el=f.querySelector('.nf-dobinfo');
+    if(!el){el=document.createElement('div');el.className='nf-dobinfo';f.appendChild(el);}
+    var p=parseDob(inp),txt='',cls='';
+    if(p){var a=ageOf(p);txt=new Date(p.y,p.m-1,p.d).toLocaleDateString(lg()==='zh'?'zh-CN':lg()==='ko'?'ko-KR':'en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+a+(lg()==='en'?' '+T('years old'):T('years old'))+(a<19?' · '+T('under 19'):'');cls=a<19?'warn':'ok';}
+    else if(inp.value){txt='';}
+    else txt=T('Type 6 digits: year, month, day');
+    if(el.textContent!==txt)el.textContent=txt;el.className='nf-dobinfo '+cls;
+  }
+  function dpClose(){if(DP.pop){DP.pop.remove();DP.pop=null;}DP.inp=null;}
+  function dpWrite(y,m,d){
+    var inp=DP.inp;if(!inp)return;
+    inp.value=inp.type==='date'?(y+'-'+pad(m)+'-'+pad(d)):(pad(y%100)+pad(m)+pad(d));
+    inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));dobInfo(inp);
+  }
+  function dpRender(){
+    var pop=DP.pop;if(!pop)return;
+    var h='<div class="nf-dh"><button type="button" class="nf-dn" data-a="p">&#8249;</button><button type="button" class="nf-dt" data-a="up"></button><button type="button" class="nf-dn" data-a="n">&#8250;</button></div><div class="nf-ds"></div>';
+    var title='',step='',cur=parseDob(DP.inp);
+    if(DP.view==='year'){
+      title=DP.yp+' – '+(DP.yp+15);step='1/3 · '+T('Pick the year');h+='<div class="nf-dg4">';
+      for(var i=0;i<16;i++){var y=DP.yp+i;h+='<button type="button" class="nf-dc'+(cur&&cur.y===y?' sel':'')+'" data-y="'+y+'">'+y+'</button>';}h+='</div>';
+    }else if(DP.view==='month'){
+      title=String(DP.vy);step='2/3 · '+T('Pick the month');h+='<div class="nf-dg3">';
+      for(var k=0;k<12;k++){var nm=new Date(2000,k,1).toLocaleDateString(lg()==='zh'?'zh-CN':lg()==='ko'?'ko-KR':'en-US',{month:'short'});h+='<button type="button" class="nf-dc'+(cur&&cur.y===DP.vy&&cur.m===k+1?' sel':'')+'" data-m="'+k+'">'+nm+'</button>';}h+='</div>';
+    }else{
+      var first=new Date(DP.vy,DP.vm,1),sd=first.getDay(),dim=new Date(DP.vy,DP.vm+1,0).getDate();
+      title=first.toLocaleDateString(lg()==='zh'?'zh-CN':lg()==='ko'?'ko-KR':'en-US',{month:'long',year:'numeric'});step='3/3 · '+T('Pick the day');h+='<div class="nf-dg7">';
+      for(var w=0;w<7;w++)h+='<span class="nf-dw">'+new Date(2023,0,1+w).toLocaleDateString(lg()==='zh'?'zh-CN':lg()==='ko'?'ko-KR':'en-US',{weekday:'short'})+'</span>';
+      for(var b=0;b<sd;b++)h+='<span></span>';
+      for(var d=1;d<=dim;d++)h+='<button type="button" class="nf-dd'+(cur&&cur.y===DP.vy&&cur.m===DP.vm+1&&cur.d===d?' sel':'')+'" data-d="'+d+'">'+d+'</button>';
+      h+='</div>';
+    }
+    h+='<div class="nf-df"><button type="button" class="nf-dl" data-a="x">'+T('Close')+'</button></div>';
+    pop.innerHTML=h;pop.querySelector('.nf-dt').textContent=title;pop.querySelector('.nf-ds').textContent=step;
+  }
+  function dpPlace(){
+    var r=DP.inp.getBoundingClientRect(),p=DP.pop,w=p.offsetWidth||296,hh=p.offsetHeight||340;
+    var below=window.innerHeight-r.bottom-10,top=below>=hh||below>r.top?r.bottom+6:Math.max(8,r.top-hh-6);
+    p.style.top=top+'px';p.style.left=Math.max(8,Math.min(r.left,window.innerWidth-w-12))+'px';
+  }
+  function dpOpen(inp){
+    dpClose();DP.inp=inp;var cur=parseDob(inp);
+    DP.vy=cur?cur.y:2000;DP.vm=cur?cur.m-1:0;DP.yp=DP.vy-7;DP.view='year';
+    var pop=document.createElement('div');pop.className='nf-dpop';pop.tabIndex=-1;document.body.appendChild(pop);DP.pop=pop;
+    pop.addEventListener('mousedown',function(e){e.preventDefault();});
+    pop.addEventListener('click',function(e){
+      var b=e.target.closest('button');if(!b)return;e.stopPropagation();
+      var a=b.dataset.a;
+      if(b.dataset.y){DP.vy=+b.dataset.y;DP.view='month';}
+      else if(b.dataset.m){DP.vm=+b.dataset.m;DP.view='day';}
+      else if(b.dataset.d){dpWrite(DP.vy,DP.vm+1,+b.dataset.d);dpClose();return;}
+      else if(a==='x'){dpClose();return;}
+      else if(a==='up'){DP.view=DP.view==='day'?'month':'year';}
+      else if(a==='p'||a==='n'){var k=a==='n'?1:-1;if(DP.view==='year')DP.yp+=16*k;else if(DP.view==='month')DP.vy+=k;else{DP.vm+=k;if(DP.vm<0){DP.vm=11;DP.vy--;}if(DP.vm>11){DP.vm=0;DP.vy++;}}}
+      dpRender();
+    });
+    dpRender();dpPlace();
+  }
+  document.addEventListener('mousedown',function(e){
+    var t=e.target;
+    if(DP.pop&&!DP.pop.contains(t)&&t!==DP.inp)dpClose();
+  },true);
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    if(t&&t.classList&&t.classList.contains('nf-dob')){e.preventDefault();if(DP.inp===t&&DP.pop)dpClose();else dpOpen(t);}
+  },true);
+  document.addEventListener('keydown',function(e){if(DP.pop&&(e.key==='Escape'||e.key==='Tab'))dpClose();},true);
+  document.addEventListener('scroll',function(e){if(DP.pop&&!DP.pop.contains(e.target)){dpPlace();}},true);
+  window.addEventListener('resize',dpClose);
+  function dobSetup(id){
+    var i=$(id);if(!i||i.dataset.nfd)return;i.dataset.nfd='1';i.classList.add('nf-dob');i.setAttribute('data-native','1');i.autocomplete='off';
+    i.addEventListener('input',function(){dobInfo(i);});
+  }
+  /* ---------- years stepper ---------- */
+  function stepper(id){
+    var i=$(id);if(!i||i.dataset.nfs)return;i.dataset.nfs='1';
+    var w=document.createElement('div');w.className='nf-step';
+    var mk=function(sign){var b=document.createElement('button');b.type='button';b.className='nf-stp';b.setAttribute('aria-label',sign>0?'More (0.5)':'Less (0.5)');b.innerHTML=sign>0?'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg>':'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12"/></svg>';
+      b.addEventListener('click',function(){var v=parseFloat(i.value);if(isNaN(v))v=0;v=Math.max(0,Math.round((v+sign*0.5)*2)/2);i.value=String(v);i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));});return b;};
+    i.parentNode.insertBefore(w,i);w.appendChild(mk(-1));w.appendChild(i);w.appendChild(mk(1));
+    w.parentNode.classList.add('nf-years');
+  }
+  /* ---------- ARC expiry rule (prepaid) ---------- */
+  function arcState(){
+    var g=$('f_idType_group'),ex=$('f_idExpiry');
+    if(!g||!ex||!ex.value)return {block:false};
+    if((g.dataset.selected||'ARC')!=='ARC')return {block:false};
+    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(ex.value);if(!m)return {block:false};
+    var d=new Date(+m[1],+m[2]-1,+m[3]),n=new Date(),lim=new Date(n.getFullYear(),n.getMonth()+3,n.getDate()),t0=new Date(n.getFullYear(),n.getMonth(),n.getDate());
+    if(d>=lim)return {block:false};
+    return {block:true,days:Math.round((d-t0)/86400000)};
+  }
+  function arcUI(on){
+    var f=$('f_idExpiryField'),g=$('f_idType_group');if(!f||!g)return;
+    var isArc=(g.dataset.selected||'ARC')==='ARC';
+    f.style.display=(on&&isArc)?'':'none';
+    var w=$('nfArcWarn');
+    var st=on&&isArc?arcState():{block:false};
+    if(!st.block){if(w)w.remove();}
+    else{
+      if(!w){w=document.createElement('div');w.id='nfArcWarn';w.className='nf-warn full';w.setAttribute('role','alert');f.insertAdjacentElement('afterend',w);}
+      var msg=st.days<0?T('This ARC has already expired.'):({en:'This ARC expires in '+st.days+' days.',zh:'此证件将在'+st.days+'天后到期。',ko:'등록증이 '+st.days+'일 후 만료됩니다.'})[lg()];
+      var sig=msg+lg();
+      if(w.dataset.s!==sig){w.dataset.s=sig;w.innerHTML='<b></b><span></span>';w.firstChild.textContent=T("Prepaid can't be made with this ARC");w.lastChild.textContent=msg+' '+T('A prepaid SIM needs at least 3 months of validity left. Ask the customer for a renewed ARC, or use a passport.');}
+    }
+    ['saveCustomerBtn','savePrintCustomerBtn'].forEach(function(id){var b=$(id);if(b)b.classList.toggle('nf-dis',!!(on&&st.block));});
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('#saveCustomerBtn,#savePrintCustomerBtn');
+    if(!b||!b.classList.contains('nf-dis'))return;
+    e.stopImmediatePropagation();e.preventDefault();try{toast(T('Not saved: ARC expires in less than 3 months'));}catch(x){}
+  },true);
+  /* ---------- per-open setup and ticking ---------- */
+  var wasOn=false;
+  function today(){var n=new Date();return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate());}
+  function tickPre(form){
+    var pre=isNew()&&vis($('prepaid3mFields'));
+    if(!pre){if(form.dataset.nf==='pre')unbuild(form);arcUI(false);return;}
+    buildPre(form);
+    /* plan type: only new sign-up or number port */
+    var pt=$('f_planType');
+    if(pt&&pt.options.length>2){pt.__all=pt.__all||[].slice.call(pt.options);var keep=[].slice.call(pt.options).filter(function(o){return /신규가입|번호이동/.test(o.value+o.text);}).slice(0,2);var cur=pt.value;pt.innerHTML='';keep.forEach(function(o){pt.appendChild(o);});if(keep.some(function(o){return o.value===cur;}))pt.value=cur;}
+    /* carrier network is taken from the carrier type; SIM phone from the phone field */
+    var cf=ff('f_carrierType');if(cf)cf.style.display='none';
+    var pf=ff('p3_number');if(pf)pf.style.display='none';
+    var sc=$('p3_svcCarrierType_group'),cn=$('f_carrierType');
+    if(sc&&cn){var net=carrierNet(sc.dataset.selected);if(net&&cn.value!==net)cn.value=net;}
+    var ph=$('f_phone'),pn=$('p3_number');if(ph&&pn&&pn.value!==ph.value&&document.activeElement!==pn)pn.value=ph.value;
+    mirror('p3_company_group','Company');mirror('p3_svcCarrierType_group','Carrier type');
+    planTiles();dobSetup('f_dob');dobInfo($('f_dob'));stepper('f_years');arcUI(true);
+    var ad=$('p3_activationDate');if(ad&&!ad.value)ad.value=today();
+  }
+  function tick(){
+    var o=ov(),form=$('customerForm');if(!o||!form)return;
+    if(!shown(o)){wasOn=false;dpClose();return;}
+    if(!wasOn){wasOn=true;}
+    tickPre(form);
+  }
+  setInterval(function(){try{tick();}catch(e){}},250);
+})();
