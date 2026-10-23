@@ -872,3 +872,9 @@ html[data-theme="dark"] input[type="date"]{color-scheme:dark;}
 .nf-warn b{font-size:13.5px;}
 .nf-dis{opacity:.45;cursor:not-allowed!important;}
 @media(max-width:640px){.nf-body{grid-template-columns:1fr}#p3_prepaidPlan_group{grid-template-columns:1fr}}
+/* postpaid new-customer form */
+.form-grid.nf-post{display:flex;flex-direction:column;gap:14px;}
+.nf-post>:not(.nf-card){display:none!important;}
+.nf-post .nf-body>.form-field:has(.tile-radio-group){grid-column:auto;}
+.nf-post .nf-body>.form-field:has(.tile-radio){grid-column:1/-1;}
+.nf-post .nf-body .option-field-btn{width:100%;justify-content:space-between;}
