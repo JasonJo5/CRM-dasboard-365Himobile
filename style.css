@@ -807,3 +807,68 @@ html[data-theme="dark"] input[type="date"]{color-scheme:dark;}
 .dr-day.edge.s.e{border-radius:50%;}
 .dr-hint{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-soft);text-align:center;}
 @media (max-width:640px){.dr-pop{flex-direction:column;max-width:calc(100vw - 16px);}.dr-presets{flex-direction:row;flex-wrap:wrap;border-right:0;padding-right:0;min-width:0;}}
+
+/* ===== New customer form (cards) ===== */
+#customerForm.nf{display:flex;flex-direction:column;gap:14px;}
+.nf-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px 18px 18px;}
+#prepaid3mFields.nf-card{display:block;margin:0;}
+#prepaid3mFields.nf-card[style*="none"]{display:none!important;}
+.nf-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.nf-ib{width:30px;height:30px;border-radius:10px;background:var(--blue-light);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;}
+.nf-ttl{font-weight:700;font-size:14.5px;letter-spacing:-.01em;color:var(--text);}
+.nf-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.nf-body>.form-field.full,.nf-body>.form-field:has(.tile-radio-group),.nf-body>.form-field:has(textarea){grid-column:1/-1;}
+.nf-body>.form-field:has(#f_idType_group),.nf-body>.form-field:has(#f_occupation_group){grid-column:1/-1;}
+#prepaid3mFields.nf-card .form-grid{gap:14px;}
+.nf-mirror{width:100%;}
+/* plan rows */
+#p3_prepaidPlan_group{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;}
+#p3_prepaidPlan_group .tile-radio.nf-plan{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1.5px solid var(--border)!important;background:var(--card)!important;color:var(--text)!important;text-align:left;position:relative;transform:none;filter:none;}
+#p3_prepaidPlan_group .tile-radio.nf-plan::after{display:none!important;}
+#p3_prepaidPlan_group .tile-radio.nf-plan[data-val="15"]{order:1}
+#p3_prepaidPlan_group .tile-radio.nf-plan[data-val="60"]{order:2}
+#p3_prepaidPlan_group .tile-radio.nf-plan[data-val="30"]{order:3}
+#p3_prepaidPlan_group .tile-radio.nf-plan[data-val="90"]{order:4}
+.nf-plan{--pc:#d9560f;--pb:#fdeee4}
+.nf-plan.nf-b{--pc:#2b72e6;--pb:#e6efff}
+.nf-plan.nf-g{--pc:#0b8a5f;--pb:#e1f5ee}
+.nf-plan.nf-v{--pc:#8a3fd4;--pb:#f1e7fc}
+.nf-pb{width:44px;height:44px;border-radius:13px;background:var(--pb);color:var(--pc);display:inline-flex;align-items:center;justify-content:center;flex:none;}
+.nf-pm{display:flex;flex-direction:column;flex:1;min-width:0;line-height:1.25;}
+.nf-pm b{font-size:14.5px;font-weight:700;}
+.nf-pm i{font-style:normal;font-size:12px;color:var(--text-soft);}
+.nf-pc{font-weight:700;font-size:13.5px;color:var(--pc);white-space:nowrap;}
+.nf-pr{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;color:transparent;flex:none;}
+#p3_prepaidPlan_group .tile-radio.nf-plan:hover{border-color:var(--pc)!important;}
+#p3_prepaidPlan_group .tile-radio.nf-plan.selected{border-color:var(--pc)!important;background:var(--pb)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 18%,transparent);}
+#p3_prepaidPlan_group .tile-radio.nf-plan.selected .nf-pr{background:var(--pc);border-color:var(--pc);color:#fff;}
+/* DOB */
+.nf-dobinfo{font-size:12px;margin-top:5px;color:var(--text-soft);min-height:16px;}
+.nf-dobinfo.ok{color:var(--green);}.nf-dobinfo.warn{color:var(--orange);font-weight:600;}
+.nf-dob{cursor:pointer;}
+.nf-dpop{position:fixed;z-index:100000;width:296px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);padding:12px;font-family:inherit;}
+.nf-dh{display:flex;align-items:center;gap:6px;}
+.nf-dt{flex:1;border:0;background:var(--gray-light);border-radius:10px;padding:8px;font-weight:700;font-size:13.5px;color:var(--text);cursor:pointer;}
+.nf-dn{width:32px;height:32px;border:0;border-radius:10px;background:transparent;font-size:20px;color:var(--text-soft);cursor:pointer;}
+.nf-dn:hover{background:var(--gray-light);}
+.nf-ds{font-size:11.5px;color:var(--text-soft);text-align:center;margin:8px 0;}
+.nf-dg4,.nf-dg3,.nf-dg7{display:grid;gap:4px;}
+.nf-dg4{grid-template-columns:repeat(4,1fr);}.nf-dg3{grid-template-columns:repeat(3,1fr);}.nf-dg7{grid-template-columns:repeat(7,1fr);}
+.nf-dc,.nf-dd{border:0;background:transparent;border-radius:10px;padding:9px 0;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit;}
+.nf-dd{padding:7px 0;}
+.nf-dc:hover,.nf-dd:hover{background:var(--blue-light);}
+.nf-dc.sel,.nf-dd.sel{background:var(--blue);color:#fff;font-weight:700;}
+.nf-dw{font-size:11px;color:var(--text-soft);text-align:center;padding:4px 0;}
+.nf-df{display:flex;justify-content:flex-end;margin-top:8px;}
+.nf-dl{border:0;background:transparent;color:var(--text-soft);font-size:12.5px;cursor:pointer;padding:6px 10px;border-radius:8px;}
+.nf-dl:hover{background:var(--gray-light);}
+/* years stepper */
+.nf-step{display:flex;align-items:center;max-width:170px;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);}
+.nf-step input{border:0!important;box-shadow:none!important;text-align:center;width:100%;min-width:0;background:transparent!important;padding:9px 0;}
+.nf-stp{width:38px;align-self:stretch;border:0;background:var(--gray-light);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+.nf-stp:hover{background:var(--blue-light);color:var(--blue);}
+/* ARC warning */
+.nf-warn{grid-column:1/-1;display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:12px;background:var(--red-light);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 30%,transparent);font-size:12.5px;line-height:1.45;}
+.nf-warn b{font-size:13.5px;}
+.nf-dis{opacity:.45;cursor:not-allowed!important;}
+@media(max-width:640px){.nf-body{grid-template-columns:1fr}#p3_prepaidPlan_group{grid-template-columns:1fr}}
