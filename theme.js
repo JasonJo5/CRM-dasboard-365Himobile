@@ -54,7 +54,7 @@
     if(d>=85&&d<=95)n=3;else if(d>=55&&d<=65)n=2;else if(d>=28&&d<=35)n=1;
     if(!n)return null;
     var pr=Number(s.sellingPrice!=null?s.sellingPrice:s.price);
-    var rc=n===1&&(/recharge/i.test(s.changeReason||'')||pr===36000||pr===36300);
+    var rc=n===1&&/recharge/i.test(s.changeReason||'');
     var t=__zh()?n+'个月':n+(n>1?' months':' month');
     return rc?['rc',__zh()?'充值'+t:'Recharge '+t]:['m'+n,t];}
   window.__planLab=lab;
