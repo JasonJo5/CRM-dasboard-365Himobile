@@ -762,3 +762,8 @@
   function bind(){tbl=document.getElementById('sheetTable');if(tbl&&!tbl.__xf){tbl.__xf=1;new MutationObserver(function(){try{sync();}catch(e){}}).observe(tbl,{childList:true});}}
   setInterval(function(){if(document.hidden)return;try{bind();sync();}catch(e){}},500);
 })();
+
+/* ===== Extra prepaid company option ===== */
+(function(){
+  try{if(typeof PREPAID_COMPANIES!=='undefined'&&PREPAID_COMPANIES.indexOf('벨류컨SMT')<0)PREPAID_COMPANIES.push('벨류컨SMT');}catch(e){}
+})();
