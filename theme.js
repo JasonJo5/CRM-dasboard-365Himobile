@@ -54,7 +54,8 @@
     if(d>=85&&d<=95)n=3;else if(d>=55&&d<=65)n=2;else if(d>=28&&d<=35)n=1;
     if(!n)return null;
     var pr=Number(s.sellingPrice!=null?s.sellingPrice:s.price);
-    var rc=n===1&&/recharge/i.test(s.changeReason||'');
+    var cn='';try{cn=((getCustomer(s.customerId)||{}).name||'').toUpperCase();}catch(e){}
+    var rc=n===1&&(/recharge/i.test(s.changeReason||'')||((pr===36000||pr===36300)&&cn.indexOf('SAFARBAYEV BERIK')<0));
     var t=__zh()?n+'个月':n+(n>1?' months':' month');
     return rc?['rc',__zh()?'充值'+t:'Recharge '+t]:['m'+n,t];}
   window.__planLab=lab;
@@ -766,4 +767,17 @@
 /* ===== Extra prepaid company option ===== */
 (function(){
   try{if(typeof PREPAID_COMPANIES!=='undefined'&&PREPAID_COMPANIES.indexOf('벨류컨SMT')<0)PREPAID_COMPANIES.push('벨류컨SMT');}catch(e){}
+})();
+
+/* ===== Excel export: recharge plans are written as "Recharge" in PLAN TYPE (same rule as the CRM) ===== */
+(function(){
+  try{
+    if(typeof prepaidExportRow!=='function'||window.__rcExport)return;
+    var orig=prepaidExportRow;window.__rcExport=1;
+    window.prepaidExportRow=function(c,s){
+      var r=orig.apply(this,arguments);
+      try{var l=window.__planLab&&window.__planLab(s);if(l&&l[0]==='rc')r[9]='Recharge';}catch(e){}
+      return r;
+    };
+  }catch(e){}
 })();
